@@ -22,16 +22,16 @@ html, body {
 /* Dashboard Card Global Styles - To match FileMaker design exactly */
 .dashboard-card {
   background: #ffffff;
-  border: 2px solid #2176d2;
+  border: 2px solid #003043;
   border-radius: 8px;
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  box-shadow: 0 2px 4px rgba(25, 118, 210, 0.1);
+  box-shadow: 0 2px 4px rgba(0, 48, 67, 0.1);
 }
 
 .dashboard-card-header {
-  background: #2176d2;
+  background: #003043;
   color: #ffffff;
   font-weight: 600;
   font-size: 14px;
