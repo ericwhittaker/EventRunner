@@ -18,3 +18,121 @@ html, body {
   background: #f5f6fa;
   color: #222;
 }
+
+/* Dashboard Card Global Styles - To match FileMaker design exactly */
+.dashboard-card {
+  background: #ffffff;
+  border: 2px solid #2176d2;
+  border-radius: 8px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 2px 4px rgba(25, 118, 210, 0.1);
+}
+
+.dashboard-card-header {
+  background: #2176d2;
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 14px;
+  padding: 10px 16px;
+  border: none;
+  margin: 0;
+  text-align: center;
+  letter-spacing: 0.3px;
+  border-top-left-radius: 6px;
+  border-top-right-radius: 6px;
+}
+
+.dashboard-card-content {
+  flex: 1;
+  overflow: hidden;
+  padding: 0;
+}
+
+/* Table Styling to match FileMaker */
+.dashboard-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  background: transparent;
+  table-layout: fixed;
+  font-size: 11px;
+}
+
+.dashboard-table th {
+  background: #e8f0fe;
+  color: #1a1a1a;
+  font-weight: 600;
+  padding: 6px 8px;
+  border-bottom: 1px solid #c1d5f0;
+  font-size: 11px;
+  text-align: left;
+  vertical-align: middle;
+  height: 28px;
+}
+
+.dashboard-table td {
+  background: transparent;
+  color: #333;
+  padding: 4px 8px;
+  font-size: 11px;
+  border-bottom: 1px solid #f0f3f7;
+  height: 26px;
+  vertical-align: middle;
+}
+
+.dashboard-table tr:nth-child(even) td {
+  background: #f8fafe;
+}
+
+/* Event ID Styling to match FileMaker */
+.event-id {
+  background: #e3f2fd;
+  color: #1565c0;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-weight: 600;
+  font-size: 10px;
+  display: inline-block;
+}
+
+/* Status Badge Styling to match FileMaker */
+.status {
+  border-radius: 12px;
+  padding: 3px 8px;
+  font-size: 10px;
+  font-weight: 600;
+  color: white;
+  display: inline-block;
+  min-width: 20px;
+  text-align: center;
+}
+
+.status.live {
+  background: #4caf50;
+}
+
+.status.urgent {
+  background: #f44336;
+}
+
+.status.warning {
+  background: #ff9800;
+}
+
+.status.ok {
+  background: #4caf50;
+}
+
+/* Info and Check Icons */
+.info-icon {
+  color: #2196f3;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.check-icon {
+  color: #4caf50;
+  font-weight: bold;
+}
