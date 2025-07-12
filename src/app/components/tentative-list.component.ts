@@ -15,41 +15,39 @@ export interface TentativeRow {
   standalone: true,
   imports: [CommonModule],
   template: `
-    <div class="dashboard-card">
-      <div class="dashboard-card-header">Tentative</div>
-      <div class="dashboard-card-content">
-        <table class="tentative-table">
-          <thead>
-            <tr>
-              <th style="width: 20%">Start</th>
-              <th style="width: 20%">End</th>
-              <th style="width: 35%">Event Name</th>
-              <th style="width: 10%">Status</th>
-              <th style="width: 8%">To Do</th>
-              <th style="width: 7%">Info</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let row of data">
-              <td>{{ row.start }}</td>
-              <td>{{ row.end }}</td>
-              <td class="event-name">{{ row.eventName }}</td>
-              <td [innerHTML]="row.status.html"></td>
-              <td class="todo-cell">{{ row.toDo }}</td>
-              <td [innerHTML]="row.info.html"></td>
-            </tr>
-            <!-- Empty rows to maintain height -->
-            <tr *ngFor="let i of emptyRows" class="empty-row">
-              <td>&nbsp;</td>
-              <td>&nbsp;</td>
-              <td>&nbsp;</td>
-              <td>&nbsp;</td>
-              <td>&nbsp;</td>
-              <td>&nbsp;</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+    <div class="dashboard-card-header">Tentative</div>
+    <div class="dashboard-card-content">
+      <table class="tentative-table">
+        <thead>
+          <tr>
+            <th style="width: 20%">Start</th>
+            <th style="width: 20%">End</th>
+            <th style="width: 35%">Event Name</th>
+            <th style="width: 10%">Status</th>
+            <th style="width: 8%">To Do</th>
+            <th style="width: 7%">Info</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let row of data">
+            <td>{{ row.start }}</td>
+            <td>{{ row.end }}</td>
+            <td class="event-name">{{ row.eventName }}</td>
+            <td [innerHTML]="row.status.html"></td>
+            <td class="todo-cell">{{ row.toDo }}</td>
+            <td [innerHTML]="row.info.html"></td>
+          </tr>
+          <!-- Empty rows to maintain height -->
+          <tr *ngFor="let i of emptyRows" class="empty-row">
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   `,
   styles: [`

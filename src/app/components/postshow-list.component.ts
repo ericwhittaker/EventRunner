@@ -16,44 +16,42 @@ export interface PostShowRow {
   standalone: true,
   imports: [CommonModule],
   template: `
-    <div class="dashboard-card">
-      <div class="dashboard-card-header">Post Show / Follow Up</div>
-      <div class="dashboard-card-content">
-        <table class="postshow-table">
-          <thead>
-            <tr>
-              <th style="width: 15%">Start</th>
-              <th style="width: 15%">End</th>
-              <th style="width: 30%">Event Name</th>
-              <th style="width: 15%">City / State</th>
-              <th style="width: 8%">Info</th>
-              <th style="width: 8%">To Do</th>
-              <th style="width: 9%">Set S</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let row of data">
-              <td>{{ row.start }}</td>
-              <td>{{ row.end }}</td>
-              <td class="event-name">{{ row.eventName }}</td>
-              <td>{{ row.cityState }}</td>
-              <td [innerHTML]="row.info.html"></td>
-              <td class="todo-cell">{{ row.toDo }}</td>
-              <td [innerHTML]="row.setS.html"></td>
-            </tr>
-            <!-- Empty rows to maintain height -->
-            <tr *ngFor="let i of emptyRows" class="empty-row">
-              <td>&nbsp;</td>
-              <td>&nbsp;</td>
-              <td>&nbsp;</td>
-              <td>&nbsp;</td>
-              <td>&nbsp;</td>
-              <td>&nbsp;</td>
-              <td>&nbsp;</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+    <div class="dashboard-card-header">Post Show / Follow Up</div>
+    <div class="dashboard-card-content">
+      <table class="postshow-table">
+        <thead>
+          <tr>
+            <th style="width: 15%">Start</th>
+            <th style="width: 15%">End</th>
+            <th style="width: 30%">Event Name</th>
+            <th style="width: 15%">City / State</th>
+            <th style="width: 8%">Info</th>
+            <th style="width: 8%">To Do</th>
+            <th style="width: 9%">Set S</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let row of data">
+            <td>{{ row.start }}</td>
+            <td>{{ row.end }}</td>
+            <td class="event-name">{{ row.eventName }}</td>
+            <td>{{ row.cityState }}</td>
+            <td [innerHTML]="row.info.html"></td>
+            <td class="todo-cell">{{ row.toDo }}</td>
+            <td [innerHTML]="row.setS.html"></td>
+          </tr>
+          <!-- Empty rows to maintain height -->
+          <tr *ngFor="let i of emptyRows" class="empty-row">
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   `,
   styles: [`

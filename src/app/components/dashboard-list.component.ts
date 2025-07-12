@@ -20,36 +20,34 @@ export interface MainDashboardRow {
   standalone: true,
   imports: [CommonModule],
   template: `
-    <div class="dashboard-card">
-      <div class="dashboard-card-header">Main Dashboard</div>
-      <div class="dashboard-card-content">
-        <table class="main-dashboard-table">
-          <thead>
-            <tr>
-              <th style="width: 8%">Start</th>
-              <th style="width: 8%">End</th>
-              <th style="width: 28%">Event Name</th>
-              <th style="width: 8%">Event ID</th>
-              <th style="width: 20%">Venue / Sub Venue</th>
-              <th style="width: 12%">City / State</th>
-              <th style="width: 8%">Providing</th>
-              <th style="width: 8%">Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let row of data">
-              <td>{{ row.start }}</td>
-              <td>{{ row.end }}</td>
-              <td class="event-name">{{ row.eventName }}</td>
-              <td [innerHTML]="row.eventId.html"></td>
-              <td class="venue">{{ row.venue }}</td>
-              <td>{{ row.cityState }}</td>
-              <td>{{ row.providing }}</td>
-              <td [innerHTML]="row.status.html"></td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+    <div class="dashboard-card-header">Main Dashboard</div>
+    <div class="dashboard-card-content">
+      <table class="main-dashboard-table">
+        <thead>
+          <tr>
+            <th style="width: 8%">Start</th>
+            <th style="width: 8%">End</th>
+            <th style="width: 28%">Event Name</th>
+            <th style="width: 8%">Event ID</th>
+            <th style="width: 20%">Venue / Sub Venue</th>
+            <th style="width: 12%">City / State</th>
+            <th style="width: 8%">Providing</th>
+            <th style="width: 8%">Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let row of data">
+            <td>{{ row.start }}</td>
+            <td>{{ row.end }}</td>
+            <td class="event-name">{{ row.eventName }}</td>
+            <td [innerHTML]="row.eventId.html"></td>
+            <td class="venue">{{ row.venue }}</td>
+            <td>{{ row.cityState }}</td>
+            <td>{{ row.providing }}</td>
+            <td [innerHTML]="row.status.html"></td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   `,
   styles: [`
