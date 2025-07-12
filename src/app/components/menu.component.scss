@@ -1,0 +1,83 @@
+.menu-bar {
+  width: 100vw;
+  height: 64px;
+  background: linear-gradient(90deg, #222 80%, #333 100%);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 32px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  border-bottom: 1px solid #444;
+  z-index: 10;
+}
+
+.menu-left {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.app-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  letter-spacing: 1px;
+  margin-right: 32px;
+}
+
+.menu-icons {
+  display: flex;
+  gap: 12px;
+}
+
+.icon-btn {
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 1.3rem;
+  padding: 6px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.icon-btn:hover {
+  background: #444;
+}
+
+.icon-placeholder {
+  font-size: 1.3rem;
+}
+
+.menu-right {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.active-users {
+  font-size: 1rem;
+  color: #fff;
+  margin-right: 8px;
+}
+
+.user-count {
+  background: #0077cc;
+  color: #fff;
+  border-radius: 12px;
+  padding: 2px 8px;
+  margin-left: 4px;
+  font-weight: 600;
+}
+
+.search-events {
+  padding: 6px 12px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  font-size: 1rem;
+  outline: none;
+}
+
+.search-events:focus {
+  border-color: #0077cc;
+}

@@ -1,0 +1,25 @@
+/* Only keep status styles, remove redundant card/table styles */
+.status.urgent {
+  background: #e74c3c;
+  color: #fff;
+  border-radius: 12px;
+  padding: 2px 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+.status.warning {
+  background: #f39c12;
+  color: #fff;
+  border-radius: 12px;
+  padding: 2px 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+.status.ok {
+  background: #2ecc40;
+  color: #fff;
+  border-radius: 12px;
+  padding: 2px 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+}

@@ -1,0 +1,9 @@
+/* Only keep status styles, remove redundant card/table styles */
+.status {
+  background: #2ecc40;
+  color: #fff;
+  border-radius: 12px;
+  padding: 2px 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
