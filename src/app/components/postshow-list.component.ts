@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 export interface PostShowRow {
@@ -31,25 +31,29 @@ export interface PostShowRow {
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let row of data">
-            <td>{{ row.start }}</td>
-            <td>{{ row.end }}</td>
-            <td class="event-name">{{ row.eventName }}</td>
-            <td>{{ row.cityState }}</td>
-            <td [innerHTML]="row.info.html"></td>
-            <td class="todo-cell">{{ row.toDo }}</td>
-            <td [innerHTML]="row.setS.html"></td>
-          </tr>
+          @for (row of dataSignal(); track row.eventName) {
+            <tr>
+              <td>{{ row.start }}</td>
+              <td>{{ row.end }}</td>
+              <td class="event-name">{{ row.eventName }}</td>
+              <td>{{ row.cityState }}</td>
+              <td [innerHTML]="row.info.html"></td>
+              <td class="todo-cell">{{ row.toDo }}</td>
+              <td [innerHTML]="row.setS.html"></td>
+            </tr>
+          }
           <!-- Empty rows to maintain height -->
-          <tr *ngFor="let i of emptyRows" class="empty-row">
-            <td>&nbsp;</td>
-            <td>&nbsp;</td>
-            <td>&nbsp;</td>
-            <td>&nbsp;</td>
-            <td>&nbsp;</td>
-            <td>&nbsp;</td>
-            <td>&nbsp;</td>
-          </tr>
+          @for (i of emptyRows(); track i) {
+            <tr class="empty-row">
+              <td>&nbsp;</td>
+              <td>&nbsp;</td>
+              <td>&nbsp;</td>
+              <td>&nbsp;</td>
+              <td>&nbsp;</td>
+              <td>&nbsp;</td>
+              <td>&nbsp;</td>
+            </tr>
+          }
         </tbody>
       </table>
     </div>
@@ -104,11 +108,20 @@ export interface PostShowRow {
   `]
 })
 export class PostShowListComponent {
-  @Input() data: PostShowRow[] = [];
+  @Input() set data(value: PostShowRow[]) {
+    this._data.set(value);
+  }
   
-  get emptyRows(): number[] {
+  private _data = signal<PostShowRow[]>([]);
+  
+  emptyRows = computed(() => {
     const minRows = 6;
-    const emptyCount = Math.max(0, minRows - this.data.length);
+    const emptyCount = Math.max(0, minRows - this._data().length);
     return new Array(emptyCount).fill(0).map((_, i) => i);
+  });
+  
+  // Getter for template usage
+  get dataSignal() {
+    return this._data;
   }
 }

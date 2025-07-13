@@ -1,0 +1,51 @@
+<div class="related-apps">
+  <div class="apps-section">
+    <h4>EventRunner Related Apps</h4>
+    <div class="app-grid">
+      @for (app of relatedApps(); track app.id) {
+        <div class="app-item" (click)="openApp(app)">
+          <div class="app-icon">{{ app.icon }}</div>
+          <div class="app-info">
+            <div class="app-name">{{ app.name }}</div>
+            <div class="app-description">{{ app.description }}</div>
+          </div>
+          <div class="app-action">
+            <span class="open-icon">↗</span>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+  
+  <div class="apps-section">
+    <h4>External Tools</h4>
+    <div class="app-grid">
+      @for (tool of externalTools(); track tool.id) {
+        <div class="app-item" (click)="openExternalTool(tool)">
+          <div class="app-icon">{{ tool.icon }}</div>
+          <div class="app-info">
+            <div class="app-name">{{ tool.name }}</div>
+            <div class="app-description">{{ tool.description }}</div>
+          </div>
+          <div class="app-action">
+            <span class="open-icon">↗</span>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+  
+  <div class="apps-section">
+    <h4>Quick Actions</h4>
+    <div class="quick-actions">
+      <button class="quick-action-btn" (click)="refreshAllApps()">
+        <span class="action-icon">🔄</span>
+        Refresh All Apps
+      </button>
+      <button class="quick-action-btn" (click)="openSettings()">
+        <span class="action-icon">⚙️</span>
+        App Settings
+      </button>
+    </div>
+  </div>
+</div>

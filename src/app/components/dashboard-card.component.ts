@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 export interface DashboardColumn {
@@ -17,24 +17,34 @@ export interface DashboardRow {
   imports: [CommonModule],
   template: `
     <div class="dashboard-card-container">
-      <div class="dashboard-card-header">{{ title }}</div>
+      <div class="dashboard-card-header">{{ title() }}</div>
       <div class="dashboard-card-content">
         <table class="dashboard-table">
           <thead>
             <tr>
-              <th *ngFor="let column of columns" [style.width]="column.width">
-                {{ column.header }}
-              </th>
+              @for (column of columns(); track column.key) {
+                <th [style.width]="column.width">
+                  {{ column.header }}
+                </th>
+              }
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let row of data; let i = index">
-              <td *ngFor="let column of columns" [innerHTML]="getCellValue(row, column.key)"></td>
-            </tr>
+            @for (row of data(); track $index) {
+              <tr>
+                @for (column of columns(); track column.key) {
+                  <td [innerHTML]="getCellValue(row, column.key)"></td>
+                }
+              </tr>
+            }
             <!-- Empty rows to maintain consistent height -->
-            <tr *ngFor="let emptyRow of emptyRows" class="empty-row">
-              <td *ngFor="let column of columns">&nbsp;</td>
-            </tr>
+            @for (emptyRow of emptyRows(); track emptyRow) {
+              <tr class="empty-row">
+                @for (column of columns(); track column.key) {
+                  <td>&nbsp;</td>
+                }
+              </tr>
+            }
           </tbody>
         </table>
       </div>
@@ -61,15 +71,15 @@ export interface DashboardRow {
   `]
 })
 export class DashboardCardComponent {
-  @Input() title: string = '';
-  @Input() columns: DashboardColumn[] = [];
-  @Input() data: DashboardRow[] = [];
-  @Input() minRows: number = 8; // Minimum rows to display for consistent height
+  title = signal<string>('');
+  columns = signal<DashboardColumn[]>([]);
+  data = signal<DashboardRow[]>([]);
+  minRows = signal<number>(8); // Minimum rows to display for consistent height
   
-  get emptyRows(): any[] {
-    const emptyRowCount = Math.max(0, this.minRows - this.data.length);
-    return new Array(emptyRowCount);
-  }
+  emptyRows = computed(() => {
+    const emptyRowCount = Math.max(0, this.minRows() - this.data().length);
+    return new Array(emptyRowCount).fill(0).map((_, i) => i);
+  });
   
   getCellValue(row: DashboardRow, key: string): string {
     const value = row[key];

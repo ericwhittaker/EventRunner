@@ -1,0 +1,41 @@
+<div class="action-info">
+  <div class="info-section">
+    <h4>EventRunner</h4>
+    <div class="info-item">
+      <span class="label">Version:</span>
+      <span class="value">{{ appVersion() }}</span>
+    </div>
+    <div class="info-item">
+      <span class="label">Build:</span>
+      <span class="value">{{ buildNumber() }}</span>
+    </div>
+    <div class="info-item">
+      <span class="label">Platform:</span>
+      <span class="value">{{ platform() }}</span>
+    </div>
+  </div>
+  
+  <div class="info-section">
+    <h4>Latest Updates</h4>
+    <div class="patch-notes">
+      @for (note of patchNotes(); track note.version) {
+        <div class="patch-item">
+          <span class="patch-version">{{ note.version }}</span>
+          <span class="patch-description">{{ note.description }}</span>
+        </div>
+      }
+    </div>
+  </div>
+  
+  <div class="info-section">
+    <h4>System Information</h4>
+    <div class="info-item">
+      <span class="label">User Agent:</span>
+      <span class="value small">{{ userAgent() }}</span>
+    </div>
+    <div class="info-item">
+      <span class="label">Screen Resolution:</span>
+      <span class="value">{{ screenResolution() }}</span>
+    </div>
+  </div>
+</div>

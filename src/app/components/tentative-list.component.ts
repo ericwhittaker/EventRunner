@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 export interface TentativeRow {
@@ -29,23 +29,27 @@ export interface TentativeRow {
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let row of data">
-            <td>{{ row.start }}</td>
-            <td>{{ row.end }}</td>
-            <td class="event-name">{{ row.eventName }}</td>
-            <td [innerHTML]="row.status.html"></td>
-            <td class="todo-cell">{{ row.toDo }}</td>
-            <td [innerHTML]="row.info.html"></td>
-          </tr>
+          @for (row of dataSignal(); track row.eventName) {
+            <tr>
+              <td>{{ row.start }}</td>
+              <td>{{ row.end }}</td>
+              <td class="event-name">{{ row.eventName }}</td>
+              <td [innerHTML]="row.status.html"></td>
+              <td class="todo-cell">{{ row.toDo }}</td>
+              <td [innerHTML]="row.info.html"></td>
+            </tr>
+          }
           <!-- Empty rows to maintain height -->
-          <tr *ngFor="let i of emptyRows" class="empty-row">
-            <td>&nbsp;</td>
-            <td>&nbsp;</td>
-            <td>&nbsp;</td>
-            <td>&nbsp;</td>
-            <td>&nbsp;</td>
-            <td>&nbsp;</td>
-          </tr>
+          @for (i of emptyRows(); track i) {
+            <tr class="empty-row">
+              <td>&nbsp;</td>
+              <td>&nbsp;</td>
+              <td>&nbsp;</td>
+              <td>&nbsp;</td>
+              <td>&nbsp;</td>
+              <td>&nbsp;</td>
+            </tr>
+          }
         </tbody>
       </table>
     </div>
@@ -114,11 +118,20 @@ export interface TentativeRow {
   `]
 })
 export class TentativeListComponent {
-  @Input() data: TentativeRow[] = [];
+  @Input() set data(value: TentativeRow[]) {
+    this._data.set(value);
+  }
   
-  get emptyRows(): number[] {
+  private _data = signal<TentativeRow[]>([]);
+  
+  emptyRows = computed(() => {
     const minRows = 6;
-    const emptyCount = Math.max(0, minRows - this.data.length);
+    const emptyCount = Math.max(0, minRows - this._data().length);
     return new Array(emptyCount).fill(0).map((_, i) => i);
+  });
+  
+  // Getter for template usage
+  get dataSignal() {
+    return this._data;
   }
 }

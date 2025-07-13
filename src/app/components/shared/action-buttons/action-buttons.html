@@ -1,0 +1,47 @@
+<div class="action-buttons-container">
+  @for (button of buttons(); track button.id) {
+    @if (button.visible !== false) {
+      <button 
+        class="action-btn"
+        [class.active]="activePopover() === button.id"
+        [class.disabled]="button.enabled === false"
+        [title]="button.tooltip" 
+        [disabled]="button.enabled === false"
+        (click)="onButtonClick(button, $event)">
+        <span class="btn-icon">{{ button.icon }}</span>
+        <span class="btn-text">{{ button.text }}</span>
+      </button>
+    }
+  }
+  
+  <!-- Popover Container -->
+  @if (activePopover()) {
+    <div 
+      #popoverContainer
+      class="popover-container" 
+      (click)="$event.stopPropagation()">
+      
+      <div class="popover-content" [style.width]="getPopoverWidth()">
+        <div class="popover-header">
+          <span class="popover-title">
+            {{ getActiveButtonTitle() }}
+          </span>
+          <button class="popover-close" (click)="closePopover()">×</button>
+        </div>
+        
+        <div class="popover-body">
+          <!-- Dynamic component loading based on activePopover -->
+          @if (activePopover() === 'info') {
+            <app-action-info></app-action-info>
+          }
+          @if (activePopover() === 'tools') {
+            <app-action-related-apps></app-action-related-apps>
+          }
+        </div>
+      </div>
+      
+      <!-- Backdrop -->
+      <div class="popover-backdrop" (click)="closePopover()"></div>
+    </div>
+  }
+</div>

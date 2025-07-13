@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 export interface MainDashboardRow {
@@ -36,16 +36,18 @@ export interface MainDashboardRow {
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let row of data">
-            <td>{{ row.start }}</td>
-            <td>{{ row.end }}</td>
-            <td class="event-name">{{ row.eventName }}</td>
-            <td [innerHTML]="row.eventId.html"></td>
-            <td class="venue">{{ row.venue }}</td>
-            <td>{{ row.cityState }}</td>
-            <td>{{ row.providing }}</td>
-            <td [innerHTML]="row.status.html"></td>
-          </tr>
+          @for (row of dataSignal(); track row.eventId) {
+            <tr>
+              <td>{{ row.start }}</td>
+              <td>{{ row.end }}</td>
+              <td class="event-name">{{ row.eventName }}</td>
+              <td [innerHTML]="row.eventId.html"></td>
+              <td class="venue">{{ row.venue }}</td>
+              <td>{{ row.cityState }}</td>
+              <td>{{ row.providing }}</td>
+              <td [innerHTML]="row.status.html"></td>
+            </tr>
+          }
         </tbody>
       </table>
     </div>
@@ -108,5 +110,14 @@ export interface MainDashboardRow {
   `]
 })
 export class DashboardListComponent {
-  @Input() data: MainDashboardRow[] = [];
+  @Input() set data(value: MainDashboardRow[]) {
+    this._data.set(value);
+  }
+  
+  private _data = signal<MainDashboardRow[]>([]);
+  
+  // Getter for template usage
+  get dataSignal() {
+    return this._data;
+  }
 }

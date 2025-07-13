@@ -1,0 +1,181 @@
+/* Action Buttons - FileMaker Style */
+.action-buttons-container {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  position: relative; /* For popover positioning */
+}
+
+.action-btn {
+  background: #f8f9fa;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  padding: 4px 8px;
+  font-size: 11px;
+  cursor: pointer;
+  color: #374151;
+  font-weight: 500;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 24px;
+  white-space: nowrap;
+}
+
+.action-btn:hover {
+  background: #e5e7eb;
+  border-color: #9ca3af;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.action-btn:active,
+.action-btn.active {
+  background: #00BAFB;
+  border-color: #003043;
+  color: #003043;
+  transform: translateY(1px);
+}
+
+.action-btn:disabled,
+.action-btn.disabled {
+  background: #f3f4f6;
+  border-color: #e5e7eb;
+  color: #9ca3af;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.action-btn:disabled:hover,
+.action-btn.disabled:hover {
+  background: #f3f4f6;
+  border-color: #e5e7eb;
+  color: #9ca3af;
+  box-shadow: none;
+}
+
+.btn-icon {
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 12px;
+}
+
+.btn-text {
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 1;
+}
+
+/* Enhanced button effects */
+.action-btn:focus {
+  outline: 2px solid #00BAFB;
+  outline-offset: 1px;
+  border-color: #00BAFB;
+}
+
+.action-btn:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* Popover Styles */
+.popover-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 1000;
+  pointer-events: none;
+}
+
+.popover-backdrop {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: transparent;
+  pointer-events: all;
+}
+
+.popover-content {
+  position: absolute;
+  background: white;
+  border: 1px solid #003043;
+  border-radius: 6px;
+  box-shadow: 0 8px 25px rgba(0, 48, 67, 0.15);
+  min-width: 300px;
+  max-width: 500px;
+  pointer-events: all;
+  overflow: hidden;
+}
+
+.popover-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  background: #003043;
+  color: white;
+  border-bottom: 1px solid #00BAFB;
+}
+
+.popover-title {
+  font-weight: 600;
+  font-size: 13px;
+}
+
+.popover-close {
+  background: transparent;
+  border: none;
+  color: white;
+  font-size: 18px;
+  cursor: pointer;
+  padding: 0;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 3px;
+  transition: background-color 0.2s;
+}
+
+.popover-close:hover {
+  background: rgba(0, 186, 251, 0.2);
+}
+
+.popover-body {
+  padding: 16px;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+/* Responsive behavior */
+@media (max-width: 768px) {
+  .action-buttons-container {
+    gap: 4px;
+  }
+  
+  .action-btn {
+    padding: 3px 6px;
+    font-size: 10px;
+  }
+  
+  .btn-text {
+    display: none; /* Hide text on small screens, keep only icons */
+  }
+  
+  .btn-icon {
+    font-size: 14px; /* Slightly larger icons when text is hidden */
+  }
+  
+  .popover-content {
+    min-width: 250px;
+    max-width: 90vw;
+  }
+}

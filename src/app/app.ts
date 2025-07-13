@@ -1,18 +1,19 @@
 
-import { Component, signal } from '@angular/core';
+import { Component, signal, inject, OnInit } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { MenuComponent } from './components/menu.component';
-import { SubNavComponent } from './components/subnav.component';
+import { SubMenuComponent } from './components/submenu.component';
 import { DashboardListComponent, MainDashboardRow } from './components/dashboard-list.component';
 import { TentativeListComponent, TentativeRow } from './components/tentative-list.component';
 import { PostShowListComponent, PostShowRow } from './components/postshow-list.component';
+import { ActionButtonService } from './components/shared/action-buttons/action-button.service';
 
 @Component({
   selector: 'app-root',
   imports: [
     RouterOutlet,
     MenuComponent,
-    SubNavComponent,
+    SubMenuComponent,
     DashboardListComponent,
     TentativeListComponent,
     PostShowListComponent
@@ -20,11 +21,13 @@ import { PostShowListComponent, PostShowRow } from './components/postshow-list.c
   templateUrl: './app.html',
   styleUrl: './app.scss'
 })
-export class App {
+export class App implements OnInit {
+  private actionButtonService = inject(ActionButtonService);
+  
   protected readonly title = signal('EventRunner');
   
   // Main Dashboard Data - matching FileMaker design
-  mainDashboardData: MainDashboardRow[] = [
+  mainDashboardData = signal<MainDashboardRow[]>([
     {
       start: '07/12/25',
       end: '07/25/25',
@@ -75,10 +78,10 @@ export class App {
       providing: 'Lis Rig Pers',
       status: { html: '<span class="status live">Live</span>' }
     }
-  ];
+  ]);
   
   // Tentative Data
-  tentativeData: TentativeRow[] = [
+  tentativeData = signal<TentativeRow[]>([
     {
       start: '07/20/25',
       end: '07/20/25',
@@ -103,10 +106,10 @@ export class App {
       toDo: '0',
       info: { html: '<span class="info-icon">ⓘ</span>' }
     }
-  ];
+  ]);
   
   // Post Show / Follow Up Data  
-  postShowData: PostShowRow[] = [
+  postShowData = signal<PostShowRow[]>([
     {
       start: '07/11/25',
       end: '07/11/25',
@@ -134,5 +137,30 @@ export class App {
       toDo: '3',
       setS: { html: '<span class="check-icon">✓</span>' }
     }
-  ];
+  ]);
+  
+  ngOnInit() {
+    // Example: Configure action buttons dynamically
+    // You can customize buttons based on user permissions, current page, etc.
+    
+    // Example: Add a custom button for dashboard page
+    // this.actionButtonService.addButton({
+    //   id: 'export-data',
+    //   icon: '📁',
+    //   text: 'Export',
+    //   tooltip: 'Export dashboard data',
+    //   type: 'action',
+    //   enabled: true,
+    //   visible: true,
+    //   action: () => this.exportDashboardData()
+    // });
+    
+    // Example: Disable a button based on some condition
+    // this.actionButtonService.setButtonEnabled('add-event', false);
+  }
+  
+  private exportDashboardData() {
+    console.log('Exporting dashboard data...');
+    // Implementation for exporting data
+  }
 }

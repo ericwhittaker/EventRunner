@@ -1,0 +1,150 @@
+.related-apps {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+.apps-section {
+  margin-bottom: 24px;
+  
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.apps-section h4 {
+  margin: 0 0 12px 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: #003043;
+  border-bottom: 1px solid #e5e7eb;
+  padding-bottom: 6px;
+}
+
+.app-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.app-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px;
+  background: #f8f9fa;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+  
+  &:hover {
+    background: #e5f3ff;
+    border-color: #00BAFB;
+    box-shadow: 0 2px 4px rgba(0, 186, 251, 0.1);
+  }
+  
+  &:active {
+    transform: translateY(1px);
+    background: #d1ecf7;
+  }
+}
+
+.app-icon {
+  font-size: 20px;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: white;
+  border-radius: 6px;
+  border: 1px solid #d1d5db;
+}
+
+.app-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.app-name {
+  font-weight: 600;
+  font-size: 13px;
+  color: #003043;
+  margin-bottom: 2px;
+}
+
+.app-description {
+  font-size: 11px;
+  color: #6b7280;
+  line-height: 1.3;
+}
+
+.app-action {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+}
+
+.open-icon {
+  font-size: 14px;
+  color: #00BAFB;
+  font-weight: bold;
+}
+
+.quick-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.quick-action-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  background: white;
+  border: 1px solid #003043;
+  border-radius: 6px;
+  color: #003043;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  width: 100%;
+  
+  &:hover {
+    background: #003043;
+    color: white;
+  }
+  
+  &:active {
+    transform: translateY(1px);
+  }
+}
+
+.action-icon {
+  font-size: 14px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 480px) {
+  .app-item {
+    padding: 8px;
+    gap: 8px;
+  }
+  
+  .app-icon {
+    width: 28px;
+    height: 28px;
+    font-size: 16px;
+  }
+  
+  .app-name {
+    font-size: 12px;
+  }
+  
+  .app-description {
+    font-size: 10px;
+  }
+}
