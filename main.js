@@ -2,14 +2,15 @@ const { app, BrowserWindow, ipcMain } = require('electron/main')
 
 const createWindow = () => {
   const win = new BrowserWindow({
-    width: 800,
-    height: 600,
+    width: 1200,
+    height: 1000,
     webPreferences: {
       preload: require('path').join(__dirname, 'preload.js'),
     }
   })
 
-  win.loadFile('dist/EventRunner/browser/index.html')
+  win.loadFile(require('path').join(__dirname, 'dist', 'EventRunner', 'browser', 'index.html'))
+  // win.loadFile('dist/EventRunner/browser/index.html')
   // win.loadURL('http://platform.onelife.app')
 }
 

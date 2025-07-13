@@ -1,7 +1,5 @@
 import { Component, ViewChild, ElementRef, OnInit, OnDestroy, signal, computed, Type, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActionInfo } from './action-components/action-info/action-info/action-info';
-import { ActionRelatedApps } from './action-components/action-related-apps/action-related-apps';
 import { ActionButtonService } from './action-button.service';
 
 export type ActionButtonType = 'action' | 'popover';
@@ -26,7 +24,9 @@ export interface ActionButtonConfig {
 
 @Component({
   selector: 'action-buttons',
-  imports: [CommonModule, ActionInfo, ActionRelatedApps],
+  imports: [
+    CommonModule
+  ],
   templateUrl: './action-buttons.html',
   styleUrl: './action-buttons.scss'
 })
