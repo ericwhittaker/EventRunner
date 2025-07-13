@@ -1,5 +1,5 @@
 {
-  "name": "event-runner",
+  "name": "eventrunner",
   "description": "Event Management Software",
   "version": "0.0.0",
   "main": "main.js",
