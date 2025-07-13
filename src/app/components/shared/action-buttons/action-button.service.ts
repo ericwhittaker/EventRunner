@@ -119,7 +119,19 @@ export class ActionButtonService {
 
   private onRefreshApp(): void {
     console.log('Refresh App clicked');
-    // Refresh the entire application
-    window.location.reload();
+    // For Electron apps, use a more reliable refresh method
+    if (typeof window !== 'undefined' && (window as any).electronAPI) {
+      // If you have electron API exposed, use it
+      (window as any).electronAPI.reload();
+    } else {
+      // Fallback to standard reload, but with better error handling
+      try {
+        window.location.reload();
+      } catch (error) {
+        console.error('Failed to reload application:', error);
+        // Alternative refresh method for Electron
+        window.location.href = window.location.href;
+      }
+    }
   }
 }

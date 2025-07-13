@@ -1,6 +1,5 @@
 
 import { Component, signal, inject, OnInit } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
 import { MenuComponent } from './components/menu.component';
 import { SubMenuComponent } from './components/submenu.component';
 import { DashboardListComponent, MainDashboardRow } from './components/dashboard-list.component';
@@ -11,7 +10,6 @@ import { ActionButtonService } from './components/shared/action-buttons/action-b
 @Component({
   selector: 'app-root',
   imports: [
-    RouterOutlet,
     MenuComponent,
     SubMenuComponent,
     DashboardListComponent,
