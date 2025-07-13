@@ -1,0 +1,22 @@
+@if (activePopover()) {
+  <div class="popover-backdrop" (click)="closePopover()"></div>
+  <div 
+    #popoverContainer 
+    class="popover-container" 
+    [style.width]="getPopoverWidth()"
+    >
+    <div class="popover-content">
+      <div class="popover-header">
+        <span>{{ getActiveButtonTitle() }}</span>
+        <button class="close-btn" (click)="closePopover()">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="popover-body">
+        @if(activePopover()?.config.component; as component){
+          <ng-container *ngComponentOutlet="component"></ng-container>
+        }
+      </div>
+    </div>
+  </div>
+}

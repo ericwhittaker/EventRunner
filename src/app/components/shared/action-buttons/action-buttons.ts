@@ -112,15 +112,16 @@ export class ActionButtons implements OnInit, OnDestroy {
   }
 
   private positionPopover(buttonElement: HTMLElement) {
-    // Will position the popover relative to the clicked button
+    // Use a timeout to ensure the popover element is rendered and in the DOM
     setTimeout(() => {
-      const popover = this.popoverContainer?.nativeElement;
-      if (popover && buttonElement) {
+      const popoverContainer = this.popoverContainer?.nativeElement;
+      if (popoverContainer && buttonElement) {
         const buttonRect = buttonElement.getBoundingClientRect();
-        popover.style.position = 'absolute';
-        popover.style.top = `${buttonRect.bottom + 5}px`;
-        popover.style.left = `${buttonRect.left}px`;
-        popover.style.zIndex = '1000';
+
+        // Position the container itself, not a child element.
+        // The container has position: fixed, so it's relative to the viewport.
+        popoverContainer.style.top = `${buttonRect.bottom + 10}px`; // 10px for arrow
+        popoverContainer.style.left = `${buttonRect.left}px`;
       }
     });
   }

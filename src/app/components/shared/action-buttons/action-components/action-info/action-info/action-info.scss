@@ -1,4 +1,7 @@
 .action-info {
+  display: flex;
+  flex-direction: column;
+  height: 100%; /* Ensure it fills the popover body */
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 }
 
@@ -7,6 +10,11 @@
   
   &:last-child {
     margin-bottom: 0;
+  }
+  
+  /* Allow system info to be flexible */
+  &.system-info {
+    flex-shrink: 0;
   }
 }
 
@@ -48,8 +56,11 @@
 }
 
 .patch-notes {
-  max-height: 120px;
+  /* This will take up the available space and become scrollable */
+  flex-grow: 1;
   overflow-y: auto;
+  min-height: 100px; /* Give it a minimum height to be useful */
+  padding-right: 8px; /* Space for scrollbar */
 }
 
 .patch-item {

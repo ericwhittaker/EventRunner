@@ -82,57 +82,78 @@
 }
 
 /* Popover Styles */
-.popover-container {
+.popover-backdrop {
   position: fixed;
   top: 0;
   left: 0;
   width: 100vw;
   height: 100vh;
-  z-index: 1000;
-  pointer-events: none;
+  background: rgba(0, 0, 0, 0.3); /* Darken the background */
+  z-index: 1040; /* Sit below the popover */
+  pointer-events: auto;
 }
 
-.popover-backdrop {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: transparent;
-  pointer-events: all;
+.popover-container {
+  position: fixed; /* Use fixed position relative to the viewport */
+  z-index: 1050;   /* Ensure it's on top of the backdrop */
+  transform: translateZ(0); /* Create a new stacking context */
+  pointer-events: auto; // The container is only in the DOM when active.
+
+  &.visible {
+    pointer-events: auto; /* Becomes interactive when visible */
+  }
+
+  .popover-content {
+    background: #ffffff;
+    border: 1px solid #7d7d7d; /* Stronger border for definition */
+    border-radius: 8px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25); /* More pronounced shadow */
+    min-width: 350px;
+    max-width: 550px;
+    display: flex;
+    flex-direction: column;
+    max-height: 70vh; /* Allow more vertical space */
+    position: relative; /* Needed for the arrow */
+    pointer-events: auto; /* The content inside is interactive */
+  }
 }
 
-.popover-content {
+/* Popover Arrow */
+.popover-content::before {
+  content: '';
   position: absolute;
-  background: white;
-  border: 1px solid #003043;
-  border-radius: 6px;
-  box-shadow: 0 8px 25px rgba(0, 48, 67, 0.15);
-  min-width: 300px;
-  max-width: 500px;
-  pointer-events: all;
-  overflow: hidden;
+  top: -10px; /* Position arrow above the popover */
+  left: 25px; /* Adjust horizontal position to align with button */
+  width: 0;
+  height: 0;
+  border-left: 10px solid transparent;
+  border-right: 10px solid transparent;
+  border-bottom: 10px solid #003043; /* Arrow color matches header */
 }
 
 .popover-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 12px 16px;
-  background: #003043;
-  color: white;
-  border-bottom: 1px solid #00BAFB;
+  padding: 10px 16px;
+  background: #003043; /* Correct navy blue header */
+  border-bottom: 1px solid #002333;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+  flex-shrink: 0; /* Prevent header from shrinking */
 }
 
 .popover-title {
   font-weight: 600;
   font-size: 13px;
+  color: #ffffff; /* White text on dark header */
 }
 
 .popover-close {
   background: transparent;
   border: none;
-  color: white;
+  color: #ffffff; /* White close button */
+  opacity: 0.8;
   font-size: 18px;
   cursor: pointer;
   padding: 0;
@@ -146,13 +167,16 @@
 }
 
 .popover-close:hover {
-  background: rgba(0, 186, 251, 0.2);
+  background: rgba(255, 255, 255, 0.2);
 }
 
 .popover-body {
   padding: 16px;
-  max-height: 400px;
-  overflow-y: auto;
+  overflow-y: auto; /* This makes the content scrollable */
+  flex-grow: 1;    /* Allows the body to fill available space */
+  background: #ffffff; /* Ensure body has a solid background */
+  border-bottom-left-radius: 8px;
+  border-bottom-right-radius: 8px;
 }
 
 /* Responsive behavior */
