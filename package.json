@@ -8,7 +8,6 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "prebuild": "node -e \"const fs = require('fs'); const pkg = require('./package.json'); fs.writeFileSync('./src/app/version.ts', '// This file is auto-generated during build\\nexport const APP_VERSION = \\'' + pkg.version + '\\';\\n');\"",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
@@ -19,7 +18,11 @@
     "electronpublish": "electron-forge publish",
     "electronstartnormal": "electron .",
     "postversion": "git push && git push --tags",
-    "release": "npm run build && electron-forge publish"
+    "release": "npm run build && electron-forge publish",
+    "update-version-file": "node -e \"const fs = require('fs'); const pkg = require('./package.json'); fs.writeFileSync('./src/app/version.ts', '// This file is auto-generated during build\\nexport const APP_VERSION = \\'' + pkg.version + '\\';\\n');\"",
+    "er-releasepatch": "npm run update-version-file && git add . && git commit -m \"Update version file for patch release\" && npm version patch && npm run release",
+    "er-releaseminor": "npm run update-version-file && git add . && git commit -m \"Update version file for minor release\" && npm version minor && npm run release",
+    "er-releasemajor": "npm run update-version-file && git add . && git commit -m \"Update version file for major release\" && npm version major && npm run release"
   },
   "prettier": {
     "overrides": [

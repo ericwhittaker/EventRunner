@@ -80,11 +80,31 @@ This creates installers in the `/out/make/` folder.
 ### Development Workflow
 1. **Code & Commit**: Make your changes and commit them using VS Code GUI (as usual)
 2. **Test**: Ensure everything works with `npm run electronstart`
+3. **Clean Working Tree**: Make sure all changes are committed (clean git status)
 
 ### Release Workflow
 When you're ready to release a new version to users:
 
-#### Method 1: Full Release (Recommended)
+#### EventRunner Release Commands (Recommended)
+```bash
+# For bug fixes (0.4.2 → 0.4.3)
+npm run er-releasepatch
+
+# For new features (0.4.2 → 0.5.0)  
+npm run er-releaseminor
+
+# For breaking changes (0.4.2 → 1.0.0)
+npm run er-releasemajor
+```
+
+#### What Each Command Does:
+1. **Updates version.ts** with current package.json version
+2. **Commits version file** with descriptive message
+3. **Bumps version** in package.json (patch/minor/major)
+4. **Auto-pushes** commits and tags to GitHub (via postversion)
+5. **Builds and publishes** to GitHub Releases
+
+#### Old Method (Manual - Not Recommended)
 ```bash
 # 1. Version bump (creates tag + pushes automatically)
 npm version minor    # or 'patch' for bug fixes, 'major' for breaking changes
