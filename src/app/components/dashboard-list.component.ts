@@ -1,5 +1,6 @@
 import { Component, Input, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 
 export interface MainDashboardRow {
   start: string;
@@ -37,7 +38,7 @@ export interface MainDashboardRow {
         </thead>
         <tbody>
           @for (row of dataSignal(); track row.eventId) {
-            <tr>
+            <tr class="event-row" (click)="openEvent(row)">
               <td>{{ row.start }}</td>
               <td>{{ row.end }}</td>
               <td class="event-name">{{ row.eventName }}</td>
@@ -107,9 +108,20 @@ export interface MainDashboardRow {
     :host ::ng-deep .status.live {
       background: #4caf50;
     }
+    
+    .event-row {
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+    
+    .event-row:hover {
+      background-color: #f8f9ff;
+    }
   `]
 })
 export class DashboardListComponent {
+  constructor(private router: Router) {}
+
   @Input() set data(value: MainDashboardRow[]) {
     this._data.set(value);
   }
@@ -119,5 +131,11 @@ export class DashboardListComponent {
   // Getter for template usage
   get dataSignal() {
     return this._data;
+  }
+
+  openEvent(row: MainDashboardRow) {
+    // Extract event ID from HTML (e.g., "8591" from '<span class="event-id">8591</span>')
+    const eventId = row.eventId.html.match(/>\s*(\d+)\s*</)?.[1] || 'unknown';
+    this.router.navigate(['/event', eventId]);
   }
 }

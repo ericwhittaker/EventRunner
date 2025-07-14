@@ -3,13 +3,13 @@
     <button class="hamburger-btn">☰</button>
     <span class="logo">EventRunner</span>
     <div class="menu-items">
-      <div class="menu-item active">Dash</div>
-      <div class="menu-item">Trips / Vehicles</div>
-      <div class="menu-item">Build Log</div>
-      <div class="menu-item">Venues</div>
-      <div class="menu-item">Contacts</div>
-      <div class="menu-item">Users</div>
-      <div class="menu-item">Admin</div>
+      <div class="menu-item" [class.active]="isActive('dashboard')" (click)="navigateTo('dashboard')">Dash</div>
+      <div class="menu-item" [class.active]="isActive('trips')" (click)="navigateTo('trips')">Trips / Vehicles</div>
+      <div class="menu-item" [class.active]="isActive('build-log')" (click)="navigateTo('build-log')">Build Log</div>
+      <div class="menu-item" [class.active]="isActive('venues')" (click)="navigateTo('venues')">Venues</div>
+      <div class="menu-item" [class.active]="isActive('contacts')" (click)="navigateTo('contacts')">Contacts</div>
+      <div class="menu-item" [class.active]="isActive('users')" (click)="navigateTo('users')">Users</div>
+      <div class="menu-item" [class.active]="isActive('admin')" (click)="navigateTo('admin')">Admin</div>
     </div>
   </div>
   <div class="menu-right">
