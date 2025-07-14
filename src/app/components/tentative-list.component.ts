@@ -1,13 +1,10 @@
 import { Component, Input, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { BaseDashboardRow, calculateEmptyRows } from './shared/dashboard-list-types';
 
-export interface TentativeRow {
-  start: string;
-  end: string;
-  eventName: string;
+export interface TentativeRow extends BaseDashboardRow {
   status: { html: string };
-  toDo: string;
-  info: { html: string };
+  toDo: number; // Count of todos
 }
 
 @Component({
@@ -20,23 +17,23 @@ export interface TentativeRow {
       <table class="tentative-table">
         <thead>
           <tr>
-            <th style="width: 20%">Start</th>
-            <th style="width: 20%">End</th>
-            <th style="width: 35%">Event Name</th>
+            <th style="width: 18%">Start</th>
+            <th style="width: 18%">End</th>
+            <th style="width: 32%">Event Name</th>
             <th style="width: 10%">Status</th>
-            <th style="width: 8%">To Do</th>
-            <th style="width: 7%">Info</th>
+            <th style="width: 7%">To Do</th>
+            <th style="width: 5%">Info</th>
           </tr>
         </thead>
         <tbody>
           @for (row of dataSignal(); track row.eventName) {
-            <tr>
+            <tr class="clickable-row">
               <td>{{ row.start }}</td>
               <td>{{ row.end }}</td>
               <td class="event-name">{{ row.eventName }}</td>
               <td [innerHTML]="row.status.html"></td>
-              <td class="todo-cell">{{ row.toDo }}</td>
-              <td [innerHTML]="row.info.html"></td>
+              <td class="todo-count">{{ row.toDo }}</td>
+              <td class="info-cell"><i class="info-icon">ℹ</i></td>
             </tr>
           }
           <!-- Empty rows to maintain height -->
@@ -123,11 +120,10 @@ export class TentativeListComponent {
   }
   
   private _data = signal<TentativeRow[]>([]);
+  private maxRows = 6;
   
   emptyRows = computed(() => {
-    const minRows = 6;
-    const emptyCount = Math.max(0, minRows - this._data().length);
-    return new Array(emptyCount).fill(0).map((_, i) => i);
+    return calculateEmptyRows(this._data().length, this.maxRows);
   });
   
   // Getter for template usage

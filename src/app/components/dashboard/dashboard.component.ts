@@ -51,6 +51,7 @@ export class DashboardComponent implements OnInit {
       venue: 'Park Theatre, Main Stage',
       cityState: 'Jaffrey, NH',
       providing: 'Rig',
+      toDo: 3,
       status: { html: '<span class="status live">Live</span>' }
     },
     {
@@ -61,6 +62,7 @@ export class DashboardComponent implements OnInit {
       venue: 'Beak & Skiff Brewery, Concert Field',
       cityState: 'Lafayette, NY',
       providing: 'Gen',
+      toDo: 1,
       status: { html: '<span class="status live">Live</span>' }
     },
     {
@@ -71,6 +73,7 @@ export class DashboardComponent implements OnInit {
       venue: 'Harbor Pavilion, Main Stage',
       cityState: 'Boston, MA',
       providing: 'Full Rig',
+      toDo: 5,
       status: { html: '<span class="status live">Live</span>' }
     },
     {
@@ -81,6 +84,7 @@ export class DashboardComponent implements OnInit {
       venue: 'Mountain View Country Club, Grand Ballroom',
       cityState: 'Stowe, VT',
       providing: 'Audio/Video',
+      toDo: 2,
       status: { html: '<span class="status live">Live</span>' }
     },
     {
@@ -91,6 +95,7 @@ export class DashboardComponent implements OnInit {
       venue: 'Boston Convention Center, Hall A',
       cityState: 'Boston, MA',
       providing: 'AV/Lighting',
+      toDo: 4,
       status: { html: '<span class="status live">Live</span>' }
     },
     {
@@ -101,6 +106,7 @@ export class DashboardComponent implements OnInit {
       venue: 'Shelburne Farms, Multiple Locations',
       cityState: 'Shelburne, VT',
       providing: 'Full Production',
+      toDo: 7,
       status: { html: '<span class="status live">Live</span>' }
     },
     {
@@ -111,6 +117,7 @@ export class DashboardComponent implements OnInit {
       venue: 'University Stadium, Field House',
       cityState: 'Burlington, VT',
       providing: 'Audio Only',
+      toDo: 1,
       status: { html: '<span class="status live">Live</span>' }
     },
     {
@@ -121,6 +128,7 @@ export class DashboardComponent implements OnInit {
       venue: 'Downtown Park, Main Stage',
       cityState: 'Portland, ME',
       providing: 'Stage/Audio',
+      toDo: 2,
       status: { html: '<span class="status live">Live</span>' }
     }
   ]);
@@ -132,24 +140,21 @@ export class DashboardComponent implements OnInit {
       end: '08/20/25',
       eventName: 'Summer Music Festival',
       status: { html: '<span class="status tentative">Tentative</span>' },
-      toDo: 'Follow up on contract',
-      info: { html: '<span class="venue">Central Park Amphitheater</span>' }
+      toDo: 3
     },
     {
       start: '09/20/25',
       end: '09/22/25',
       eventName: 'Corporate Annual Meeting',
       status: { html: '<span class="status tentative">Tentative</span>' },
-      toDo: 'Waiting on venue confirmation',
-      info: { html: '<span class="venue">Hilton Downtown, Grand Ballroom</span>' }
+      toDo: 2
     },
     {
       start: '10/05/25',
       end: '10/07/25',
       eventName: 'Fall Wedding - Outdoor Ceremony',
       status: { html: '<span class="status tentative">Tentative</span>' },
-      toDo: 'Weather contingency plan needed',
-      info: { html: '<span class="venue">Private Estate, Woodstock VT</span>' }
+      toDo: 4
     }
   ]);
 
@@ -160,27 +165,24 @@ export class DashboardComponent implements OnInit {
       end: '06/03/25',
       eventName: 'Corporate Conference 2025',
       cityState: 'Boston, MA',
-      info: { html: '<span class="venue">Convention Center</span>' },
-      toDo: 'Equipment return',
-      setS: { html: '<span class="status completed">Completed</span>' }
+      toDo: 2,
+      setS: { html: '<span class="status post-show">Post Show</span>' }
     },
     {
       start: '06/15/25',
       end: '06/17/25',
       eventName: 'Summer Concert Series - Week 1',
       cityState: 'Burlington, VT',
-      info: { html: '<span class="venue">Waterfront Park</span>' },
-      toDo: 'Final invoice sent',
-      setS: { html: '<span class="status completed">Completed</span>' }
+      toDo: 1,
+      setS: { html: '<span class="status post-show">Post Show</span>' }
     },
     {
       start: '07/02/25',
       end: '07/04/25',
       eventName: 'Independence Day Celebration',
       cityState: 'Concord, NH',
-      info: { html: '<span class="venue">State Capitol Grounds</span>' },
-      toDo: 'Equipment inventory check',
-      setS: { html: '<span class="status completed">Completed</span>' }
+      toDo: 3,
+      setS: { html: '<span class="status post-show">Post Show</span>' }
     }
   ]);
 

@@ -1,3 +1,77 @@
+/* Post Show Table Styling */
+.postshow-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 11px;
+  height: 100%;
+}
+
+.postshow-table th {
+  background: #e8f4fd;
+  color: #1a1a1a;
+  font-weight: 600;
+  padding: 4px 6px;
+  border-bottom: 1px solid #b3d9f7;
+  font-size: 11px;
+  text-align: left;
+  height: 24px;
+}
+
+.postshow-table td {
+  background: #ffffff;
+  color: #333;
+  padding: 3px 6px;
+  font-size: 11px;
+  border-bottom: 1px solid #f0f3f7;
+  height: 20px;
+  vertical-align: middle;
+}
+
+.postshow-table tr:nth-child(even) td {
+  background: #f8fafe;
+}
+
+.postshow-table tbody tr:hover td {
+  background: #e1f0ff !important;
+  cursor: pointer;
+}
+
+.event-name {
+  font-weight: 500;
+}
+
+.todo-cell {
+  text-align: center;
+  font-weight: 600;
+}
+
+.todo-count {
+  text-align: center !important;
+  font-weight: 600;
+  color: #666;
+}
+
+.empty-row td {
+  height: 20px;
+}
+
+/* Status Styling */
+:host ::ng-deep .status {
+  border-radius: 12px;
+  padding: 2px 8px;
+  font-size: 10px;
+  font-weight: 600;
+  color: white;
+  display: inline-block;
+  min-width: 20px;
+  text-align: center;
+}
+
+:host ::ng-deep .status.completed {
+  background: #4caf50;
+}
+
 /* Only keep status styles, remove redundant card/table styles */
 .status {
   background: #2ecc40;

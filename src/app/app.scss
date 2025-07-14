@@ -78,6 +78,78 @@ body, html {
   background: #f8fafe;
 }
 
+/* Hover effects for all dashboard table rows */
+.dashboard-table tbody tr:hover td {
+  background: #e1f0ff !important;
+  cursor: pointer;
+}
+
+.main-dashboard-table tbody tr:hover td,
+.tentative-table tbody tr:hover td,
+.postshow-table tbody tr:hover td {
+  background: #e1f0ff !important;
+  cursor: pointer;
+}
+
+/* Apply dashboard table styling to all table variants */
+.main-dashboard-table,
+.tentative-table,
+.postshow-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 11px;
+  height: 100%;
+}
+
+.main-dashboard-table th,
+.tentative-table th,
+.postshow-table th {
+  background: #e8f4fd;
+  color: #1a1a1a;
+  font-weight: 600;
+  padding: 4px 6px;
+  border-bottom: 1px solid #b3d9f7;
+  font-size: 11px;
+  text-align: left;
+  height: 24px;
+}
+
+.main-dashboard-table td,
+.tentative-table td,
+.postshow-table td {
+  background: #ffffff;
+  color: #333;
+  padding: 3px 6px;
+  font-size: 11px;
+  border-bottom: 1px solid #f0f3f7;
+  height: 20px;
+  vertical-align: middle;
+}
+
+.main-dashboard-table tr:nth-child(even) td,
+.tentative-table tr:nth-child(even) td,
+.postshow-table tr:nth-child(even) td {
+  background: #f8fafe;
+}
+
+/* Clickable row styling */
+.clickable-row {
+  transition: background-color 0.2s ease;
+}
+
+.clickable-row:hover {
+  background-color: #e1f0ff !important;
+  cursor: pointer;
+}
+
+/* Todo count styling */
+.todo-count {
+  text-align: center !important;
+  font-weight: 600;
+  color: #666;
+}
+
 /* Event ID Styling */
 .event-id {
   background: #e3f2fd;

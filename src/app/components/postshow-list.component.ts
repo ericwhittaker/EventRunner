@@ -1,13 +1,10 @@
 import { Component, Input, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { BaseDashboardRow, calculateEmptyRows } from './shared/dashboard-list-types';
 
-export interface PostShowRow {
-  start: string;
-  end: string;
-  eventName: string;
+export interface PostShowRow extends BaseDashboardRow {
   cityState: string;
-  info: { html: string };
-  toDo: string;
+  toDo: number; // Count of todos
   setS: { html: string };
 }
 
@@ -21,24 +18,24 @@ export interface PostShowRow {
       <table class="postshow-table">
         <thead>
           <tr>
-            <th style="width: 15%">Start</th>
-            <th style="width: 15%">End</th>
-            <th style="width: 30%">Event Name</th>
-            <th style="width: 15%">City / State</th>
-            <th style="width: 8%">Info</th>
-            <th style="width: 8%">To Do</th>
+            <th style="width: 13%">Start</th>
+            <th style="width: 13%">End</th>
+            <th style="width: 28%">Event Name</th>
+            <th style="width: 13%">City / State</th>
+            <th style="width: 7%">To Do</th>
+            <th style="width: 5%">Info</th>
             <th style="width: 9%">Set S</th>
           </tr>
         </thead>
         <tbody>
           @for (row of dataSignal(); track row.eventName) {
-            <tr>
+            <tr class="clickable-row">
               <td>{{ row.start }}</td>
               <td>{{ row.end }}</td>
               <td class="event-name">{{ row.eventName }}</td>
               <td>{{ row.cityState }}</td>
-              <td [innerHTML]="row.info.html"></td>
-              <td class="todo-cell">{{ row.toDo }}</td>
+              <td class="todo-count">{{ row.toDo }}</td>
+              <td class="info-cell"><i class="info-icon">ℹ</i></td>
               <td [innerHTML]="row.setS.html"></td>
             </tr>
           }
@@ -113,11 +110,10 @@ export class PostShowListComponent {
   }
   
   private _data = signal<PostShowRow[]>([]);
+  private maxRows = 6;
   
   emptyRows = computed(() => {
-    const minRows = 6;
-    const emptyCount = Math.max(0, minRows - this._data().length);
-    return new Array(emptyCount).fill(0).map((_, i) => i);
+    return calculateEmptyRows(this._data().length, this.maxRows);
   });
   
   // Getter for template usage
