@@ -17,6 +17,7 @@
     "electronmake": "electron-forge make",
     "electronpublish": "electron-forge publish",
     "electronstartnormal": "electron .",
+    "postversion": "git push && git push --tags",
     "release": "npm run build && electron-forge publish"
   },
   "prettier": {
