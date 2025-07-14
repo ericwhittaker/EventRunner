@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { APP_VERSION } from '../version';
 
 @Component({
   selector: 'app-menu',
@@ -20,45 +21,25 @@ export class MenuComponent implements OnInit {
 
   async loadVersion() {
     try {
-      // Check if we're in Electron environment
-      if ((window as any).electronAPI) {
-        console.log('Getting version from Electron...');
-        
+      // Use the version from the generated version file
+      this.version = APP_VERSION;
+      console.log('Version loaded:', this.version);
+      
+      // Optional: Try to get version from Electron if available (for future updates)
+      if ((window as any).electronAPI && (window as any).electronAPI.getVersion) {
         try {
-          // Try IPC method first
-          if ((window as any).electronAPI.getVersion) {
-            const versionPromise = (window as any).electronAPI.getVersion();
-            const timeoutPromise = new Promise((_, reject) => 
-              setTimeout(() => reject(new Error('Timeout')), 2000)
-            );
-            
-            this.version = await Promise.race([versionPromise, timeoutPromise]);
-            console.log('Version received via IPC:', this.version);
+          const electronVersion = await (window as any).electronAPI.getVersion();
+          if (electronVersion && electronVersion.trim() !== '') {
+            this.version = electronVersion;
+            console.log('Updated version from Electron:', this.version);
           }
-        } catch (ipcError) {
-          console.warn('IPC version failed, trying fallback:', ipcError);
-          
-          // Try direct fallback method
-          if ((window as any).electronAPI.getAppInfo) {
-            const appInfo = (window as any).electronAPI.getAppInfo();
-            this.version = appInfo.version;
-            console.log('Version received via fallback:', this.version);
-          }
+        } catch (error) {
+          console.log('Electron version not available, using static version');
         }
-        
-        // Final fallback if version is still empty
-        if (!this.version || this.version.trim() === '') {
-          console.warn('Version is empty, using hardcoded fallback');
-          this.version = '0.4.0'; // Current package version as fallback
-        }
-      } else {
-        // Fallback for web development
-        console.log('Not in Electron environment, using dev fallback');
-        this.version = 'dev';
       }
     } catch (error) {
       console.error('Could not load version:', error);
-      this.version = '0.4.0'; // Use current package version as fallback
+      this.version = '0.4.1'; // Final fallback
     }
   }
 

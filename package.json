@@ -8,6 +8,7 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
+    "prebuild": "node -e \"const fs = require('fs'); const pkg = require('./package.json'); fs.writeFileSync('./src/app/version.ts', '// This file is auto-generated during build\\nexport const APP_VERSION = \\'' + pkg.version + '\\';\\n');\"",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
