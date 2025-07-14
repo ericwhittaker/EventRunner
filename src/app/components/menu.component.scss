@@ -52,6 +52,15 @@
   gap: 16px;
 }
 
+.version-info {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.8);
+  background: rgba(255, 255, 255, 0.1);
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-family: monospace;
+}
+
 .active-users {
   font-size: 14px;
 }

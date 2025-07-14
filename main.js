@@ -1,5 +1,6 @@
 const { app, BrowserWindow, ipcMain } = require('electron/main')
 const { autoUpdater } = require('electron-updater')
+const packageJson = require('./package.json')
 
 // Configure auto-updater for GitHub releases
 autoUpdater.setFeedURL({
@@ -83,6 +84,11 @@ app.whenReady().then(() => {
   // Handle manual update check
   ipcMain.handle('check-for-updates', () => {
     autoUpdater.checkForUpdatesAndNotify();
+  });
+
+  // Handle version request
+  ipcMain.handle('get-app-version', () => {
+    return packageJson.version;
   });
   
   createWindow()
