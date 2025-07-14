@@ -132,3 +132,35 @@ npm run electronpublish
 - Clean working tree (all changes committed)
 - Push access to the GitHub repository
 - GitHub token configured for electron-forge publisher
+
+## 📝 Quick Reference: npm Lifecycle Scripts
+
+### What are Lifecycle Scripts?
+npm automatically runs certain script names at specific times. These are RESERVED names, not custom aliases.
+
+### Common Lifecycle Scripts:
+```
+preversion  → Runs BEFORE npm version
+version     → Runs DURING npm version  
+postversion → Runs AFTER npm version (we use this to auto-push)
+
+preinstall  → Runs before package install
+postinstall → Runs after package install
+
+pretest     → Runs before npm test
+posttest    → Runs after npm test
+
+prebuild    → Runs before npm run build
+postbuild   → Runs after npm run build
+```
+
+### Our Setup:
+```json
+"postversion": "git push && git push --tags"
+```
+This is WHY npm version minor automatically pushes - it's not magic, it's a lifecycle script!
+
+### Remember:
+- Custom script names: electronstart, release, dev (you make these up)
+- Lifecycle scripts: preversion, postversion, pretest (npm controls these)
+- Pattern: pre[command] and post[command]
