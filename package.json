@@ -1,7 +1,7 @@
 {
   "name": "eventrunner",
   "description": "Event Management Software",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "main": "main.js",
   "author": "Eric Whittaker",
   "license": "MIT",
