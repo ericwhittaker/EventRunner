@@ -63,31 +63,75 @@
 .subnav-right {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 12px;
   font-size: 12px;
+}
+
+.user-tasks-section {
+  display: flex;
+  align-items: center;
 }
 
 .user-tasks {
   color: #374151;
   font-weight: 500;
-  margin-right: 4px;
+  font-size: 12px;
 }
 
-.icon-btn {
-  background: #f3f4f6;
+.task-buttons {
+  display: flex;
+  gap: 4px;
+}
+
+.task-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: #f8f9fa;
   border: 1px solid #d1d5db;
   color: #374151;
-  font-size: 11px;
-  padding: 3px 8px;
-  border-radius: 3px;
+  padding: 6px 8px;
+  border-radius: 4px;
   cursor: pointer;
   font-weight: 500;
   transition: all 0.2s;
+  min-width: 45px;
 }
 
-.icon-btn:hover {
-  background: #e5e7eb;
-  border-color: #9ca3af;
+.task-btn:hover {
+  background: #e9ecef;
+  border-color: #adb5bd;
+}
+
+.task-btn.new:hover {
+  background: #e3f2fd;
+  border-color: #90caf9;
+  color: #1565c0;
+}
+
+.task-btn.asap:hover {
+  background: #fff3e0;
+  border-color: #ffb74d;
+  color: #e65100;
+}
+
+.task-btn.wait:hover {
+  background: #f3e5f5;
+  border-color: #ce93d8;
+  color: #7b1fa2;
+}
+
+.btn-label {
+  font-size: 10px;
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+
+.btn-counter {
+  font-size: 11px;
+  font-weight: 700;
+  color: #666;
+  line-height: 1;
 }
 
 @media (max-width: 900px) {
