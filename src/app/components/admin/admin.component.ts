@@ -1,6 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { MenuComponent } from '../menu.component';
 import { CommonModule } from '@angular/common';
+import { APP_VERSION } from '../../version';
 
 @Component({
   selector: 'app-admin',
@@ -68,7 +69,7 @@ import { CommonModule } from '@angular/common';
           <div class="info-list">
             <div class="info-item">
               <span>Version:</span>
-              <span>2.1.3</span>
+              <span>{{ version() }}</span>
             </div>
             <div class="info-item">
               <span>Uptime:</span>
@@ -110,4 +111,5 @@ import { CommonModule } from '@angular/common';
   `]
 })
 export class AdminComponent {
+  version = signal(APP_VERSION);
 }

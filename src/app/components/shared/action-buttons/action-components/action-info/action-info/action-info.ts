@@ -1,5 +1,6 @@
 import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { APP_VERSION } from '../../../../../../version';
 
 interface PatchNote {
   version: string;
@@ -13,7 +14,7 @@ interface PatchNote {
   styleUrl: './action-info.scss'
 })
 export class ActionInfo implements OnInit {
-  appVersion = signal('1.0.0');
+  appVersion = signal(APP_VERSION);
   buildNumber = signal('20241201');
   platform = signal(navigator.platform || 'Unknown');
   userAgent = signal(navigator.userAgent);
@@ -21,20 +22,20 @@ export class ActionInfo implements OnInit {
   
   patchNotes = signal<PatchNote[]>([
     {
-      version: '1.0.0',
-      description: 'Initial release with FileMaker integration'
+      version: APP_VERSION,
+      description: 'Auto-updating version display and improved release workflow'
     },
     {
-      version: '0.9.8',
-      description: 'Added action button system with popovers'
+      version: '0.4.2',
+      description: 'Fixed white screen issue and implemented auto-updater'
     },
     {
-      version: '0.9.7',
-      description: 'Enhanced UI to match FileMaker design'
+      version: '0.4.1',
+      description: 'Enhanced hash-based routing for Electron compatibility'
     },
     {
-      version: '0.9.6',
-      description: 'Implemented three-card dashboard layout'
+      version: '0.4.0',
+      description: 'Added GitHub release automation and version management'
     }
   ]);
 
