@@ -2,7 +2,7 @@
   "name": "eventrunner",
   "productName": "EventRunner",
   "description": "Event Management Software",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "main": "main.js",
   "author": "Eric Whittaker",
   "license": "MIT",
