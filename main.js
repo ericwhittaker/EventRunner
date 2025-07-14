@@ -6,7 +6,9 @@ const packageJson = require('./package.json')
 autoUpdater.setFeedURL({
   provider: 'github',
   owner: 'ericwhittaker',
-  repo: 'EventRunner'
+  repo: 'EventRunner',
+  private: true,
+  token: process.env.GITHUB_TOKEN || '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' // Replace with your actual token
 })
 
 // Auto-updater events
@@ -278,12 +280,14 @@ app.whenReady().then(() => {
   
   createWindow()
 
-  // Check for updates when app starts (only in production)
-  if (!process.env.NODE_ENV || process.env.NODE_ENV === 'production') {
+  // Check for updates when app starts 
+  // TEMPORARILY ENABLED FOR TESTING - normally would be: (!process.env.NODE_ENV || process.env.NODE_ENV === 'production')
+  // if (!process.env.NODE_ENV || process.env.NODE_ENV === 'production') {
     setTimeout(() => {
+      console.log('Auto-update check starting in 3 seconds...')
       autoUpdater.checkForUpdatesAndNotify();
     }, 3000); // Wait 3 seconds after startup
-  }
+  // }
 
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) {
