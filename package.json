@@ -20,9 +20,12 @@
     "postversion": "git push && git push --tags",
     "release": "npm run build && electron-forge publish",
     "update-version-file": "node -e \"const fs = require('fs'); const pkg = require('./package.json'); fs.writeFileSync('./src/app/version.ts', '// This file is auto-generated during build\\nexport const APP_VERSION = \\'' + pkg.version + '\\';\\n');\"",
-    "er-releasepatch": "npm run update-version-file && git add . && git commit -m \"Update version file for patch release\" && npm version patch && npm run release",
-    "er-releaseminor": "npm run update-version-file && git add . && git commit -m \"Update version file for minor release\" && npm version minor && npm run release",
-    "er-releasemajor": "npm run update-version-file && git add . && git commit -m \"Update version file for major release\" && npm version major && npm run release"
+    "update-version-file-patch": "node -e \"const fs = require('fs'); const pkg = require('./package.json'); const v = pkg.version.split('.'); const newVer = v[0] + '.' + v[1] + '.' + (parseInt(v[2]) + 1); fs.writeFileSync('./src/app/version.ts', '// This file is auto-generated during build\\nexport const APP_VERSION = \\'' + newVer + '\\';\\n');\"",
+    "update-version-file-minor": "node -e \"const fs = require('fs'); const pkg = require('./package.json'); const v = pkg.version.split('.'); const newVer = v[0] + '.' + (parseInt(v[1]) + 1) + '.0'; fs.writeFileSync('./src/app/version.ts', '// This file is auto-generated during build\\nexport const APP_VERSION = \\'' + newVer + '\\';\\n');\"",
+    "update-version-file-major": "node -e \"const fs = require('fs'); const pkg = require('./package.json'); const v = pkg.version.split('.'); const newVer = (parseInt(v[0]) + 1) + '.0.0'; fs.writeFileSync('./src/app/version.ts', '// This file is auto-generated during build\\nexport const APP_VERSION = \\'' + newVer + '\\';\\n');\"",
+    "er-releasepatch": "npm run update-version-file-patch && git add . && git commit -m \"Update version file for patch release\" && npm version patch && npm run release",
+    "er-releaseminor": "npm run update-version-file-minor && git add . && git commit -m \"Update version file for minor release\" && npm version minor && npm run release",
+    "er-releasemajor": "npm run update-version-file-major && git add . && git commit -m \"Update version file for major release\" && npm version major && npm run release"
   },
   "prettier": {
     "overrides": [
