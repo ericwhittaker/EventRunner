@@ -63,7 +63,66 @@ export class DashboardComponent implements OnInit {
       providing: 'Gen',
       status: { html: '<span class="status live">Live</span>' }
     },
-    // Add more sample data as needed...
+    {
+      start: '08/02/25',
+      end: '08/04/25',
+      eventName: 'Boston Harbor Festival - Main Stage Setup',
+      eventId: { html: '<span class="event-id">8845</span>' },
+      venue: 'Harbor Pavilion, Main Stage',
+      cityState: 'Boston, MA',
+      providing: 'Full Rig',
+      status: { html: '<span class="status live">Live</span>' }
+    },
+    {
+      start: '07/28/25',
+      end: '08/01/25',
+      eventName: 'Mountain View Country Club Wedding',
+      eventId: { html: '<span class="event-id">8798</span>' },
+      venue: 'Mountain View Country Club, Grand Ballroom',
+      cityState: 'Stowe, VT',
+      providing: 'Audio/Video',
+      status: { html: '<span class="status live">Live</span>' }
+    },
+    {
+      start: '08/15/25',
+      end: '08/17/25',
+      eventName: 'Tech Conference 2025 - Corporate AV',
+      eventId: { html: '<span class="event-id">8901</span>' },
+      venue: 'Boston Convention Center, Hall A',
+      cityState: 'Boston, MA',
+      providing: 'AV/Lighting',
+      status: { html: '<span class="status live">Live</span>' }
+    },
+    {
+      start: '09/05/25',
+      end: '09/07/25',
+      eventName: 'Fall Harvest Festival - Multiple Stages',
+      eventId: { html: '<span class="event-id">8923</span>' },
+      venue: 'Shelburne Farms, Multiple Locations',
+      cityState: 'Shelburne, VT',
+      providing: 'Full Production',
+      status: { html: '<span class="status live">Live</span>' }
+    },
+    {
+      start: '08/22/25',
+      end: '08/24/25',
+      eventName: 'University Graduation Ceremony',
+      eventId: { html: '<span class="event-id">8856</span>' },
+      venue: 'University Stadium, Field House',
+      cityState: 'Burlington, VT',
+      providing: 'Audio Only',
+      status: { html: '<span class="status live">Live</span>' }
+    },
+    {
+      start: '09/12/25',
+      end: '09/14/25',
+      eventName: 'Craft Beer Festival - Outdoor Stage',
+      eventId: { html: '<span class="event-id">8967</span>' },
+      venue: 'Downtown Park, Main Stage',
+      cityState: 'Portland, ME',
+      providing: 'Stage/Audio',
+      status: { html: '<span class="status live">Live</span>' }
+    }
   ]);
 
   // Tentative Data
@@ -75,6 +134,22 @@ export class DashboardComponent implements OnInit {
       status: { html: '<span class="status tentative">Tentative</span>' },
       toDo: 'Follow up on contract',
       info: { html: '<span class="venue">Central Park Amphitheater</span>' }
+    },
+    {
+      start: '09/20/25',
+      end: '09/22/25',
+      eventName: 'Corporate Annual Meeting',
+      status: { html: '<span class="status tentative">Tentative</span>' },
+      toDo: 'Waiting on venue confirmation',
+      info: { html: '<span class="venue">Hilton Downtown, Grand Ballroom</span>' }
+    },
+    {
+      start: '10/05/25',
+      end: '10/07/25',
+      eventName: 'Fall Wedding - Outdoor Ceremony',
+      status: { html: '<span class="status tentative">Tentative</span>' },
+      toDo: 'Weather contingency plan needed',
+      info: { html: '<span class="venue">Private Estate, Woodstock VT</span>' }
     }
   ]);
 
@@ -87,6 +162,24 @@ export class DashboardComponent implements OnInit {
       cityState: 'Boston, MA',
       info: { html: '<span class="venue">Convention Center</span>' },
       toDo: 'Equipment return',
+      setS: { html: '<span class="status completed">Completed</span>' }
+    },
+    {
+      start: '06/15/25',
+      end: '06/17/25',
+      eventName: 'Summer Concert Series - Week 1',
+      cityState: 'Burlington, VT',
+      info: { html: '<span class="venue">Waterfront Park</span>' },
+      toDo: 'Final invoice sent',
+      setS: { html: '<span class="status completed">Completed</span>' }
+    },
+    {
+      start: '07/02/25',
+      end: '07/04/25',
+      eventName: 'Independence Day Celebration',
+      cityState: 'Concord, NH',
+      info: { html: '<span class="venue">State Capitol Grounds</span>' },
+      toDo: 'Equipment inventory check',
       setS: { html: '<span class="status completed">Completed</span>' }
     }
   ]);
