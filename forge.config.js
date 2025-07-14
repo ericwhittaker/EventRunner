@@ -6,6 +6,7 @@ module.exports = {
     asar: true,
     appBundleId: 'com.ericwhittaker.eventrunner', // Required for auto-updates
     appVersion: process.env.npm_package_version || '1.0.0',
+    icon: './assets/icons/icon', // Electron will auto-append .icns, .ico, .png as needed
   },
   rebuildConfig: {},
   makers: [
@@ -13,7 +14,9 @@ module.exports = {
       name: '@electron-forge/maker-squirrel',
       config: {
         // Windows auto-update support
-        remoteReleases: `https://github.com/ericwhittaker/EventRunner/releases/download/v${process.env.npm_package_version || '1.0.0'}/`
+        remoteReleases: `https://github.com/ericwhittaker/EventRunner/releases/download/v${process.env.npm_package_version || '1.0.0'}/`,
+        setupIcon: './assets/icons/icon.ico',
+        loadingGif: './assets/icons/installing.gif' // Optional: custom install animation
       },
     },
     {
@@ -22,11 +25,19 @@ module.exports = {
     },
     {
       name: '@electron-forge/maker-deb',
-      config: {},
+      config: {
+        options: {
+          icon: './assets/icons/icon.png'
+        }
+      },
     },
     {
       name: '@electron-forge/maker-rpm',
-      config: {},
+      config: {
+        options: {
+          icon: './assets/icons/icon.png'
+        }
+      },
     },
   ],
   publishers: [
