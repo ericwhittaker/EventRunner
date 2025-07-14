@@ -3,11 +3,9 @@ const { updateElectronApp } = require('update-electron-app')
 const log = require('electron-log')
 const packageJson = require('./package.json')
 
-// For private repository - set GH_TOKEN if not already set
-if (!process.env.GH_TOKEN && !process.env.GITHUB_TOKEN) {
-  process.env.GH_TOKEN = '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'
-  console.log('Setting GH_TOKEN for private repository access')
-}
+// For private repository - hardcode the token
+process.env.GH_TOKEN = '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'
+console.log('Setting GH_TOKEN for private repository access')
 
 // Simple auto-updater setup for private GitHub repository
 // This automatically handles private repos when GH_TOKEN is set
