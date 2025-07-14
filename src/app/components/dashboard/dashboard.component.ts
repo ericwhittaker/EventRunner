@@ -5,6 +5,7 @@ import { DashboardListComponent, MainDashboardRow } from '../dashboard-list.comp
 import { TentativeListComponent, TentativeRow } from '../tentative-list.component';
 import { PostShowListComponent, PostShowRow } from '../postshow-list.component';
 import { ActionButtonService } from '../shared/action-buttons/action-button.service';
+import { calculateDaysOut, getStatusIcon } from '../shared/dashboard-utils';
 
 @Component({
   selector: 'app-dashboard',
@@ -41,97 +42,109 @@ import { ActionButtonService } from '../shared/action-buttons/action-button.serv
 export class DashboardComponent implements OnInit {
   private actionButtonService = inject(ActionButtonService);
   
+  // Helper method to add calculated fields
+  private addCalculatedFields(row: any): MainDashboardRow {
+    const daysOut = calculateDaysOut(row.start);
+    return {
+      ...row,
+      daysOut,
+      statusIcon: getStatusIcon(daysOut)
+    };
+  }
+  
   // Main Dashboard Data - matching FileMaker design
   mainDashboardData = signal<MainDashboardRow[]>([
-    {
-      start: '07/12/25',
+    this.addCalculatedFields({
+      start: '07/15/25', // 1 day out
       end: '07/25/25',
       eventName: 'The Park Theatre (Motor Truss Rental) #3',
       eventId: { html: '<span class="event-id">8591</span>' },
       venue: 'Park Theatre, Main Stage',
       cityState: 'Jaffrey, NH',
       providing: 'Rig',
-      toDo: 3,
-      status: { html: '<span class="status live">Live</span>' }
-    },
-    {
-      start: '05/26/25',
-      end: '06/11/25', 
-      eventName: 'Beak & Skiff Seasonal Generator Rental',
-      eventId: { html: '<span class="event-id">8776</span>' },
-      venue: 'Beak & Skiff Brewery, Concert Field',
-      cityState: 'Lafayette, NY',
-      providing: 'Gen',
-      toDo: 1,
-      status: { html: '<span class="status live">Live</span>' }
-    },
-    {
-      start: '08/02/25',
+      toDo: 3
+    }),
+    this.addCalculatedFields({
+      start: '07/22/25', // 8 days out
+      end: '07/25/25',
+      eventName: 'Mountain View Country Club Wedding',
+      eventId: { html: '<span class="event-id">8798</span>' },
+      venue: 'Mountain View Country Club, Grand Ballroom',
+      cityState: 'Stowe, VT',
+      providing: 'Audio/Video',
+      toDo: 2
+    }),
+    this.addCalculatedFields({
+      start: '08/02/25', // 19 days out
       end: '08/04/25',
       eventName: 'Boston Harbor Festival - Main Stage Setup',
       eventId: { html: '<span class="event-id">8845</span>' },
       venue: 'Harbor Pavilion, Main Stage',
       cityState: 'Boston, MA',
       providing: 'Full Rig',
-      toDo: 5,
-      status: { html: '<span class="status live">Live</span>' }
-    },
-    {
-      start: '07/28/25',
-      end: '08/01/25',
-      eventName: 'Mountain View Country Club Wedding',
-      eventId: { html: '<span class="event-id">8798</span>' },
-      venue: 'Mountain View Country Club, Grand Ballroom',
-      cityState: 'Stowe, VT',
-      providing: 'Audio/Video',
-      toDo: 2,
-      status: { html: '<span class="status live">Live</span>' }
-    },
-    {
-      start: '08/15/25',
+      toDo: 5
+    }),
+    this.addCalculatedFields({
+      start: '08/15/25', // 32 days out
       end: '08/17/25',
       eventName: 'Tech Conference 2025 - Corporate AV',
       eventId: { html: '<span class="event-id">8901</span>' },
       venue: 'Boston Convention Center, Hall A',
       cityState: 'Boston, MA',
       providing: 'AV/Lighting',
-      toDo: 4,
-      status: { html: '<span class="status live">Live</span>' }
-    },
-    {
-      start: '09/05/25',
-      end: '09/07/25',
-      eventName: 'Fall Harvest Festival - Multiple Stages',
-      eventId: { html: '<span class="event-id">8923</span>' },
-      venue: 'Shelburne Farms, Multiple Locations',
-      cityState: 'Shelburne, VT',
-      providing: 'Full Production',
-      toDo: 7,
-      status: { html: '<span class="status live">Live</span>' }
-    },
-    {
-      start: '08/22/25',
+      toDo: 4
+    }),
+    this.addCalculatedFields({
+      start: '08/22/25', // 39 days out
       end: '08/24/25',
       eventName: 'University Graduation Ceremony',
       eventId: { html: '<span class="event-id">8856</span>' },
       venue: 'University Stadium, Field House',
       cityState: 'Burlington, VT',
       providing: 'Audio Only',
-      toDo: 1,
-      status: { html: '<span class="status live">Live</span>' }
-    },
-    {
-      start: '09/12/25',
+      toDo: 1
+    }),
+    this.addCalculatedFields({
+      start: '09/05/25', // 53 days out
+      end: '09/07/25',
+      eventName: 'Fall Harvest Festival - Multiple Stages',
+      eventId: { html: '<span class="event-id">8923</span>' },
+      venue: 'Shelburne Farms, Multiple Locations',
+      cityState: 'Shelburne, VT',
+      providing: 'Full Production',
+      toDo: 7
+    }),
+    this.addCalculatedFields({
+      start: '09/12/25', // 60 days out
       end: '09/14/25',
       eventName: 'Craft Beer Festival - Outdoor Stage',
       eventId: { html: '<span class="event-id">8967</span>' },
       venue: 'Downtown Park, Main Stage',
       cityState: 'Portland, ME',
       providing: 'Stage/Audio',
-      toDo: 2,
-      status: { html: '<span class="status live">Live</span>' }
+      toDo: 2
+    }),
+    // Live events (past or current)
+    {
+      start: '07/10/25', // Live (past)
+      end: '07/14/25',
+      eventName: 'Beak & Skiff Seasonal Generator Rental',
+      eventId: { html: '<span class="event-id">8776</span>' },
+      venue: 'Beak & Skiff Brewery, Concert Field',
+      cityState: 'Lafayette, NY',
+      providing: 'Gen',
+      toDo: 1,
+      daysOut: undefined // Will show as "Live"
     }
-  ]);
+  ].sort((a, b) => {
+    // Live events (undefined daysOut) come first
+    if (a.daysOut === undefined && b.daysOut !== undefined) return -1;
+    if (a.daysOut !== undefined && b.daysOut === undefined) return 1;
+    if (a.daysOut === undefined && b.daysOut === undefined) return 0;
+    
+    // Then sort by days out (ascending - closest first)
+    return (a.daysOut || 0) - (b.daysOut || 0);
+  }));
 
   // Tentative Data
   tentativeData = signal<TentativeRow[]>([

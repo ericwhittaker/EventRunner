@@ -134,6 +134,14 @@
   line-height: 1;
 }
 
+.submenu-divider {
+  height: 3px;
+  background: linear-gradient(90deg, #00bcd4 0%, #00acc1 100%);
+  border: none;
+  margin: 0;
+  width: 100%;
+}
+
 @media (max-width: 900px) {
   .subnav-container {
     flex-direction: column;

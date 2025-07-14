@@ -37,6 +37,27 @@
   cursor: pointer;
 }
 
+/* Override hover for status cells - keep their original colors */
+.main-dashboard-table tbody tr:hover td.status-cell.status-past {
+  background: #2e7d32 !important;
+}
+
+.main-dashboard-table tbody tr:hover td.status-cell.status-urgent {
+  background: #d32f2f !important;
+}
+
+.main-dashboard-table tbody tr:hover td.status-cell.status-soon {
+  background: #f57c00 !important;
+}
+
+.main-dashboard-table tbody tr:hover td.status-cell.status-future {
+  background: #fbc02d !important;
+}
+
+.main-dashboard-table tbody tr:hover td.status-cell.status-far-future {
+  background: #7b1fa2 !important;
+}
+
 /* Event ID Styling */
 :host ::ng-deep .event-id {
   background: #e3f2fd;
@@ -108,4 +129,58 @@
 
 .icon-placeholder {
   font-size: 1rem;
+}
+
+/* Days Out and Status Icons */
+.status-cell {
+  text-align: center !important;
+  font-weight: 600;
+  border-radius: 12px;
+  padding: 2px 6px;
+  color: white;
+}
+
+.set-money {
+  text-align: center !important;
+  font-weight: 600;
+  color: #2e7d32;
+}
+
+.notes-cell {
+  text-align: center !important;
+}
+
+.days-out {
+  text-align: center !important;
+  font-weight: 600;
+}
+
+.status-icon {
+  margin-right: 4px;
+  font-size: 12px;
+}
+
+.status-past {
+  background: #2e7d32 !important; /* Brighter green for Live events */
+  color: white !important;
+}
+
+.status-urgent {
+  background: #d32f2f !important; /* Bright red for urgent (1-3 days) */
+  color: white !important;
+}
+
+.status-soon {
+  background: #f57c00 !important; /* Bright orange for soon (4-14 days) */
+  color: white !important;
+}
+
+.status-future {
+  background: #fbc02d !important; /* Bright yellow for future (15-30 days) */
+  color: black !important;
+}
+
+.status-far-future {
+  background: #7b1fa2 !important; /* Purple for far future (30+ days) */
+  color: white !important;
 }

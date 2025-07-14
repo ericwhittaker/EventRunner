@@ -2,6 +2,7 @@ import { Component, Input, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { BaseDashboardRow, calculateEmptyRows } from './shared/dashboard-list-types';
+import { getStatusClass } from './shared/dashboard-utils';
 
 export interface MainDashboardRow extends BaseDashboardRow {
   eventId: { html: string };
@@ -9,9 +10,7 @@ export interface MainDashboardRow extends BaseDashboardRow {
   cityState: string;
   providing: string;
   toDo: number; // Count of todos
-  status: { html: string };
-  setS?: string;
-  notes?: string;
+  daysOut?: number; // Days until/since event (shows in Status column)
 }
 
 @Component({
@@ -26,14 +25,16 @@ export interface MainDashboardRow extends BaseDashboardRow {
           <tr>
             <th style="width: 7%">Start</th>
             <th style="width: 7%">End</th>
-            <th style="width: 24%">Event Name</th>
+            <th style="width: 26%">Event Name</th>
             <th style="width: 7%">Event ID</th>
-            <th style="width: 17%">Venue / Sub Venue</th>
+            <th style="width: 18%">Venue / Sub Venue</th>
             <th style="width: 11%">City / State</th>
             <th style="width: 8%">Providing</th>
-            <th style="width: 6%">To Do</th>
-            <th style="width: 5%">Info</th>
-            <th style="width: 8%">Status</th>
+            <th style="width: 4%">Status</th>
+            <th style="width: 4%">To Do</th>
+            <th style="width: 3%">Set $</th>
+            <th style="width: 3%">Notes</th>
+            <th style="width: 2%">Info</th>
           </tr>
         </thead>
         <tbody>
@@ -46,14 +47,20 @@ export interface MainDashboardRow extends BaseDashboardRow {
               <td class="venue">{{ row.venue }}</td>
               <td>{{ row.cityState }}</td>
               <td>{{ row.providing }}</td>
+              <td class="status-cell" [ngClass]="getDaysOutClass(row.daysOut)">
+                {{ row.daysOut !== undefined ? row.daysOut : 'Live' }}
+              </td>
               <td class="todo-count">{{ row.toDo }}</td>
+              <td class="set-money">$</td>
+              <td class="notes-cell">📝</td>
               <td class="info-cell"><i class="info-icon">ℹ</i></td>
-              <td [innerHTML]="row.status.html"></td>
             </tr>
           }
           <!-- Empty rows to maintain height -->
           @for (i of emptyRows(); track i) {
             <tr class="empty-row">
+              <td>&nbsp;</td>
+              <td>&nbsp;</td>
               <td>&nbsp;</td>
               <td>&nbsp;</td>
               <td>&nbsp;</td>
@@ -98,4 +105,8 @@ export class DashboardListComponent {
   emptyRows = computed(() => {
     return calculateEmptyRows(this._data().length, this.maxRows);
   });
+
+  getDaysOutClass(daysOut: number | undefined): string {
+    return getStatusClass(daysOut);
+  }
 }
