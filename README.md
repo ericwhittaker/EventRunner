@@ -133,6 +133,56 @@ npm run electronpublish
 - Push access to the GitHub repository
 - GitHub token configured for electron-forge publisher
 
+## 🔑 GitHub Token Management
+
+### Current Setup
+The GitHub token is stored in your `~/.zshrc` file:
+```bash
+export GITHUB_TOKEN=your_actual_token_here
+```
+
+### Token Types: Classic vs Fine-grained
+**Use Classic Tokens** for Electron Forge publishing (recommended):
+- **Classic Tokens**: Full repo access, simpler setup, works reliably with electron-forge
+- **Fine-grained Tokens**: More secure but complex permissions, may have compatibility issues
+
+### Creating a Classic Token
+1. Go to GitHub → Settings → Developer settings → Personal access tokens → Tokens (classic)
+2. Click "Generate new token (classic)"
+3. Set expiration (90 days recommended for security)
+4. Select scopes:
+   - ✅ `repo` (Full control of private repositories)
+   - ✅ `write:packages` (Upload packages to GitHub Package Registry)
+5. Copy the token immediately (you won't see it again!)
+
+### Updating the Token (Every 90 Days)
+When your token expires, you'll need to:
+
+1. **Generate a new token** (follow steps above)
+2. **Update your ~/.zshrc file**:
+   ```bash
+   # Edit the file
+   nano ~/.zshrc
+   
+   # Find this line and replace with new token:
+   export GITHUB_TOKEN=your_new_token_here
+   
+   # Save and reload
+   source ~/.zshrc
+   ```
+3. **Verify it works**:
+   ```bash
+   echo $GITHUB_TOKEN
+   npm run release  # Test the release process
+   ```
+
+### Security Best Practices
+- ✅ Set token expiration (90 days max)
+- ✅ Use minimal required scopes
+- ✅ Never commit tokens to git repositories
+- ✅ Store in environment variables only
+- ❌ Don't share tokens or put them in code
+
 ## 📝 Quick Reference: npm Lifecycle Scripts
 
 ### What are Lifecycle Scripts?
