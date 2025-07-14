@@ -88,6 +88,7 @@ When you're ready to release a new version to users:
 ```bash
 # 1. Version bump (creates tag + pushes automatically)
 npm version minor    # or 'patch' for bug fixes, 'major' for breaking changes
+                     # ↑ This automatically pushes commits & tags via postversion script
 
 # 2. Build and publish to GitHub Releases
 npm run release
@@ -95,7 +96,7 @@ npm run release
 
 #### Method 2: Step by Step
 ```bash
-# 1. Version bump
+# 1. Version bump (automatically pushes)
 npm version minor
 
 # 2. Build Angular app
@@ -110,7 +111,7 @@ npm run electronpublish
   - Updates package.json version (0.3.1 → 0.4.0)
   - Creates git commit with version number
   - Creates git tag (v0.4.0)
-  - Pushes commits and tags to GitHub
+  - **Automatically pushes commits and tags to GitHub** (via postversion script)
 - **npm run release**:
   - Builds Angular app for production
   - Creates Electron installers (.dmg, .exe, etc.)
