@@ -17,7 +17,6 @@
     "electronpackage": "electron-forge package",
     "electronmake": "electron-forge make",
     "electronpublish": "electron-forge publish",
-    "electronstartnormal": "electron .",
     "postversion": "git push && git push --tags",
     "release": "npm run build && electron-forge publish",
     "update-version-file": "node -e \"const fs = require('fs'); const pkg = require('./package.json'); fs.writeFileSync('./src/app/version.ts', '// This file is auto-generated during build\\nexport const APP_VERSION = \\'' + pkg.version + '\\';\\n');\"",
