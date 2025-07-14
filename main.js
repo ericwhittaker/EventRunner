@@ -88,7 +88,9 @@ app.whenReady().then(() => {
 
   // Handle version request
   ipcMain.handle('get-app-version', () => {
-    return packageJson.version;
+    const version = app.getVersion(); // Use Electron's built-in method
+    console.log('Version requested, returning:', version);
+    return version;
   });
   
   createWindow()
