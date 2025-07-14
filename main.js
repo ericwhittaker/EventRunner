@@ -39,7 +39,7 @@ autoUpdater.on('update-downloaded', (info) => {
 
 const createWindow = () => {
   const win = new BrowserWindow({
-    width: 1200,
+    width: 1366, // Adjusted width for better visibility
     height: 1000,
     webPreferences: {
       preload: require('path').join(__dirname, 'preload.js'),
