@@ -1,60 +1,26 @@
 const { app, BrowserWindow, ipcMain, Menu, dialog } = require('electron/main')
-const { autoUpdater } = require('electron-updater')
+const { updateElectronApp } = require('update-electron-app')
+const log = require('electron-log')
 const packageJson = require('./package.json')
 
-// Configure auto-updater for GitHub releases
-autoUpdater.setFeedURL({
-  provider: 'github',
-  owner: 'ericwhittaker',
-  repo: 'EventRunner',
-  private: true,
-  token: process.env.GITHUB_TOKEN || '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' // Replace with your actual token
+// For private repository - set GH_TOKEN if not already set
+if (!process.env.GH_TOKEN && !process.env.GITHUB_TOKEN) {
+  process.env.GH_TOKEN = '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'
+  console.log('Setting GH_TOKEN for private repository access')
+}
+
+// Simple auto-updater setup for private GitHub repository
+// This automatically handles private repos when GH_TOKEN is set
+updateElectronApp({
+  repo: 'ericwhittaker/EventRunner',
+  updateInterval: '1 hour',
+  logger: log,
+  notifyUser: true
 })
 
-// Auto-updater events
-autoUpdater.on('checking-for-update', () => {
-  console.log('Checking for update...')
-})
-
-autoUpdater.on('update-available', (info) => {
-  console.log('Update available:', info.version)
-  dialog.showMessageBox({
-    type: 'info',
-    title: 'Update Available',
-    message: `A new version is available!`,
-    detail: `Version ${info.version} is downloading in the background. You'll be notified when it's ready to install.`,
-    buttons: ['OK']
-  })
-})
-
-autoUpdater.on('update-not-available', (info) => {
-  console.log('Update not available.')
-})
-
-autoUpdater.on('error', (err) => {
-  console.log('Error in auto-updater:', err)
-})
-
-autoUpdater.on('download-progress', (progressObj) => {
-  const log_message = `Download speed: ${progressObj.bytesPerSecond} - Downloaded ${progressObj.percent}% (${progressObj.transferred}/${progressObj.total})`
-  console.log(log_message)
-})
-
-autoUpdater.on('update-downloaded', (info) => {
-  console.log('Update downloaded')
-  // Show dialog to user about update
-  dialog.showMessageBox({
-    type: 'info',
-    title: 'Update Ready',
-    message: 'Update has been downloaded and will be installed on restart.',
-    detail: `Version ${info.version} is ready to install.`,
-    buttons: ['Restart Now', 'Later']
-  }).then((result) => {
-    if (result.response === 0) {
-      autoUpdater.quitAndInstall()
-    }
-  })
-})
+console.log('Auto-updater initialized for private repository')
+console.log('Current version:', app.getVersion())
+console.log('GH_TOKEN available:', !!process.env.GH_TOKEN)
 
 const createWindow = () => {
   const win = new BrowserWindow({
@@ -189,48 +155,6 @@ const createMenu = () => {
       label: 'Help',
       submenu: [
         {
-          label: 'Check for Updates...',
-          click: async () => {
-            console.log('Manual update check triggered')
-            // Show checking dialog
-            const checkingDialog = dialog.showMessageBox({
-              type: 'info',
-              title: 'Checking for Updates',
-              message: 'Checking for updates...',
-              buttons: ['Cancel'],
-              defaultId: 0
-            })
-            
-            try {
-              const result = await autoUpdater.checkForUpdates()
-              // Close the checking dialog
-              checkingDialog.then((dialogResult) => {
-                // Dialog was closed
-              })
-              
-              if (!result.updateInfo || result.updateInfo.version === app.getVersion()) {
-                dialog.showMessageBox({
-                  type: 'info',
-                  title: 'No Updates Available',
-                  message: 'You are running the latest version.',
-                  detail: `Current version: ${app.getVersion()}`,
-                  buttons: ['OK']
-                })
-              }
-            } catch (error) {
-              console.error('Update check failed:', error)
-              dialog.showMessageBox({
-                type: 'error',
-                title: 'Update Check Failed',
-                message: 'Failed to check for updates.',
-                detail: error.message,
-                buttons: ['OK']
-              })
-            }
-          }
-        },
-        { type: 'separator' },
-        {
           label: 'EventRunner Help',
           click: () => {
             // TODO: Open help documentation
@@ -263,11 +187,6 @@ app.whenReady().then(() => {
     });
   });
 
-  // Handle manual update check
-  ipcMain.handle('check-for-updates', () => {
-    autoUpdater.checkForUpdatesAndNotify();
-  });
-
   // Handle version request
   ipcMain.handle('get-app-version', () => {
     const version = app.getVersion(); // Use Electron's built-in method
@@ -279,13 +198,6 @@ app.whenReady().then(() => {
   createMenu()
   
   createWindow()
-
-  // Check for updates when app starts (only in production)
-  if (!process.env.NODE_ENV || process.env.NODE_ENV === 'production') {
-    setTimeout(() => {
-      autoUpdater.checkForUpdatesAndNotify();
-    }, 3000); // Wait 3 seconds after startup
-  }
 
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) {

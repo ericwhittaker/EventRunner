@@ -45,10 +45,12 @@
     "@angular/forms": "^20.1.0",
     "@angular/platform-browser": "^20.1.0",
     "@angular/router": "^20.1.0",
+    "electron-log": "^5.4.1",
     "electron-squirrel-startup": "^1.0.1",
     "electron-updater": "^6.6.2",
     "rxjs": "~7.8.0",
-    "tslib": "^2.3.0"
+    "tslib": "^2.3.0",
+    "update-electron-app": "^3.1.1"
   },
   "devDependencies": {
     "@angular/build": "^20.1.0",
