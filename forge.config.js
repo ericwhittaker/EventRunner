@@ -7,6 +7,14 @@ module.exports = {
     appBundleId: 'com.ericwhittaker.eventrunner', // Required for auto-updates
     appVersion: process.env.npm_package_version || '1.0.0',
     icon: './assets/icons/icon', // Electron will auto-append .icns, .ico, .png as needed
+    
+    // MINIMAL code signing - just the certificate, no extra security features
+    ...(process.env.CSC_NAME && {
+      osxSign: {
+        identity: process.env.CSC_NAME
+        // No hardened-runtime, no entitlements - just basic signing
+      }
+    })
   },
   rebuildConfig: {},
   makers: [
