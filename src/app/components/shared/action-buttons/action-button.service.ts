@@ -11,7 +11,7 @@ export class ActionButtonService {
   private buttonConfigs = signal<ActionButtonConfig[]>([
     {
       id: 'add-event',
-      icon: '➕',
+      icon: 'fas fa-plus',
       text: 'Add Event',
       tooltip: 'Add new event',
       type: 'action',
@@ -20,18 +20,8 @@ export class ActionButtonService {
       action: () => this.onAddEvent()
     },
     {
-      id: 'refresh',
-      icon: '🔄',
-      text: 'Refresh',
-      tooltip: 'Refresh application',
-      type: 'action',
-      enabled: true,
-      visible: true,
-      action: () => this.onRefreshApp()
-    },
-    {
       id: 'info',
-      icon: 'ℹ️',
+      icon: 'fas fa-info-circle',
       text: 'Info',
       tooltip: 'EventRunner information',
       type: 'popover',
@@ -46,7 +36,7 @@ export class ActionButtonService {
     },
     {
       id: 'tools',
-      icon: '⚙️',
+      icon: 'fas fa-cog',
       text: 'Tools',
       tooltip: 'Related tools and apps',
       type: 'popover',
@@ -115,23 +105,5 @@ export class ActionButtonService {
     console.log('Add Event clicked');
     // TODO: Implement add event modal/functionality
     // Could emit an event or call a service method
-  }
-
-  private onRefreshApp(): void {
-    console.log('Refresh App clicked');
-    // For Electron apps, use a more reliable refresh method
-    if (typeof window !== 'undefined' && (window as any).electronAPI) {
-      // If you have electron API exposed, use it
-      (window as any).electronAPI.reload();
-    } else {
-      // Fallback to standard reload, but with better error handling
-      try {
-        window.location.reload();
-      } catch (error) {
-        console.error('Failed to reload application:', error);
-        // Alternative refresh method for Electron
-        window.location.href = window.location.href;
-      }
-    }
   }
 }

@@ -2,6 +2,9 @@
 
 This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 20.1.0.
 
+## TODO
+- [ ] **Add notarization for better user experience** - Currently code signed with Developer ID, but adding notarization would eliminate security warnings on first download. Requires adding `osxNotarize` config with Apple ID credentials.
+
 ## Development server
 
 To start a local development server, run:
