@@ -9,5 +9,8 @@ contextBridge.exposeInMainWorld('versions', {
 })
 
 contextBridge.exposeInMainWorld('electronAPI', {
-  reload: () => ipcRenderer.invoke('app-reload')
+  reload: () => ipcRenderer.invoke('app-reload'),
+  checkForUpdates: () => ipcRenderer.invoke('check-for-updates'),
+  onUpdateAvailable: (callback) => ipcRenderer.on('update-available', callback),
+  onUpdateDownloaded: (callback) => ipcRenderer.on('update-downloaded', callback)
 })

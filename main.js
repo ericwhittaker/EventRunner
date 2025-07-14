@@ -1,4 +1,40 @@
 const { app, BrowserWindow, ipcMain } = require('electron/main')
+const { autoUpdater } = require('electron-updater')
+
+// Configure auto-updater for GitHub releases
+autoUpdater.setFeedURL({
+  provider: 'github',
+  owner: 'ericwhittaker',
+  repo: 'EventRunner'
+})
+
+// Auto-updater events
+autoUpdater.on('checking-for-update', () => {
+  console.log('Checking for update...')
+})
+
+autoUpdater.on('update-available', (info) => {
+  console.log('Update available:', info.version)
+})
+
+autoUpdater.on('update-not-available', (info) => {
+  console.log('Update not available.')
+})
+
+autoUpdater.on('error', (err) => {
+  console.log('Error in auto-updater:', err)
+})
+
+autoUpdater.on('download-progress', (progressObj) => {
+  const log_message = `Download speed: ${progressObj.bytesPerSecond} - Downloaded ${progressObj.percent}% (${progressObj.transferred}/${progressObj.total})`
+  console.log(log_message)
+})
+
+autoUpdater.on('update-downloaded', (info) => {
+  console.log('Update downloaded')
+  // Auto-install on next restart
+  autoUpdater.quitAndInstall()
+})
 
 const createWindow = () => {
   const win = new BrowserWindow({
@@ -43,8 +79,20 @@ app.whenReady().then(() => {
       win.loadFile(indexPath);
     });
   });
+
+  // Handle manual update check
+  ipcMain.handle('check-for-updates', () => {
+    autoUpdater.checkForUpdatesAndNotify();
+  });
   
   createWindow()
+
+  // Check for updates when app starts (only in production)
+  if (!process.env.NODE_ENV || process.env.NODE_ENV === 'production') {
+    setTimeout(() => {
+      autoUpdater.checkForUpdatesAndNotify();
+    }, 3000); // Wait 3 seconds after startup
+  }
 
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) {

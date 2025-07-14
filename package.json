@@ -15,7 +15,9 @@
     "electrontest": "echo \"Error: no test specified\" && exit 1",
     "electronpackage": "electron-forge package",
     "electronmake": "electron-forge make",
-    "electronstartnormal": "electron ."
+    "electronpublish": "electron-forge publish",
+    "electronstartnormal": "electron .",
+    "release": "npm run build && electron-forge publish"
   },
   "prettier": {
     "overrides": [
@@ -36,6 +38,7 @@
     "@angular/platform-browser": "^20.1.0",
     "@angular/router": "^20.1.0",
     "electron-squirrel-startup": "^1.0.1",
+    "electron-updater": "^6.6.2",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0"
   },
@@ -50,6 +53,7 @@
     "@electron-forge/maker-zip": "^7.8.1",
     "@electron-forge/plugin-auto-unpack-natives": "^7.8.1",
     "@electron-forge/plugin-fuses": "^7.8.1",
+    "@electron-forge/publisher-github": "^7.8.1",
     "@electron/fuses": "^1.8.0",
     "@types/jasmine": "~5.1.0",
     "electron": "^37.2.1",
