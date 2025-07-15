@@ -5,10 +5,97 @@ const fs = require('fs')
 const path = require('path')
 
 
+// Log rotation configuration
+const LOG_CONFIG = {
+  maxFileSize: 1024 * 1024, // 1MB max file size
+  maxFiles: 5, // Keep 5 rotated log files
+  maxAge: 30 * 24 * 60 * 60 * 1000 // 30 days in milliseconds
+}
+
 // Create a simple log file in the app's user data directory (This is for debugging purposes)
 const logFilePath = path.join(app.getPath('userData'), 'eventrunner-updater.log')
 
-// Simple logging function that works in both dev and packaged app
+// Log rotation function
+function rotateLogIfNeeded() {
+  try {
+    // Check if log file exists and get its stats
+    if (!fs.existsSync(logFilePath)) {
+      return // No log file to rotate
+    }
+    
+    const stats = fs.statSync(logFilePath)
+    const now = Date.now()
+    
+    // Check if rotation is needed (size or age)
+    const needsRotation = stats.size >= LOG_CONFIG.maxFileSize || 
+                         (now - stats.mtime.getTime()) >= LOG_CONFIG.maxAge
+    
+    if (!needsRotation) {
+      return
+    }
+    
+    // Create rotated filename with timestamp
+    const timestamp = new Date().toISOString().replace(/[:.]/g, '-')
+    const rotatedPath = path.join(
+      app.getPath('userData'), 
+      `eventrunner-updater-${timestamp}.log`
+    )
+    
+    // Move current log to rotated file
+    fs.renameSync(logFilePath, rotatedPath)
+    
+    // Clean up old rotated files
+    cleanupOldLogs()
+    
+    console.log(`Log rotated to: ${rotatedPath}`)
+  } catch (err) {
+    console.error('Failed to rotate log:', err)
+  }
+}
+
+// Clean up old rotated log files
+function cleanupOldLogs() {
+  try {
+    const userDataDir = app.getPath('userData')
+    const files = fs.readdirSync(userDataDir)
+    
+    // Find all rotated log files
+    const logFiles = files
+      .filter(file => file.startsWith('eventrunner-updater-') && file.endsWith('.log'))
+      .map(file => ({
+        name: file,
+        path: path.join(userDataDir, file),
+        stats: fs.statSync(path.join(userDataDir, file))
+      }))
+      .sort((a, b) => b.stats.mtime.getTime() - a.stats.mtime.getTime()) // Newest first
+    
+    // Remove files beyond the limit
+    if (logFiles.length > LOG_CONFIG.maxFiles) {
+      const filesToDelete = logFiles.slice(LOG_CONFIG.maxFiles)
+      filesToDelete.forEach(file => {
+        fs.unlinkSync(file.path)
+        console.log(`Deleted old log file: ${file.name}`)
+      })
+    }
+    
+    // Remove files older than maxAge
+    const cutoffTime = Date.now() - LOG_CONFIG.maxAge
+    logFiles.forEach(file => {
+      if (file.stats.mtime.getTime() < cutoffTime) {
+        try {
+          fs.unlinkSync(file.path)
+          console.log(`Deleted expired log file: ${file.name}`)
+        } catch (err) {
+          console.error(`Failed to delete expired log file ${file.name}:`, err)
+        }
+      }
+    })
+  } catch (err) {
+    console.error('Failed to cleanup old logs:', err)
+  }
+}
+
+// Enhanced logging function with rotation
 function log(...args) {
   const timestamp = new Date().toISOString()
   const message = `[${timestamp}] ${args.join(' ')}`
@@ -18,6 +105,9 @@ function log(...args) {
   
   // Log to file (for packaged app)
   try {
+    // Rotate log if needed before writing
+    rotateLogIfNeeded()
+    
     fs.appendFileSync(logFilePath, message + '\n')
   } catch (err) {
     console.error('Failed to write to log file:', err)
@@ -236,16 +326,38 @@ const createMenu = () => {
         {
           label: 'Show Update Logs',
           click: () => {
+            // Get log file info
+            let logInfo = 'No log file found'
+            try {
+              if (fs.existsSync(logFilePath)) {
+                const stats = fs.statSync(logFilePath)
+                const sizeKB = (stats.size / 1024).toFixed(1)
+                const age = Math.round((Date.now() - stats.mtime.getTime()) / (1000 * 60 * 60 * 24))
+                logInfo = `Current log: ${sizeKB}KB, ${age} days old`
+              }
+            } catch (err) {
+              logInfo = 'Error reading log file'
+            }
+            
             dialog.showMessageBox({
               type: 'info',
               title: 'Update Logs',
-              message: 'Auto-updater log file location:',
-              detail: `${logFilePath}\n\nLogs are written to this file. You can copy this file to share debug information.`,
-              buttons: ['OK', 'Open Log Folder']
+              message: 'Auto-updater log files:',
+              detail: `${logInfo}\n\nLog file location:\n${logFilePath}\n\nLogs are automatically rotated when they exceed 1MB or are older than 30 days. Up to 5 old log files are kept as backup.`,
+              buttons: ['OK', 'Open Log Folder', 'Clean Old Logs']
             }).then((result) => {
               if (result.response === 1) {
                 // Open log folder
                 require('child_process').exec(`open "${path.dirname(logFilePath)}"`);
+              } else if (result.response === 2) {
+                // Clean old logs manually
+                cleanupOldLogs();
+                dialog.showMessageBox({
+                  type: 'info',
+                  title: 'Logs Cleaned',
+                  message: 'Old log files have been cleaned up.',
+                  buttons: ['OK']
+                });
               }
             });
           }
@@ -265,6 +377,45 @@ const createMenu = () => {
               message: 'Update check triggered',
               detail: `Current version: ${app.getVersion()}\nCheck the log file for details.\n\nNote: Updates only work in packaged apps, not development mode.`,
               buttons: ['OK']
+            });
+          }
+        },
+        { type: 'separator' },
+        {
+          label: 'Reset App Data',
+          click: () => {
+            dialog.showMessageBox({
+              type: 'warning',
+              title: 'Reset App Data',
+              message: 'This will delete all EventRunner app data',
+              detail: `This will remove:\n• All log files\n• App preferences\n• Cache and temporary files\n• Local storage data\n\nThis cannot be undone. The app will quit after reset.`,
+              buttons: ['Cancel', 'Reset App Data'],
+              defaultId: 0,
+              cancelId: 0
+            }).then((result) => {
+              if (result.response === 1) {
+                // User confirmed reset
+                try {
+                  const userDataPath = app.getPath('userData');
+                  log('🗑️  Resetting app data at:', userDataPath);
+                  
+                  // Remove the entire user data directory
+                  fs.rmSync(userDataPath, { recursive: true, force: true });
+                  
+                  dialog.showMessageBox({
+                    type: 'info',
+                    title: 'App Data Reset',
+                    message: 'App data has been reset',
+                    detail: 'All EventRunner data has been removed. The app will now quit.',
+                    buttons: ['OK']
+                  }).then(() => {
+                    app.quit();
+                  });
+                } catch (err) {
+                  console.error('Failed to reset app data:', err);
+                  dialog.showErrorBox('Reset Failed', `Failed to reset app data: ${err.message}`);
+                }
+              }
             });
           }
         }
