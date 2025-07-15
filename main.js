@@ -7,7 +7,7 @@ const path = require('path')
 // For private repository - hardcode the token
 process.env.GH_TOKEN = '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'
 
-// Create a simple log file in the app's user data directory
+// Create a simple log file in the app's user data directory (This is for debugging purposes)
 const logFilePath = path.join(app.getPath('userData'), 'eventrunner-updater.log')
 
 // Simple logging function that works in both dev and packaged app
