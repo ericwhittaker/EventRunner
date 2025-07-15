@@ -37,12 +37,9 @@ log('Target repository: ericwhittaker/EventRunner')
 // Simple auto-updater setup for private GitHub repository
 log('🚀 Initializing update-electron-app...');
 
-// Create a custom logger to capture update-electron-app's output
+// Create a simple logger that update-electron-app expects (just needs .log() method)
 const customLogger = {
-  info: (message) => log('📡 UPDATE-ELECTRON-APP:', message),
-  warn: (message) => log('⚠️ UPDATE-ELECTRON-APP WARNING:', message),
-  error: (message) => log('❌ UPDATE-ELECTRON-APP ERROR:', message),
-  debug: (message) => log('🔍 UPDATE-ELECTRON-APP DEBUG:', message)
+  log: (message) => log('� UPDATE-ELECTRON-APP:', message)
 };
 
 try {
