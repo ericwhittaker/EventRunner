@@ -1,68 +1,52 @@
 const { app, BrowserWindow, ipcMain, Menu, dialog } = require('electron/main')
 const { updateElectronApp } = require('update-electron-app')
-const log = require('electron-log')
 const packageJson = require('./package.json')
 
 // For private repository - hardcode the token
 process.env.GH_TOKEN = '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'
 
-// Configure electron-log for both file and console output
-log.transports.file.level = 'info';
-log.transports.console.level = 'info';
-log.transports.file.fileName = 'electron-updater.log';
-log.transports.file.maxSize = 5 * 1024 * 1024; // 5MB
-
-function logBoth(message, ...args) {
-  console.log(message, ...args);
-  log.info(message, ...args);
+// Simple logging function that works in both dev and packaged app
+function log(...args) {
+  console.log(...args);
 }
 
-logBoth('=== AUTO-UPDATER SETUP ===')
-logBoth('Setting GH_TOKEN for private repository access')
-logBoth('GH_TOKEN available:', !!process.env.GH_TOKEN)
-logBoth('Current version from app.getVersion():', app.getVersion())
-logBoth('Current version from package.json:', packageJson.version)
-logBoth('Target repository: ericwhittaker/EventRunner')
-logBoth('Electron log file location:', log.transports.file.getFile().path)
-
-// Enhanced logging for update-electron-app
-const originalConsoleLog = console.log;
-log.info = (...args) => {
-  originalConsoleLog('📋 UPDATE-LOG:', ...args);
-  log.transports.file.write('UPDATE-LOG: ' + args.join(' '));
-};
+log('=== AUTO-UPDATER SETUP ===')
+log('Setting GH_TOKEN for private repository access')
+log('GH_TOKEN available:', !!process.env.GH_TOKEN)
+log('Current version from app.getVersion():', app.getVersion())
+log('Current version from package.json:', packageJson.version)
+log('Target repository: ericwhittaker/EventRunner')
 
 // Simple auto-updater setup for private GitHub repository
-logBoth('🚀 Initializing update-electron-app...');
+log('🚀 Initializing update-electron-app...');
 updateElectronApp({
   repo: 'ericwhittaker/EventRunner',
   updateInterval: '5 minutes', // Reduced for testing
-  logger: log,
   notifyUser: true
 })
 
-logBoth('✅ Auto-updater initialized for private repository')
-logBoth('⏰ Update check interval: 5 minutes')
-logBoth('🔔 User notifications: enabled')
-logBoth('============================')
+log('✅ Auto-updater initialized for private repository')
+log('⏰ Update check interval: 5 minutes')
+log('🔔 User notifications: enabled')
+log('============================')
 
 // Additional debugging - check if we're in dev mode
-logBoth('🔍 ENVIRONMENT CHECK:')
-logBoth('app.isPackaged:', app.isPackaged)
-logBoth('process.env.NODE_ENV:', process.env.NODE_ENV)
-logBoth('__dirname:', __dirname)
-logBoth('process.argv:', process.argv.slice(0, 3))
-logBoth('============================')
+log('🔍 ENVIRONMENT CHECK:')
+log('app.isPackaged:', app.isPackaged)
+log('process.env.NODE_ENV:', process.env.NODE_ENV)
+log('__dirname:', __dirname)
+log('process.argv:', process.argv.slice(0, 3))
+log('============================')
 
 // Manual update check for debugging
 setTimeout(() => {
-  logBoth('🔍 Manual update check in 10 seconds...')
+  log('🔍 Manual update check in 10 seconds...')
   try {
     // Try to trigger an update check
-    logBoth('📡 Attempting manual update check...')
-    logBoth('📡 Note: update-electron-app doesn\'t expose manual check method')
+    log('📡 Attempting manual update check...')
+    log('📡 Note: update-electron-app doesn\'t expose manual check method')
   } catch (error) {
-    logBoth('❌ Manual update check failed:', error)
+    log('❌ Manual update check failed:', error)
   }
 }, 10000)
 
@@ -80,16 +64,16 @@ const createWindow = () => {
   const indexPath = require('path').join(__dirname, 'dist', 'EventRunner', 'browser', 'index.html');
   
   win.loadFile(indexPath).catch(err => {
-    console.error('Failed to load index.html:', err);
+    log('Failed to load index.html:', err);
     // Fallback: try loading from current directory
     win.loadFile('index.html').catch(fallbackErr => {
-      console.error('Fallback load also failed:', fallbackErr);
+      log('Fallback load also failed:', fallbackErr);
     });
   });
 
   // Handle refresh requests
   win.webContents.on('did-fail-load', (event, errorCode, errorDescription, validatedURL) => {
-    console.log('Failed to load:', errorDescription, 'URL:', validatedURL);
+    log('Failed to load:', errorDescription, 'URL:', validatedURL);
     // Reload the main index.html on any load failure
     win.loadFile(indexPath);
   });
@@ -213,37 +197,19 @@ const createMenu = () => {
         },
         { type: 'separator' },
         {
-          label: 'Show Update Logs',
-          click: () => {
-            const logPath = log.transports.file.getFile().path;
-            dialog.showMessageBox({
-              type: 'info',
-              title: 'Update Logs',
-              message: 'Auto-updater log file location:',
-              detail: `${logPath}\n\nLogs are written to both console and this file for debugging auto-update issues.`,
-              buttons: ['OK', 'Open Log Folder']
-            }).then((result) => {
-              if (result.response === 1) {
-                // Open log folder
-                require('child_process').exec(`open "${require('path').dirname(logPath)}"`);
-              }
-            });
-          }
-        },
-        {
           label: 'Debug: Check for Updates',
           click: () => {
-            logBoth('🔄 Manual update check requested via menu');
-            logBoth('📊 Current app state:');
-            logBoth('   - Version:', app.getVersion());
-            logBoth('   - Is Packaged:', app.isPackaged);
-            logBoth('   - Repository: ericwhittaker/EventRunner');
+            log('🔄 Manual update check requested via menu');
+            log('📊 Current app state:');
+            log('   - Version:', app.getVersion());
+            log('   - Is Packaged:', app.isPackaged);
+            log('   - Repository: ericwhittaker/EventRunner');
             
             dialog.showMessageBox({
               type: 'info',
               title: 'Update Check',
               message: 'Update check triggered',
-              detail: `Current version: ${app.getVersion()}\nCheck the console/logs for details.\n\nNote: Updates only work in packaged apps, not development mode.`,
+              detail: `Current version: ${app.getVersion()}\nCheck the DevTools console for details.\n\nNote: Updates only work in packaged apps, not development mode.`,
               buttons: ['OK']
             });
           }
@@ -271,7 +237,7 @@ app.whenReady().then(() => {
   // Handle version request
   ipcMain.handle('get-app-version', () => {
     const version = app.getVersion(); // Use Electron's built-in method
-    logBoth('Version requested, returning:', version);
+    log('Version requested, returning:', version);
     return version;
   });
   
