@@ -5,6 +5,14 @@ const fs = require('fs')
 const path = require('path')
 
 
+
+
+
+
+
+
+
+
 // Log rotation configuration
 const LOG_CONFIG = {
   maxFileSize: 1024 * 1024, // 1MB max file size
@@ -114,7 +122,26 @@ function log(...args) {
   }
 }
 
-// Function to get all version information dynamically
+// Logging initialization
+log(' ')
+log('========================================')
+log('========= Starting EventRunner =========')
+log('========================================')
+log(' ')
+log(' ')
+log('=========== LOGGING IS SETUP ===========')
+log('Log file location:', logFilePath)
+
+
+
+
+
+
+
+
+
+
+// Setting up all logging variables and functions below here
 function getVersionInfo() {
   try {
     const appVersion = app.getVersion()
@@ -186,48 +213,27 @@ function getVersionInfo() {
   }
 }
 
-
-
-
-
-
-
-
-
-
-// Setting up all logging variables and functions below here
+// store the version information in a constant for access later
+// This is used to log comprehensive version information at startup
+// and also in the "About" dialog
 const appVersionInfo = getVersionInfo()
 
-
-
-
-
-// Logging initialization
-log(' ')
-log('========================================')
-log('========= Starting EventRunner =========')
-log('========================================')
-log(' ')
-log('=== AUTO-UPDATER SETUP ===')
-log('Log file location:', logFilePath)
-
-
 // Log comprehensive version information
-log('=== VERSION INFORMATION ===')
+log(' ')
+log('========== VERSION INFORMATION =========')
 log('EventRunner:', appVersionInfo.app)
 log('Electron:', appVersionInfo.electron)
 log('Node.js:', appVersionInfo.node)
 log('Angular:', appVersionInfo.angular)
 log('TypeScript:', appVersionInfo.typescript)
 log('Platform:', appVersionInfo.platform, appVersionInfo.arch)
-log('============================')
-
-log('Current version from app.getVersion():', app.getVersion())
-log('Current version from package.json:', packageJson.version)
-log('Target repository: ericwhittaker/EventRunner')
+log('========================================')
+log(' ')
 
 // Simple auto-updater setup for public GitHub repository (trying public approach)
+log('========== AUTO-UPDATER SETUP ==========')
 log('🚀 Initializing update-electron-app...');
+log('Target repository: ericwhittaker/EventRunner')
 
 // Create a simple logger that update-electron-app expects (just needs .log() method)
 const customLogger = {
@@ -245,31 +251,24 @@ try {
 } catch (error) {
   log('❌ updateElectronApp() threw an error:', error);
 }
-
+// Log auto-updater setup details
+log('========================================')
+log(' ')
 log('✅ Auto-updater initialized for public repository')
 log('⏰ Update check interval: 5 minutes')
 log('🔔 User notifications: enabled')
-log('============================')
+log('========================================')
+log(' ')
 
 // Additional debugging - check if we're in dev mode
+log(' ')
+log('=============== DEBUGGING ==============')
 log('🔍 ENVIRONMENT CHECK:')
 log('app.isPackaged:', app.isPackaged)
 log('process.env.NODE_ENV:', process.env.NODE_ENV)
 log('__dirname:', __dirname)
 log('process.argv:', process.argv.slice(0, 3))
-log('============================')
-
-// Manual update check for debugging
-setTimeout(() => {
-  log('🔍 Manual update check in 10 seconds...')
-  try {
-    // Try to trigger an update check
-    log('📡 Attempting manual update check...')
-    log('📡 Note: update-electron-app doesn\'t expose manual check method')
-  } catch (error) {
-    log('❌ Manual update check failed:', error)
-  }
-}, 10000)
+log('========================================')
 
 // Add periodic logging to check if updater is still working
 setInterval(() => {
@@ -283,6 +282,16 @@ if (process.versions.electron) {
   log('🔌 Node version:', process.versions.node);
 }
 
+
+
+
+
+
+
+
+
+
+// Create the main application window
 const createWindow = () => {
   const win = new BrowserWindow({
     width: 1366, // Adjusted width for better visibility
@@ -333,10 +342,9 @@ const createMenu = () => {
         {
           label: 'About EventRunner',
           click: async () => {
-            
             // Format the detailed version information
             const versionDetails = [
-              `EventRunner: ${appVersionInfo.app}`,
+              `Version: ${appVersionInfo.app}`,
               '',
               '--- Core Technologies ---',
               `Electron: ${appVersionInfo.electron}`,
@@ -347,8 +355,6 @@ const createMenu = () => {
               '--- Frontend Framework ---',
               `Angular: ${appVersionInfo.angular}`,
               `TypeScript: ${appVersionInfo.typescript}`,
-              '',
-              '--- Development Tools ---',
               `Electron Forge: ${appVersionInfo.electronForge}`,
               `Firebase: ${appVersionInfo.firebase}`,
               '',
@@ -365,7 +371,7 @@ const createMenu = () => {
               type: 'info',
               title: 'About EventRunner',
               message: 'EventRunner',
-              detail: `Event Management Software\n\n${versionDetails}`,
+              detail: `${versionDetails}`,
               buttons: ['OK', 'Copy Version Info']
             }).then((result) => {
               if (result.response === 1) {
@@ -527,18 +533,84 @@ const createMenu = () => {
         {
           label: 'Debug: Check for Updates',
           click: () => {
-            log('🔄 Manual update check requested via menu');
-            log('📊 Current app state:');
-            log('   - Version:', app.getVersion());
-            log('   - Is Packaged:', app.isPackaged);
-            log('   - Repository: ericwhittaker/EventRunner');
+            const timestamp = new Date().toISOString();
+            
+            log('🔄 ====== MANUAL UPDATE CHECK REQUESTED ======');
+            log('🕐 Timestamp:', timestamp);
+            log('👤 Triggered by: User via Help menu');
+            log('');
+            log('📊 Current Application State:');
+            log('   • App Version:', app.getVersion());
+            log('   • Is Packaged:', app.isPackaged);
+            log('   • Environment:', app.isPackaged ? 'Production' : 'Development');
+            log('   • Platform:', process.platform);
+            log('   • Architecture:', process.arch);
+            log('   • Electron Version:', process.versions.electron);
+            log('   • Node Version:', process.versions.node);
+            log('');
+            log('🔧 Auto-Updater Configuration:');
+            log('   • Repository: ericwhittaker/EventRunner');
+            log('   • Update Interval: 5 minutes');
+            log('   • User Notifications: enabled');
+            log('   • Logger: custom logger attached');
+            log('');
+            log('ℹ️  Note: update-electron-app runs automatically in background');
+            log('ℹ️  Manual triggers are not exposed by the library');
+            log('ℹ️  This debug function logs current state for troubleshooting');
+            log('============================================');
+            
+            // Show enhanced dialog with more details
+            const updateDetails = [
+              `Current Version: ${app.getVersion()}`,
+              `Environment: ${app.isPackaged ? 'Production (updates enabled)' : 'Development (updates disabled)'}`,
+              `Platform: ${process.platform} ${process.arch}`,
+              `Electron: ${process.versions.electron}`,
+              `Repository: ericwhittaker/EventRunner`,
+              ``,
+              `Auto-updater Status:`,
+              `• Running in background every 5 minutes`,
+              `• Logs saved to: eventrunner-updater.log`,
+              `• User notifications enabled`,
+              ``,
+              `Check the log file for detailed update activity.`,
+              `Updates only work in packaged/production builds.`
+            ].join('\n');
             
             dialog.showMessageBox({
               type: 'info',
-              title: 'Update Check',
-              message: 'Update check triggered',
-              detail: `Current version: ${app.getVersion()}\nCheck the log file for details.\n\nNote: Updates only work in packaged apps, not development mode.`,
-              buttons: ['OK']
+              title: 'Update Check Debug Info',
+              message: 'Update System Status',
+              detail: updateDetails,
+              buttons: ['OK', 'Open Log Folder', 'Copy Debug Info']
+            }).then((result) => {
+              if (result.response === 1) {
+                // Open log folder
+                log('📂 Opening log folder requested by user');
+                require('child_process').exec(`open "${path.dirname(logFilePath)}"`);
+              } else if (result.response === 2) {
+                // Copy debug info to clipboard
+                log('📋 Debug info copied to clipboard by user');
+                const debugInfo = [
+                  'EventRunner Update Debug Information',
+                  `Generated: ${timestamp}`,
+                  '',
+                  updateDetails,
+                  '',
+                  '--- Technical Details ---',
+                  `Log File: ${logFilePath}`,
+                  `User Data: ${app.getPath('userData')}`,
+                  `App Path: ${app.getAppPath()}`
+                ].join('\n');
+                
+                clipboard.writeText(debugInfo);
+                
+                dialog.showMessageBox({
+                  type: 'info',
+                  title: 'Debug Info Copied',
+                  message: 'Debug information copied to clipboard',
+                  buttons: ['OK']
+                });
+              }
             });
           }
         },
