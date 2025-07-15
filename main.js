@@ -232,14 +232,15 @@ log(' ')
 
 // Simple auto-updater setup for public GitHub repository (trying public approach)
 log('========== AUTO-UPDATER SETUP ==========')
-log('🚀 Initializing update-electron-app...');
+log('🚀 Initializing update-electron-app with custom logger...');
 log('Target repository: ericwhittaker/EventRunner')
 
 // Create a simple logger that update-electron-app expects (just needs .log() method)
 const customLogger = {
-  log: (message) => log('� UPDATE-ELECTRON-APP:', message)
+  log: (message) => log('🔄 UPDATE-ELECTRON-APP:', message)
 };
 
+// Initialize update-electron-app with custom logger
 try {
   updateElectronApp({
     repo: 'ericwhittaker/EventRunner',
