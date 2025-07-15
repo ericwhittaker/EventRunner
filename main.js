@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain, Menu, dialog, clipboard } = require('electron/main')
+const { app, BrowserWindow, ipcMain, Menu, dialog, clipboard, shell } = require('electron/main')
 const { updateElectronApp } = require('update-electron-app')
 const packageJson = require('./package.json')
 const fs = require('fs')
@@ -680,6 +680,44 @@ app.whenReady().then(() => {
     const version = app.getVersion(); // Use Electron's built-in method
     log('Version requested, returning:', version);
     return version;
+  });
+
+  // Simple file manager opening - platform agnostic
+  ipcMain.handle('open-file-manager', async (event) => {
+    try {
+      log('📁 Opening file manager (platform:', process.platform + ')');
+      
+      // Get the user's home directory as a safe default starting point
+      const homePath = app.getPath('home');
+      
+      // Open the file manager at the home directory
+      // This works cross-platform: Finder on macOS, File Explorer on Windows, etc.
+      const result = await shell.openPath(homePath);
+      
+      if (result) {
+        // If result is not empty, it's an error message
+        log('❌ Error opening file manager:', result);
+        return { 
+          success: false, 
+          error: result,
+          platform: process.platform 
+        };
+      }
+
+      log('✅ Successfully opened file manager');
+      return { 
+        success: true,
+        platform: process.platform 
+      };
+
+    } catch (error) {
+      log('❌ Error opening file manager:', error);
+      return { 
+        success: false, 
+        error: error.message,
+        platform: process.platform 
+      };
+    }
   });
   
   // Create the application menu

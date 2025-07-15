@@ -1,7 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MenuComponent } from '../menu.component';
 import { CommonModule } from '@angular/common';
+import { FileSystemService } from '../../services/file-system.service';
 
 @Component({
   selector: 'app-event-detail',
@@ -10,8 +11,18 @@ import { CommonModule } from '@angular/common';
     <app-menu></app-menu>
     <div class="subnav-container">
       <div class="subnav-left">
-        <button class="action-btn" (click)="goBack()">← Back to Dashboard</button>
-        <button class="action-btn">Edit Event</button>
+        <button class="btn btn-secondary" (click)="goBack()">
+          <i class="fas fa-arrow-left"></i>
+          <span>Back to Dashboard</span>
+        </button>
+        <button class="btn btn-primary">
+          <i class="fas fa-edit"></i>
+          <span>Edit Event</span>
+        </button>
+        <button class="btn btn-success" (click)="openFileManager()" [disabled]="isOpeningFolder()">
+          <i class="fas" [class.fa-spinner]="isOpeningFolder()" [class.fa-spin]="isOpeningFolder()" [class.fa-folder-open]="!isOpeningFolder()"></i>
+          <span>{{ isOpeningFolder() ? 'Opening...' : 'Open Files' }}</span>
+        </button>
       </div>
       <div class="subnav-center">
         <div class="nav-item active">Overview</div>
@@ -140,16 +151,88 @@ import { CommonModule } from '@angular/common';
     .activity-time { color: #6c757d; font-size: 12px; }
     .contact-role { color: #6c757d; font-size: 14px; }
     .event-id { background: #e3f2fd; color: #1565c0; padding: 4px 8px; border-radius: 4px; font-weight: 600; }
-    .subnav-container { background: #f8f9fa; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #dee2e6; }
-    .subnav-left { display: flex; gap: 10px; }
+    .subnav-container { background: #f8f9fa; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #dee2e6; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+    .subnav-left { display: flex; gap: 12px; }
     .subnav-center { display: flex; gap: 20px; }
-    .action-btn { background: #007bff; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; }
+    
+    /* Modern Button Styles */
+    .btn { 
+      display: inline-flex; 
+      align-items: center; 
+      gap: 8px; 
+      padding: 10px 16px; 
+      border: none; 
+      border-radius: 6px; 
+      font-size: 14px; 
+      font-weight: 500; 
+      cursor: pointer; 
+      transition: all 0.2s ease;
+      text-decoration: none;
+      min-width: 120px;
+      justify-content: center;
+    }
+    
+    .btn i { font-size: 14px; }
+    
+    .btn-primary { 
+      background: linear-gradient(135deg, #007bff 0%, #0056b3 100%); 
+      color: white; 
+      box-shadow: 0 2px 4px rgba(0, 123, 255, 0.3);
+    }
+    .btn-primary:hover:not(:disabled) { 
+      background: linear-gradient(135deg, #0056b3 0%, #004085 100%); 
+      box-shadow: 0 4px 8px rgba(0, 123, 255, 0.4);
+      transform: translateY(-1px);
+    }
+    
+    .btn-secondary { 
+      background: linear-gradient(135deg, #6c757d 0%, #545b62 100%); 
+      color: white; 
+      box-shadow: 0 2px 4px rgba(108, 117, 125, 0.3);
+    }
+    .btn-secondary:hover:not(:disabled) { 
+      background: linear-gradient(135deg, #545b62 0%, #383d41 100%); 
+      box-shadow: 0 4px 8px rgba(108, 117, 125, 0.4);
+      transform: translateY(-1px);
+    }
+    
+    .btn-success { 
+      background: linear-gradient(135deg, #28a745 0%, #1e7e34 100%); 
+      color: white; 
+      box-shadow: 0 2px 4px rgba(40, 167, 69, 0.3);
+    }
+    .btn-success:hover:not(:disabled) { 
+      background: linear-gradient(135deg, #1e7e34 0%, #155724 100%); 
+      box-shadow: 0 4px 8px rgba(40, 167, 69, 0.4);
+      transform: translateY(-1px);
+    }
+    
+    .btn:disabled { 
+      background: linear-gradient(135deg, #6c757d 0%, #545b62 100%) !important; 
+      cursor: not-allowed !important; 
+      opacity: 0.7;
+      transform: none !important;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.1) !important;
+    }
+    
+    .btn:active:not(:disabled) { 
+      transform: translateY(0px) !important; 
+      box-shadow: 0 1px 2px rgba(0,0,0,0.2) !important;
+    }
+    
+    /* Loading spinner animation */
+    .fa-spin { animation: spin 1s linear infinite; }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     .nav-item { padding: 8px 16px; cursor: pointer; border-radius: 4px; }
     .nav-item.active { background: #007bff; color: white; }
     .nav-item:hover:not(.active) { background: #e9ecef; }
   `]
 })
 export class EventDetailComponent implements OnInit {
+  private route = inject(ActivatedRoute);
+  private router = inject(Router);
+  private fileSystemService = inject(FileSystemService);
+
   eventId: string = '';
   eventName: string = '';
   venue: string = '';
@@ -159,11 +242,7 @@ export class EventDetailComponent implements OnInit {
   providing: string = '';
   status: string = '';
   statusClass: string = '';
-
-  constructor(
-    private route: ActivatedRoute,
-    private router: Router
-  ) {}
+  isOpeningFolder = signal(false);
 
   ngOnInit() {
     this.eventId = this.route.snapshot.params['id'];
@@ -298,6 +377,33 @@ export class EventDetailComponent implements OnInit {
 
   goBack() {
     this.router.navigate(['/dashboard']);
+  }
+
+  async openFileManager() {
+    if (this.isOpeningFolder()) return;
+    
+    this.isOpeningFolder.set(true);
+    
+    try {
+      const result = await this.fileSystemService.openFileManager();
+      
+      if (result.success) {
+        console.log('✅ File manager opened successfully on', result.platform);
+        // Optionally show a brief success message
+      } else {
+        console.error('❌ Failed to open file manager:', result.error);
+        // Show error to user
+        alert(`Failed to open file manager: ${result.error}`);
+      }
+    } catch (error) {
+      console.error('❌ Error opening file manager:', error);
+      alert('An unexpected error occurred while opening the file manager.');
+    }
+    
+    // Reset button after 2 seconds
+    setTimeout(() => {
+      this.isOpeningFolder.set(false);
+    }, 2000);
   }
 
   // Dynamic stat methods based on event ID
