@@ -56,12 +56,20 @@ import { CommonModule } from '@angular/common';
           <h3>Quick Stats</h3>
           <div class="stats-grid">
             <div class="stat-item">
-              <span class="stat-number">12</span>
+              <span class="stat-number">{{ getEquipmentCount() }}</span>
               <span class="stat-label">Equipment Items</span>
             </div>
             <div class="stat-item">
-              <span class="stat-number">5</span>
+              <span class="stat-number">{{ getCrewCount() }}</span>
               <span class="stat-label">Crew Members</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-number">{{ getTodoCount() }}</span>
+              <span class="stat-label">To-Do Items</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-number">{{ getDaysUntilEvent() }}</span>
+              <span class="stat-label">{{ getDaysUntilEvent() === 0 ? 'Event Live!' : 'Days Until Event' }}</span>
             </div>
           </div>
         </div>
@@ -71,11 +79,19 @@ import { CommonModule } from '@angular/common';
           <div class="activity-list">
             <div class="activity-item">
               <span class="activity-time">2 hours ago</span>
-              <span class="activity-desc">Equipment list updated</span>
+              <span class="activity-desc">Equipment list updated for {{ eventName }}</span>
             </div>
             <div class="activity-item">
               <span class="activity-time">1 day ago</span>
               <span class="activity-desc">Crew assignments confirmed</span>
+            </div>
+            <div class="activity-item">
+              <span class="activity-time">3 days ago</span>
+              <span class="activity-desc">Site survey completed at {{ venue }}</span>
+            </div>
+            <div class="activity-item">
+              <span class="activity-time">1 week ago</span>
+              <span class="activity-desc">Initial client meeting scheduled</span>
             </div>
           </div>
         </div>
@@ -90,6 +106,14 @@ import { CommonModule } from '@angular/common';
             <div class="contact-item">
               <span class="contact-name">Sarah Johnson</span>
               <span class="contact-role">Venue Coordinator</span>
+            </div>
+            <div class="contact-item">
+              <span class="contact-name">Mike Davis</span>
+              <span class="contact-role">Lead Audio Tech</span>
+            </div>
+            <div class="contact-item">
+              <span class="contact-name">Emily Chen</span>
+              <span class="contact-role">Client Representative</span>
             </div>
           </div>
         </div>
@@ -152,7 +176,7 @@ export class EventDetailComponent implements OnInit {
       '8591': {
         name: 'The Park Theatre (Motor Truss Rental) #3',
         venue: 'Park Theatre, Main Stage',
-        startDate: '07/12/25',
+        startDate: '07/15/25',
         endDate: '07/25/25',
         location: 'Jaffrey, NH',
         providing: 'Rig',
@@ -162,12 +186,92 @@ export class EventDetailComponent implements OnInit {
       '8776': {
         name: 'Beak & Skiff Seasonal Generator Rental',
         venue: 'Beak & Skiff Brewery, Concert Field',
-        startDate: '05/26/25',
-        endDate: '06/11/25',
+        startDate: '07/10/25',
+        endDate: '07/14/25',
         location: 'Lafayette, NY',
         providing: 'Gen',
         status: 'Live',
         statusClass: 'live'
+      },
+      '8409': {
+        name: 'Do Good Fest 2025',
+        venue: 'National Life Group, Concert Site',
+        startDate: '07/12/25',
+        endDate: '07/13/25',
+        location: 'Montpelier, VT',
+        providing: 'Rig',
+        status: 'Live',
+        statusClass: 'live'
+      },
+      '8743': {
+        name: 'Shoreline Summer Fest',
+        venue: 'Atomic Pro Audio, Shop Return',
+        startDate: '07/13/25',
+        endDate: '07/13/25',
+        location: 'N. Clarendon, VT',
+        providing: 'Sound',
+        status: 'Live',
+        statusClass: 'live'
+      },
+      '8798': {
+        name: 'Mountain View Country Club Wedding',
+        venue: 'Mountain View Country Club, Grand Ballroom',
+        startDate: '07/22/25',
+        endDate: '07/25/25',
+        location: 'Stowe, VT',
+        providing: 'Audio/Video',
+        status: '8 Days',
+        statusClass: 'soon'
+      },
+      '8845': {
+        name: 'Boston Harbor Festival - Main Stage Setup',
+        venue: 'Harbor Pavilion, Main Stage',
+        startDate: '08/02/25',
+        endDate: '08/04/25',
+        location: 'Boston, MA',
+        providing: 'Full Rig',
+        status: '19 Days',
+        statusClass: 'future'
+      },
+      '8856': {
+        name: 'University Graduation Ceremony',
+        venue: 'University Stadium, Field House',
+        startDate: '08/22/25',
+        endDate: '08/24/25',
+        location: 'Burlington, VT',
+        providing: 'Audio Only',
+        status: '39 Days',
+        statusClass: 'future'
+      },
+      '8901': {
+        name: 'Tech Conference 2025 - Corporate AV',
+        venue: 'Boston Convention Center, Hall A',
+        startDate: '08/15/25',
+        endDate: '08/17/25',
+        location: 'Boston, MA',
+        providing: 'AV/Lighting',
+        status: '32 Days',
+        statusClass: 'future'
+      },
+      '8923': {
+        name: 'Fall Harvest Festival - Multiple Stages',
+        venue: 'Shelburne Farms, Multiple Locations',
+        startDate: '09/05/25',
+        endDate: '09/07/25',
+        location: 'Shelburne, VT',
+        providing: 'Full Production',
+        status: '53 Days',
+        statusClass: 'far-future'
+      },
+      '8967': {
+        name: 'Craft Beer Festival - Outdoor Stage',
+        venue: 'Downtown Park, Main Stage',
+        startDate: '09/12/25',
+        endDate: '09/14/25',
+        location: 'Portland, ME',
+        providing: 'Stage/Audio',
+        status: '60 Days',
+        statusClass: 'far-future'
       }
     };
 
@@ -194,5 +298,42 @@ export class EventDetailComponent implements OnInit {
 
   goBack() {
     this.router.navigate(['/dashboard']);
+  }
+
+  // Dynamic stat methods based on event ID
+  getEquipmentCount(): number {
+    const equipmentCounts: {[key: string]: number} = {
+      '8591': 15, '8776': 8, '8409': 22, '8743': 12,
+      '8798': 18, '8845': 35, '8856': 14, '8901': 28,
+      '8923': 45, '8967': 25
+    };
+    return equipmentCounts[this.eventId] || 12;
+  }
+
+  getCrewCount(): number {
+    const crewCounts: {[key: string]: number} = {
+      '8591': 6, '8776': 3, '8409': 8, '8743': 4,
+      '8798': 5, '8845': 12, '8856': 4, '8901': 9,
+      '8923': 15, '8967': 8
+    };
+    return crewCounts[this.eventId] || 5;
+  }
+
+  getTodoCount(): number {
+    const todoCounts: {[key: string]: number} = {
+      '8591': 3, '8776': 1, '8409': 0, '8743': 0,
+      '8798': 2, '8845': 5, '8856': 1, '8901': 4,
+      '8923': 7, '8967': 2
+    };
+    return todoCounts[this.eventId] || 0;
+  }
+
+  getDaysUntilEvent(): number {
+    if (!this.startDate) return 0;
+    const eventDate = new Date(this.startDate);
+    const today = new Date();
+    const diffTime = eventDate.getTime() - today.getTime();
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return Math.max(0, diffDays);
   }
 }
