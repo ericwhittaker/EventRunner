@@ -11,7 +11,8 @@ import { APP_VERSION } from '../version';
   styleUrls: ['./menu.component.scss']
 })
 export class MenuComponent implements OnInit {
-  version: string = '';
+  version: string = APP_VERSION; // Use static version directly
+  private static cachedElectronVersion: string | null = null; // Cache the Electron version
 
   constructor(private router: Router) {}
 
@@ -21,17 +22,23 @@ export class MenuComponent implements OnInit {
 
   async loadVersion() {
     try {
-      // Use the version from the generated version file
+      // Start with the static version
       this.version = APP_VERSION;
       console.log('Version loaded:', this.version);
       
-      // Optional: Try to get version from Electron if available (for future updates)
-      if ((window as any).electronAPI && (window as any).electronAPI.getVersion) {
+      // Only call Electron API once per app session, then cache the result
+      if (MenuComponent.cachedElectronVersion) {
+        // Use cached version
+        this.version = MenuComponent.cachedElectronVersion;
+        console.log('Using cached Electron version:', this.version);
+      } else if ((window as any).electronAPI && (window as any).electronAPI.getVersion) {
         try {
           const electronVersion = await (window as any).electronAPI.getVersion();
           if (electronVersion && electronVersion.trim() !== '') {
+            // Cache the result for future component instances
+            MenuComponent.cachedElectronVersion = electronVersion;
             this.version = electronVersion;
-            console.log('Updated version from Electron:', this.version);
+            console.log('Fetched and cached Electron version:', this.version);
           }
         } catch (error) {
           console.log('Electron version not available, using static version');

@@ -234,6 +234,7 @@ log(' ')
 log('========== AUTO-UPDATER SETUP ==========')
 log('🚀 Initializing update-electron-app with custom logger...');
 log('Target repository: ericwhittaker/EventRunner')
+log('========================================')
 
 // Create a simple logger that update-electron-app expects (just needs .log() method)
 const customLogger = {
@@ -253,8 +254,6 @@ try {
   log('❌ updateElectronApp() threw an error:', error);
 }
 // Log auto-updater setup details
-log('========================================')
-log(' ')
 log('✅ Auto-updater initialized for public repository')
 log('⏰ Update check interval: 5 minutes')
 log('🔔 User notifications: enabled')
