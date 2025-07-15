@@ -427,6 +427,8 @@ const createMenu = () => {
   Menu.setApplicationMenu(menu)
 }
 
+// This is the when ready event handler
+// It initializes the app, sets up IPC handlers, and creates the main window
 app.whenReady().then(() => {
   ipcMain.handle('ping', () => 'pong')
   
