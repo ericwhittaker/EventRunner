@@ -186,6 +186,10 @@ function getVersionInfo() {
   }
 }
 
+log('========================================')
+log('========= Starting EventRunner =========')
+log('========================================')
+log(' ')
 log('=== AUTO-UPDATER SETUP ===')
 log('Log file location:', logFilePath)
 
