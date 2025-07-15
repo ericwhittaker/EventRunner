@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain, Menu, dialog } = require('electron/main')
+const { app, BrowserWindow, ipcMain, Menu, dialog, clipboard } = require('electron/main')
 const { updateElectronApp } = require('update-electron-app')
 const packageJson = require('./package.json')
 const fs = require('fs')
@@ -114,8 +114,92 @@ function log(...args) {
   }
 }
 
+// Function to get all version information dynamically
+function getVersionInfo() {
+  try {
+    const appVersion = app.getVersion()
+    const electronVersion = process.versions.electron
+    const nodeVersion = process.versions.node
+    const chromeVersion = process.versions.chrome
+    const v8Version = process.versions.v8
+    
+    // Read package.json to get dependency versions
+    let angularVersion = 'Unknown'
+    let firebaseVersion = 'Not installed'
+    let electronForgeVersion = 'Unknown'
+    let typescriptVersion = 'Unknown'
+    
+    try {
+      // Get Angular version from dependencies
+      if (packageJson.dependencies && packageJson.dependencies['@angular/core']) {
+        angularVersion = packageJson.dependencies['@angular/core'].replace(/[^0-9.]/g, '')
+      }
+      
+      // Check for Firebase (you might add this later)
+      if (packageJson.dependencies && packageJson.dependencies['firebase']) {
+        firebaseVersion = packageJson.dependencies['firebase'].replace(/[^0-9.]/g, '')
+      } else if (packageJson.dependencies && packageJson.dependencies['@angular/fire']) {
+        firebaseVersion = `Angular Fire ${packageJson.dependencies['@angular/fire'].replace(/[^0-9.]/g, '')}`
+      }
+      
+      // Get Electron Forge version
+      if (packageJson.devDependencies && packageJson.devDependencies['@electron-forge/cli']) {
+        electronForgeVersion = packageJson.devDependencies['@electron-forge/cli'].replace(/[^0-9.]/g, '')
+      }
+      
+      // Get TypeScript version
+      if (packageJson.devDependencies && packageJson.devDependencies['typescript']) {
+        typescriptVersion = packageJson.devDependencies['typescript'].replace(/[^0-9.]/g, '')
+      }
+    } catch (err) {
+      log('Error reading dependency versions:', err)
+    }
+    
+    return {
+      app: appVersion,
+      electron: electronVersion,
+      node: nodeVersion,
+      chrome: chromeVersion,
+      v8: v8Version,
+      angular: angularVersion,
+      firebase: firebaseVersion,
+      electronForge: electronForgeVersion,
+      typescript: typescriptVersion,
+      platform: process.platform,
+      arch: process.arch
+    }
+  } catch (err) {
+    log('Error getting version info:', err)
+    return {
+      app: app.getVersion(),
+      electron: 'Unknown',
+      node: 'Unknown',
+      chrome: 'Unknown',
+      v8: 'Unknown',
+      angular: 'Unknown',
+      firebase: 'Unknown',
+      electronForge: 'Unknown',
+      typescript: 'Unknown',
+      platform: process.platform || 'Unknown',
+      arch: process.arch || 'Unknown'
+    }
+  }
+}
+
 log('=== AUTO-UPDATER SETUP ===')
 log('Log file location:', logFilePath)
+
+// Log comprehensive version information
+const versionInfo = getVersionInfo()
+log('=== VERSION INFORMATION ===')
+log('EventRunner:', versionInfo.app)
+log('Electron:', versionInfo.electron)
+log('Node.js:', versionInfo.node)
+log('Angular:', versionInfo.angular)
+log('TypeScript:', versionInfo.typescript)
+log('Platform:', versionInfo.platform, versionInfo.arch)
+log('============================')
+
 log('Current version from app.getVersion():', app.getVersion())
 log('Current version from package.json:', packageJson.version)
 log('Target repository: ericwhittaker/EventRunner')
@@ -218,13 +302,61 @@ const createMenu = () => {
         {
           label: 'About EventRunner',
           click: async () => {
-            const version = app.getVersion()
+            const versions = getVersionInfo()
+            
+            // Format the detailed version information
+            const versionDetails = [
+              `EventRunner: ${versions.app}`,
+              '',
+              '--- Core Technologies ---',
+              `Electron: ${versions.electron}`,
+              `Node.js: ${versions.node}`,
+              `Chrome: ${versions.chrome}`,
+              `V8 Engine: ${versions.v8}`,
+              '',
+              '--- Frontend Framework ---',
+              `Angular: ${versions.angular}`,
+              `TypeScript: ${versions.typescript}`,
+              '',
+              '--- Development Tools ---',
+              `Electron Forge: ${versions.electronForge}`,
+              `Firebase: ${versions.firebase}`,
+              '',
+              '--- System Information ---',
+              `Platform: ${versions.platform}`,
+              `Architecture: ${versions.arch}`,
+              '',
+              '--- Build Information ---',
+              `Built: ${new Date().toLocaleDateString()}`,
+              `Environment: ${app.isPackaged ? 'Production' : 'Development'}`
+            ].join('\n')
+            
             dialog.showMessageBox({
               type: 'info',
               title: 'About EventRunner',
               message: 'EventRunner',
-              detail: `Version: ${version}\nEvent Management Software\n\nBuilt with Electron and Angular`,
-              buttons: ['OK']
+              detail: `Event Management Software\n\n${versionDetails}`,
+              buttons: ['OK', 'Copy Version Info']
+            }).then((result) => {
+              if (result.response === 1) {
+                // Copy version info to clipboard
+                const { clipboard } = require('electron')
+                const copyText = [
+                  'EventRunner Version Information:',
+                  '',
+                  versionDetails
+                ].join('\n')
+                
+                clipboard.writeText(copyText)
+                
+                // Show confirmation
+                dialog.showMessageBox({
+                  type: 'info',
+                  title: 'Copied',
+                  message: 'Version information copied to clipboard',
+                  buttons: ['OK']
+                })
+              }
             })
           }
         },
