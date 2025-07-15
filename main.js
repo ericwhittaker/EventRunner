@@ -36,11 +36,26 @@ log('Target repository: ericwhittaker/EventRunner')
 
 // Simple auto-updater setup for private GitHub repository
 log('🚀 Initializing update-electron-app...');
-updateElectronApp({
-  repo: 'ericwhittaker/EventRunner',
-  updateInterval: '5 minutes', // Reduced for testing
-  notifyUser: true
-})
+
+// Create a custom logger to capture update-electron-app's output
+const customLogger = {
+  info: (message) => log('📡 UPDATE-ELECTRON-APP:', message),
+  warn: (message) => log('⚠️ UPDATE-ELECTRON-APP WARNING:', message),
+  error: (message) => log('❌ UPDATE-ELECTRON-APP ERROR:', message),
+  debug: (message) => log('🔍 UPDATE-ELECTRON-APP DEBUG:', message)
+};
+
+try {
+  updateElectronApp({
+    repo: 'ericwhittaker/EventRunner',
+    updateInterval: '5 minutes',
+    notifyUser: true,
+    logger: customLogger
+  });
+  log('✅ updateElectronApp() call completed without errors');
+} catch (error) {
+  log('❌ updateElectronApp() threw an error:', error);
+}
 
 log('✅ Auto-updater initialized for private repository')
 log('⏰ Update check interval: 5 minutes')
@@ -66,6 +81,18 @@ setTimeout(() => {
     log('❌ Manual update check failed:', error)
   }
 }, 10000)
+
+// Add periodic logging to check if updater is still working
+setInterval(() => {
+  log('💓 Auto-updater heartbeat - still running at', new Date().toISOString());
+  log('📊 Current state: version', app.getVersion(), '| packaged:', app.isPackaged);
+}, 2 * 60 * 1000); // Every 2 minutes
+
+// Log network requests if possible
+if (process.versions.electron) {
+  log('🔌 Electron version:', process.versions.electron);
+  log('🔌 Node version:', process.versions.node);
+}
 
 const createWindow = () => {
   const win = new BrowserWindow({
