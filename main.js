@@ -5,20 +5,51 @@ const packageJson = require('./package.json')
 
 // For private repository - hardcode the token
 process.env.GH_TOKEN = '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'
+console.log('=== AUTO-UPDATER SETUP ===')
 console.log('Setting GH_TOKEN for private repository access')
+console.log('GH_TOKEN available:', !!process.env.GH_TOKEN)
+console.log('Current version from app.getVersion():', app.getVersion())
+console.log('Current version from package.json:', packageJson.version)
+console.log('Target repository: ericwhittaker/EventRunner')
+
+// Enhanced logging for update-electron-app
+const originalConsoleLog = console.log;
+log.info = (...args) => {
+  originalConsoleLog('📋 UPDATE-LOG:', ...args);
+};
 
 // Simple auto-updater setup for private GitHub repository
-// This automatically handles private repos when GH_TOKEN is set
+console.log('🚀 Initializing update-electron-app...');
 updateElectronApp({
   repo: 'ericwhittaker/EventRunner',
-  updateInterval: '1 hour',
+  updateInterval: '5 minutes', // Reduced for testing
   logger: log,
   notifyUser: true
 })
 
-console.log('Auto-updater initialized for private repository')
-console.log('Current version:', app.getVersion())
-console.log('GH_TOKEN available:', !!process.env.GH_TOKEN)
+console.log('✅ Auto-updater initialized for private repository')
+console.log('⏰ Update check interval: 5 minutes')
+console.log('🔔 User notifications: enabled')
+console.log('============================')
+
+// Additional debugging - check if we're in dev mode
+console.log('🔍 ENVIRONMENT CHECK:')
+console.log('app.isPackaged:', app.isPackaged)
+console.log('process.env.NODE_ENV:', process.env.NODE_ENV)
+console.log('__dirname:', __dirname)
+console.log('process.argv:', process.argv.slice(0, 3))
+console.log('============================')
+
+// Manual update check for debugging
+setTimeout(() => {
+  console.log('🔍 Manual update check in 10 seconds...')
+  try {
+    // Try to trigger an update check
+    console.log('📡 Attempting manual update check...')
+  } catch (error) {
+    console.error('❌ Manual update check failed:', error)
+  }
+}, 10000)
 
 const createWindow = () => {
   const win = new BrowserWindow({
