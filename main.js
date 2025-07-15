@@ -1,16 +1,33 @@
 const { app, BrowserWindow, ipcMain, Menu, dialog } = require('electron/main')
 const { updateElectronApp } = require('update-electron-app')
 const packageJson = require('./package.json')
+const fs = require('fs')
+const path = require('path')
 
 // For private repository - hardcode the token
 process.env.GH_TOKEN = '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'
 
+// Create a simple log file in the app's user data directory
+const logFilePath = path.join(app.getPath('userData'), 'eventrunner-updater.log')
+
 // Simple logging function that works in both dev and packaged app
 function log(...args) {
-  console.log(...args);
+  const timestamp = new Date().toISOString()
+  const message = `[${timestamp}] ${args.join(' ')}`
+  
+  // Log to terminal (for development)
+  console.log(...args)
+  
+  // Log to file (for packaged app)
+  try {
+    fs.appendFileSync(logFilePath, message + '\n')
+  } catch (err) {
+    console.error('Failed to write to log file:', err)
+  }
 }
 
 log('=== AUTO-UPDATER SETUP ===')
+log('Log file location:', logFilePath)
 log('Setting GH_TOKEN for private repository access')
 log('GH_TOKEN available:', !!process.env.GH_TOKEN)
 log('Current version from app.getVersion():', app.getVersion())
@@ -197,6 +214,23 @@ const createMenu = () => {
         },
         { type: 'separator' },
         {
+          label: 'Show Update Logs',
+          click: () => {
+            dialog.showMessageBox({
+              type: 'info',
+              title: 'Update Logs',
+              message: 'Auto-updater log file location:',
+              detail: `${logFilePath}\n\nLogs are written to this file. You can copy this file to share debug information.`,
+              buttons: ['OK', 'Open Log Folder']
+            }).then((result) => {
+              if (result.response === 1) {
+                // Open log folder
+                require('child_process').exec(`open "${path.dirname(logFilePath)}"`);
+              }
+            });
+          }
+        },
+        {
           label: 'Debug: Check for Updates',
           click: () => {
             log('🔄 Manual update check requested via menu');
@@ -209,7 +243,7 @@ const createMenu = () => {
               type: 'info',
               title: 'Update Check',
               message: 'Update check triggered',
-              detail: `Current version: ${app.getVersion()}\nCheck the DevTools console for details.\n\nNote: Updates only work in packaged apps, not development mode.`,
+              detail: `Current version: ${app.getVersion()}\nCheck the log file for details.\n\nNote: Updates only work in packaged apps, not development mode.`,
               buttons: ['OK']
             });
           }
