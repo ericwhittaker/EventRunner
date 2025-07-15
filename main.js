@@ -4,8 +4,8 @@ const packageJson = require('./package.json')
 const fs = require('fs')
 const path = require('path')
 
-// For private repository - hardcode the token
-process.env.GH_TOKEN = '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'
+// For private repository - hardcode the token (COMMENTED OUT - trying public repo approach)
+// process.env.GH_TOKEN = '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'
 
 // Create a simple log file in the app's user data directory (This is for debugging purposes)
 const logFilePath = path.join(app.getPath('userData'), 'eventrunner-updater.log')
@@ -28,13 +28,13 @@ function log(...args) {
 
 log('=== AUTO-UPDATER SETUP ===')
 log('Log file location:', logFilePath)
-log('Setting GH_TOKEN for private repository access')
-log('GH_TOKEN available:', !!process.env.GH_TOKEN)
+// log('Setting GH_TOKEN for private repository access')
+// log('GH_TOKEN available:', !!process.env.GH_TOKEN)
 log('Current version from app.getVersion():', app.getVersion())
 log('Current version from package.json:', packageJson.version)
 log('Target repository: ericwhittaker/EventRunner')
 
-// Simple auto-updater setup for private GitHub repository
+// Simple auto-updater setup for public GitHub repository (trying public approach)
 log('🚀 Initializing update-electron-app...');
 
 // Create a simple logger that update-electron-app expects (just needs .log() method)
@@ -54,7 +54,7 @@ try {
   log('❌ updateElectronApp() threw an error:', error);
 }
 
-log('✅ Auto-updater initialized for private repository')
+log('✅ Auto-updater initialized for public repository')
 log('⏰ Update check interval: 5 minutes')
 log('🔔 User notifications: enabled')
 log('============================')
