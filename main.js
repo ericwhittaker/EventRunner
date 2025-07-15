@@ -186,6 +186,24 @@ function getVersionInfo() {
   }
 }
 
+
+
+
+
+
+
+
+
+
+// Setting up all logging variables and functions below here
+const appVersionInfo = getVersionInfo()
+
+
+
+
+
+// Logging initialization
+log(' ')
 log('========================================')
 log('========= Starting EventRunner =========')
 log('========================================')
@@ -193,15 +211,15 @@ log(' ')
 log('=== AUTO-UPDATER SETUP ===')
 log('Log file location:', logFilePath)
 
+
 // Log comprehensive version information
-const versionInfo = getVersionInfo()
 log('=== VERSION INFORMATION ===')
-log('EventRunner:', versionInfo.app)
-log('Electron:', versionInfo.electron)
-log('Node.js:', versionInfo.node)
-log('Angular:', versionInfo.angular)
-log('TypeScript:', versionInfo.typescript)
-log('Platform:', versionInfo.platform, versionInfo.arch)
+log('EventRunner:', appVersionInfo.app)
+log('Electron:', appVersionInfo.electron)
+log('Node.js:', appVersionInfo.node)
+log('Angular:', appVersionInfo.angular)
+log('TypeScript:', appVersionInfo.typescript)
+log('Platform:', appVersionInfo.platform, appVersionInfo.arch)
 log('============================')
 
 log('Current version from app.getVersion():', app.getVersion())
@@ -297,6 +315,15 @@ const createWindow = () => {
   // win.loadURL('http://platform.onelife.app')
 }
 
+
+
+
+
+
+
+
+
+
 // Create application menu
 const createMenu = () => {
   const template = [
@@ -306,29 +333,28 @@ const createMenu = () => {
         {
           label: 'About EventRunner',
           click: async () => {
-            const versions = getVersionInfo()
             
             // Format the detailed version information
             const versionDetails = [
-              `EventRunner: ${versions.app}`,
+              `EventRunner: ${appVersionInfo.app}`,
               '',
               '--- Core Technologies ---',
-              `Electron: ${versions.electron}`,
-              `Node.js: ${versions.node}`,
-              `Chrome: ${versions.chrome}`,
-              `V8 Engine: ${versions.v8}`,
+              `Electron: ${appVersionInfo.electron}`,
+              `Node.js: ${appVersionInfo.node}`,
+              `Chrome: ${appVersionInfo.chrome}`,
+              `V8 Engine: ${appVersionInfo.v8}`,
               '',
               '--- Frontend Framework ---',
-              `Angular: ${versions.angular}`,
-              `TypeScript: ${versions.typescript}`,
+              `Angular: ${appVersionInfo.angular}`,
+              `TypeScript: ${appVersionInfo.typescript}`,
               '',
               '--- Development Tools ---',
-              `Electron Forge: ${versions.electronForge}`,
-              `Firebase: ${versions.firebase}`,
+              `Electron Forge: ${appVersionInfo.electronForge}`,
+              `Firebase: ${appVersionInfo.firebase}`,
               '',
               '--- System Information ---',
-              `Platform: ${versions.platform}`,
-              `Architecture: ${versions.arch}`,
+              `Platform: ${appVersionInfo.platform}`,
+              `Architecture: ${appVersionInfo.arch}`,
               '',
               '--- Build Information ---',
               `Built: ${new Date().toLocaleDateString()}`,
