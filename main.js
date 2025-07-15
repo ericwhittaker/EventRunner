@@ -5,21 +5,35 @@ const packageJson = require('./package.json')
 
 // For private repository - hardcode the token
 process.env.GH_TOKEN = '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'
-console.log('=== AUTO-UPDATER SETUP ===')
-console.log('Setting GH_TOKEN for private repository access')
-console.log('GH_TOKEN available:', !!process.env.GH_TOKEN)
-console.log('Current version from app.getVersion():', app.getVersion())
-console.log('Current version from package.json:', packageJson.version)
-console.log('Target repository: ericwhittaker/EventRunner')
+
+// Configure electron-log for both file and console output
+log.transports.file.level = 'info';
+log.transports.console.level = 'info';
+log.transports.file.fileName = 'electron-updater.log';
+log.transports.file.maxSize = 5 * 1024 * 1024; // 5MB
+
+function logBoth(message, ...args) {
+  console.log(message, ...args);
+  log.info(message, ...args);
+}
+
+logBoth('=== AUTO-UPDATER SETUP ===')
+logBoth('Setting GH_TOKEN for private repository access')
+logBoth('GH_TOKEN available:', !!process.env.GH_TOKEN)
+logBoth('Current version from app.getVersion():', app.getVersion())
+logBoth('Current version from package.json:', packageJson.version)
+logBoth('Target repository: ericwhittaker/EventRunner')
+logBoth('Electron log file location:', log.transports.file.getFile().path)
 
 // Enhanced logging for update-electron-app
 const originalConsoleLog = console.log;
 log.info = (...args) => {
   originalConsoleLog('📋 UPDATE-LOG:', ...args);
+  log.transports.file.write('UPDATE-LOG: ' + args.join(' '));
 };
 
 // Simple auto-updater setup for private GitHub repository
-console.log('🚀 Initializing update-electron-app...');
+logBoth('🚀 Initializing update-electron-app...');
 updateElectronApp({
   repo: 'ericwhittaker/EventRunner',
   updateInterval: '5 minutes', // Reduced for testing
@@ -27,27 +41,28 @@ updateElectronApp({
   notifyUser: true
 })
 
-console.log('✅ Auto-updater initialized for private repository')
-console.log('⏰ Update check interval: 5 minutes')
-console.log('🔔 User notifications: enabled')
-console.log('============================')
+logBoth('✅ Auto-updater initialized for private repository')
+logBoth('⏰ Update check interval: 5 minutes')
+logBoth('🔔 User notifications: enabled')
+logBoth('============================')
 
 // Additional debugging - check if we're in dev mode
-console.log('🔍 ENVIRONMENT CHECK:')
-console.log('app.isPackaged:', app.isPackaged)
-console.log('process.env.NODE_ENV:', process.env.NODE_ENV)
-console.log('__dirname:', __dirname)
-console.log('process.argv:', process.argv.slice(0, 3))
-console.log('============================')
+logBoth('🔍 ENVIRONMENT CHECK:')
+logBoth('app.isPackaged:', app.isPackaged)
+logBoth('process.env.NODE_ENV:', process.env.NODE_ENV)
+logBoth('__dirname:', __dirname)
+logBoth('process.argv:', process.argv.slice(0, 3))
+logBoth('============================')
 
 // Manual update check for debugging
 setTimeout(() => {
-  console.log('🔍 Manual update check in 10 seconds...')
+  logBoth('🔍 Manual update check in 10 seconds...')
   try {
     // Try to trigger an update check
-    console.log('📡 Attempting manual update check...')
+    logBoth('📡 Attempting manual update check...')
+    logBoth('📡 Note: update-electron-app doesn\'t expose manual check method')
   } catch (error) {
-    console.error('❌ Manual update check failed:', error)
+    logBoth('❌ Manual update check failed:', error)
   }
 }, 10000)
 
@@ -195,6 +210,43 @@ const createMenu = () => {
               buttons: ['OK']
             })
           }
+        },
+        { type: 'separator' },
+        {
+          label: 'Show Update Logs',
+          click: () => {
+            const logPath = log.transports.file.getFile().path;
+            dialog.showMessageBox({
+              type: 'info',
+              title: 'Update Logs',
+              message: 'Auto-updater log file location:',
+              detail: `${logPath}\n\nLogs are written to both console and this file for debugging auto-update issues.`,
+              buttons: ['OK', 'Open Log Folder']
+            }).then((result) => {
+              if (result.response === 1) {
+                // Open log folder
+                require('child_process').exec(`open "${require('path').dirname(logPath)}"`);
+              }
+            });
+          }
+        },
+        {
+          label: 'Debug: Check for Updates',
+          click: () => {
+            logBoth('🔄 Manual update check requested via menu');
+            logBoth('📊 Current app state:');
+            logBoth('   - Version:', app.getVersion());
+            logBoth('   - Is Packaged:', app.isPackaged);
+            logBoth('   - Repository: ericwhittaker/EventRunner');
+            
+            dialog.showMessageBox({
+              type: 'info',
+              title: 'Update Check',
+              message: 'Update check triggered',
+              detail: `Current version: ${app.getVersion()}\nCheck the console/logs for details.\n\nNote: Updates only work in packaged apps, not development mode.`,
+              buttons: ['OK']
+            });
+          }
         }
       ]
     }
@@ -219,7 +271,7 @@ app.whenReady().then(() => {
   // Handle version request
   ipcMain.handle('get-app-version', () => {
     const version = app.getVersion(); // Use Electron's built-in method
-    console.log('Version requested, returning:', version);
+    logBoth('Version requested, returning:', version);
     return version;
   });
   
