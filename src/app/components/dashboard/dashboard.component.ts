@@ -6,6 +6,7 @@ import { TentativeListComponent, TentativeRow } from '../tentative-list.componen
 import { PostShowListComponent, PostShowRow } from '../postshow-list.component';
 import { ActionButtonService } from '../shared/action-buttons/action-button.service';
 import { calculateDaysOut, getStatusIcon } from '../shared/dashboard-utils';
+import { EventService, Event } from '../../services/event.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -42,6 +43,8 @@ import { calculateDaysOut, getStatusIcon } from '../shared/dashboard-utils';
 export class DashboardComponent implements OnInit {
   private actionButtonService = inject(ActionButtonService);
   
+  constructor(private eventService: EventService) {}
+  
   // Helper method to add calculated fields
   private addCalculatedFields(row: any): MainDashboardRow {
     const daysOut = calculateDaysOut(row.start);
@@ -51,155 +54,83 @@ export class DashboardComponent implements OnInit {
       statusIcon: getStatusIcon(daysOut)
     };
   }
-  
-  // Main Dashboard Data - matching FileMaker design
-  mainDashboardData = signal<MainDashboardRow[]>([
-    this.addCalculatedFields({
-      start: '07/15/25', // 1 day out
-      end: '07/25/25',
-      eventName: 'The Park Theatre (Motor Truss Rental) #3',
-      eventId: { html: '<span class="event-id">8591</span>' },
-      venue: 'Park Theatre, Main Stage',
-      cityState: 'Jaffrey, NH',
-      providing: 'Rig',
-      toDo: 3
-    }),
-    this.addCalculatedFields({
-      start: '07/22/25', // 8 days out
-      end: '07/25/25',
-      eventName: 'Mountain View Country Club Wedding',
-      eventId: { html: '<span class="event-id">8798</span>' },
-      venue: 'Mountain View Country Club, Grand Ballroom',
-      cityState: 'Stowe, VT',
-      providing: 'Audio/Video',
-      toDo: 2
-    }),
-    this.addCalculatedFields({
-      start: '08/02/25', // 19 days out
-      end: '08/04/25',
-      eventName: 'Boston Harbor Festival - Main Stage Setup',
-      eventId: { html: '<span class="event-id">8845</span>' },
-      venue: 'Harbor Pavilion, Main Stage',
-      cityState: 'Boston, MA',
-      providing: 'Full Rig',
-      toDo: 5
-    }),
-    this.addCalculatedFields({
-      start: '08/15/25', // 32 days out
-      end: '08/17/25',
-      eventName: 'Tech Conference 2025 - Corporate AV',
-      eventId: { html: '<span class="event-id">8901</span>' },
-      venue: 'Boston Convention Center, Hall A',
-      cityState: 'Boston, MA',
-      providing: 'AV/Lighting',
-      toDo: 4
-    }),
-    this.addCalculatedFields({
-      start: '08/22/25', // 39 days out
-      end: '08/24/25',
-      eventName: 'University Graduation Ceremony',
-      eventId: { html: '<span class="event-id">8856</span>' },
-      venue: 'University Stadium, Field House',
-      cityState: 'Burlington, VT',
-      providing: 'Audio Only',
-      toDo: 1
-    }),
-    this.addCalculatedFields({
-      start: '09/05/25', // 53 days out
-      end: '09/07/25',
-      eventName: 'Fall Harvest Festival - Multiple Stages',
-      eventId: { html: '<span class="event-id">8923</span>' },
-      venue: 'Shelburne Farms, Multiple Locations',
-      cityState: 'Shelburne, VT',
-      providing: 'Full Production',
-      toDo: 7
-    }),
-    this.addCalculatedFields({
-      start: '09/12/25', // 60 days out
-      end: '09/14/25',
-      eventName: 'Craft Beer Festival - Outdoor Stage',
-      eventId: { html: '<span class="event-id">8967</span>' },
-      venue: 'Downtown Park, Main Stage',
-      cityState: 'Portland, ME',
-      providing: 'Stage/Audio',
-      toDo: 2
-    }),
-    // Live events (past or current)
-    {
-      start: '07/10/25', // Live (past)
-      end: '07/14/25',
-      eventName: 'Beak & Skiff Seasonal Generator Rental',
-      eventId: { html: '<span class="event-id">8776</span>' },
-      venue: 'Beak & Skiff Brewery, Concert Field',
-      cityState: 'Lafayette, NY',
-      providing: 'Gen',
-      toDo: 1,
-      daysOut: undefined // Will show as "Live"
-    }
-  ].sort((a, b) => {
-    // Live events (undefined daysOut) come first
-    if (a.daysOut === undefined && b.daysOut !== undefined) return -1;
-    if (a.daysOut !== undefined && b.daysOut === undefined) return 1;
-    if (a.daysOut === undefined && b.daysOut === undefined) return 0;
+
+  // Convert Event to MainDashboardRow
+  private convertEventToMainDashboardRow(event: Event): MainDashboardRow {
+    const venue = this.eventService.getVenueById(event.venue_id);
+    const client = this.eventService.getContactById(event.client_contact_id);
     
-    // Then sort by days out (ascending - closest first)
-    return (a.daysOut || 0) - (b.daysOut || 0);
-  }));
+    const startDate = this.eventService.formatEventDate(event.event_date);
+    const endDate = this.eventService.formatEventDate(new Date(event.event_date.getTime() + (event.duration_hours * 60 * 60 * 1000)));
+    
+    return this.addCalculatedFields({
+      start: startDate,
+      end: endDate,
+      eventName: event.title,
+      eventId: { html: `<span class="event-id">${event.id}</span>` },
+      venue: venue ? `${venue.name}` : 'Unknown Venue',
+      cityState: venue ? `${venue.city}, ${venue.state}` : 'Unknown Location',
+      providing: event.event_type,
+      toDo: Math.floor(Math.random() * 10) + 1 // This should come from actual task data
+    });
+  }
 
-  // Tentative Data
-  tentativeData = signal<TentativeRow[]>([
-    {
-      start: '08/15/25',
-      end: '08/20/25',
-      eventName: 'Summer Music Festival',
-      status: { html: '<span class="status tentative">Tentative</span>' },
-      toDo: 3
-    },
-    {
-      start: '09/20/25',
-      end: '09/22/25',
-      eventName: 'Corporate Annual Meeting',
-      status: { html: '<span class="status tentative">Tentative</span>' },
-      toDo: 2
-    },
-    {
-      start: '10/05/25',
-      end: '10/07/25',
-      eventName: 'Fall Wedding - Outdoor Ceremony',
-      status: { html: '<span class="status tentative">Tentative</span>' },
-      toDo: 4
-    }
-  ]);
+  // Convert Event to TentativeRow
+  private convertEventToTentativeRow(event: Event): TentativeRow {
+    const venue = this.eventService.getVenueById(event.venue_id);
+    const client = this.eventService.getContactById(event.client_contact_id);
+    
+    return {
+      start: this.eventService.formatEventDate(event.event_date),
+      end: this.eventService.formatEventDate(new Date(event.event_date.getTime() + (event.duration_hours * 60 * 60 * 1000))),
+      eventName: event.title,
+      status: { html: `<span class="status tentative">Tentative</span>` },
+      toDo: Math.floor(Math.random() * 5) + 1
+    };
+  }
 
-  // Post Show Data
-  postShowData = signal<PostShowRow[]>([
-    {
-      start: '06/01/25',
-      end: '06/03/25',
-      eventName: 'Corporate Conference 2025',
-      cityState: 'Boston, MA',
-      toDo: 2,
-      setS: { html: '<span class="status post-show">Post Show</span>' }
-    },
-    {
-      start: '06/15/25',
-      end: '06/17/25',
-      eventName: 'Summer Concert Series - Week 1',
-      cityState: 'Burlington, VT',
-      toDo: 1,
-      setS: { html: '<span class="status post-show">Post Show</span>' }
-    },
-    {
-      start: '07/02/25',
-      end: '07/04/25',
-      eventName: 'Independence Day Celebration',
-      cityState: 'Concord, NH',
-      toDo: 3,
-      setS: { html: '<span class="status post-show">Post Show</span>' }
-    }
-  ]);
+  // Convert Event to PostShowRow
+  private convertEventToPostShowRow(event: Event): PostShowRow {
+    const venue = this.eventService.getVenueById(event.venue_id);
+    
+    return {
+      start: this.eventService.formatEventDate(event.event_date),
+      end: this.eventService.formatEventDate(new Date(event.event_date.getTime() + (event.duration_hours * 60 * 60 * 1000))),
+      eventName: event.title,
+      cityState: venue ? `${venue.city}, ${venue.state}` : 'Unknown Location',
+      toDo: Math.floor(Math.random() * 3) + 1,
+      setS: { html: `<span class="status post-show">Post Show</span>` }
+    };
+  }
+  
+  // Main Dashboard Data - from Firebase
+  mainDashboardData = signal<MainDashboardRow[]>([]);
+  
+  // Tentative Data - from Firebase
+  tentativeData = signal<TentativeRow[]>([]);
+  
+  // Post Show Data - from Firebase
+  postShowData = signal<PostShowRow[]>([]);
 
-  ngOnInit() {
-    // Initialize any dashboard-specific setup
+  async ngOnInit() {
+    // Load data from Firebase
+    await this.eventService.loadAllData();
+    
+    // Update signals with Firebase data
+    const currentAndFutureEvents = this.eventService.getCurrentAndFutureEvents();
+    const tentativeEvents = this.eventService.getTentativeEvents();
+    const postShowEvents = this.eventService.getPostShowEvents();
+    
+    this.mainDashboardData.set(
+      currentAndFutureEvents.map(event => this.convertEventToMainDashboardRow(event))
+    );
+    
+    this.tentativeData.set(
+      tentativeEvents.map(event => this.convertEventToTentativeRow(event))
+    );
+    
+    this.postShowData.set(
+      postShowEvents.map(event => this.convertEventToPostShowRow(event))
+    );
   }
 }
