@@ -409,11 +409,13 @@ export class FileMakerMigrationService {
     this.migrationLogs.set([]);
 
     try {
-      this.addLog('🚀 Starting REAL DDR-based migration...');
-      this.addLog('📖 Reading actual FileMaker DDR data...');
+      this.addLog('🚀 Starting DDR-based migration with enhanced sample data...');
+      this.addLog('📖 Reading FileMaker DDR schema...');
+      this.addLog('✨ Generating realistic sample data based on your actual field definitions...');
+      this.addLog('� Tip: For real data, export tables from FileMaker as XML files to public/data/');
       
       // Parse the actual DDR file
-      const ddrData = await this.ddrParser.parseDDRFile('assets/data/EventRunner_fmp12.xml');
+      const ddrData = await this.ddrParser.parseDDRFile('data/EventRunner_fmp12.xml');
       
       this.addLog(`📊 Found ${Object.keys(ddrData.tables).length} tables in DDR`);
       
@@ -454,6 +456,135 @@ export class FileMakerMigrationService {
       this.addLog(`❌ Migration failed: ${error}`);
       this.migrationStatus.set('error');
       throw error;
+    }
+  }
+
+  // Check if XML exports are available, otherwise use DDR + sample data
+  async migrateWithXMLOrDDR(): Promise<void> {
+    this.migrationStatus.set('running');
+    this.migrationProgress.set(0);
+    this.migrationLogs.set([]);
+
+    try {
+      // Check if XML exports are available
+      const xmlFiles = ['events.xml', 'contacts.xml', 'venues.xml', 'vehicles.xml'];
+      const availableFiles: string[] = [];
+      
+      for (const file of xmlFiles) {
+        try {
+          const response = await fetch(`data/${file}`);
+          if (response.ok) {
+            availableFiles.push(file);
+          }
+        } catch (error) {
+          // File not available, skip
+        }
+      }
+      
+      if (availableFiles.length > 0) {
+        this.addLog(`📄 Found ${availableFiles.length} XML export files: ${availableFiles.join(', ')}`);
+        this.addLog('🔄 Using actual FileMaker data from XML exports...');
+        await this.migrateFromXMLExports(availableFiles);
+      } else {
+        this.addLog('📋 No XML export files found, using DDR + sample data...');
+        await this.migrateFromDDR();
+      }
+      
+    } catch (error) {
+      this.addLog(`❌ Migration failed: ${error}`);
+      this.migrationStatus.set('error');
+      throw error;
+    }
+  }
+
+  // Parse FileMaker XML exports (FMPXMLRESULT format)
+  private async migrateFromXMLExports(xmlFiles: string[]): Promise<void> {
+    for (const xmlFile of xmlFiles) {
+      try {
+        this.addLog(`📖 Processing ${xmlFile}...`);
+        
+        const response = await fetch(`data/${xmlFile}`);
+        const xmlText = await response.text();
+        
+        const parser = new DOMParser();
+        const xmlDoc = parser.parseFromString(xmlText, 'text/xml');
+        
+        // Parse FMPXMLRESULT format
+        const metadata = xmlDoc.querySelector('METADATA');
+        const resultset = xmlDoc.querySelector('RESULTSET');
+        
+        if (!metadata || !resultset) {
+          this.addLog(`⚠️ Invalid XML format in ${xmlFile}`);
+          continue;
+        }
+        
+        // Get field definitions
+        const fields = Array.from(metadata.querySelectorAll('FIELD')).map(field => ({
+          name: field.getAttribute('NAME') || '',
+          type: field.getAttribute('TYPE') || 'TEXT'
+        }));
+        
+        // Get records
+        const rows = Array.from(resultset.querySelectorAll('ROW'));
+        this.addLog(`📊 Found ${rows.length} records in ${xmlFile}`);
+        
+        // Convert to Firestore format
+        const collectionName = xmlFile.replace('.xml', '');
+        let migratedCount = 0;
+        
+        for (const row of rows) {
+          const cols = Array.from(row.querySelectorAll('COL'));
+          const record: any = {};
+          
+          cols.forEach((col, index) => {
+            if (index < fields.length) {
+              const field = fields[index];
+              const dataElement = col.querySelector('DATA');
+              const value = dataElement ? dataElement.textContent : '';
+              record[field.name] = this.convertXMLValue(value, field.type);
+            }
+          });
+          
+          // Add system fields
+          record.createdAt = new Date();
+          record.updatedAt = new Date();
+          record.migratedFrom = 'filemaker_xml';
+          
+          await this.firebase.addDocument(collectionName, record);
+          migratedCount++;
+          
+          // Update progress
+          if (migratedCount % 10 === 0) {
+            this.addLog(`  📝 Processed ${migratedCount}/${rows.length} records...`);
+          }
+        }
+        
+        this.addLog(`✅ Successfully migrated ${migratedCount} records from ${xmlFile}`);
+        
+      } catch (error) {
+        this.addLog(`❌ Error processing ${xmlFile}: ${error}`);
+      }
+    }
+    
+    this.migrationStatus.set('completed');
+    this.addLog('🎉 XML migration completed successfully!');
+  }
+
+  private convertXMLValue(value: string | null, type: string): any {
+    if (!value) return null;
+    
+    switch (type.toUpperCase()) {
+      case 'NUMBER':
+        return parseFloat(value) || 0;
+      case 'DATE':
+        return new Date(value);
+      case 'TIME':
+        return value;
+      case 'TIMESTAMP':
+        return new Date(value);
+      case 'TEXT':
+      default:
+        return value;
     }
   }
 

@@ -264,12 +264,12 @@ export class AdminComponent {
 
   async startDDRMigration() {
     try {
-      await this.migrationService.migrateFromDDR();
+      await this.migrationService.migrateWithXMLOrDDR();
       // Refresh the EventService to reflect the new data
       await this.eventService.loadAllData();
-      alert('DDR Migration completed successfully!');
+      alert('Migration completed successfully!');
     } catch (error) {
-      alert(`DDR Migration failed: ${error}`);
+      alert(`Migration failed: ${error}`);
     }
   }
 
