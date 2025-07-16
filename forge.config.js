@@ -18,7 +18,7 @@ module.exports = {
       name: '@electron-forge/maker-squirrel',
       config: {
         // Windows auto-update support
-        remoteReleases: `https://github.com/ericwhittaker/EventRunner/releases/download/v${process.env.npm_package_version || '1.0.0'}/`,
+        // remoteReleases: `https://github.com/ericwhittaker/EventRunner/releases/download/v${process.env.npm_package_version || '1.0.0'}/`,
         setupIcon: './assets/icons/icon.ico',
         loadingGif: './assets/icons/installing.gif' // Optional: custom install animation
       },
