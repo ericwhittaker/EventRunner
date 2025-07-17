@@ -3,7 +3,7 @@ import { Component, OnInit, inject, signal, effect } from '@angular/core';
 
 import { MenuComponent } from '../menu.component';
 import { SubMenuComponent } from '../submenu.component';
-import { DashboardListComponent, MainDashboardRow } from '../dashboard-list.component';
+import { MainDashboardRow } from '../dashboard-list.component';
 import { DashboardListV3Component } from '../dashboard-list-v3.component';
 import { TentativeListComponent, TentativeRow } from '../tentative-list.component';
 import { PostShowListComponent, PostShowRow } from '../postshow-list.component';
@@ -43,7 +43,7 @@ import { EventDataV3Service } from '../../services/eventData-v3.service';
   imports: [
     MenuComponent,
     SubMenuComponent,
-    DashboardListComponent,
+    // DashboardListComponent,
     DashboardListV3Component,
     TentativeListComponent,
     PostShowListComponent
