@@ -4,9 +4,16 @@
 </div>
 <div class="dashboard-center-area">
   <div class="dashboard-main-area">
+    <!-- V2 Dashboard (Original) -->
     <div class="dashboard-card dashboard-card-main">
       <app-dashboard-list [data]="mainDashboardData()"></app-dashboard-list>
     </div>
+    
+    <!-- V3 Dashboard (Modern Control Flow) -->
+    <div class="dashboard-card dashboard-card-main" style="margin-top: 20px; border: 2px solid #4CAF50;">
+      <app-dashboard-list-v3 [data]="mainDashboardDataV3()"></app-dashboard-list-v3>
+    </div>
+    
     <div class="dashboard-bottom-row">
       <div class="dashboard-card dashboard-card-tentative">
         <app-tentative-list [data]="tentativeData()"></app-tentative-list>
@@ -18,7 +25,7 @@
     <!-- Debug info moved to bottom center -->
     <div style="display: flex; justify-content: center; margin-top: 10px;">
       <div style="background: yellow; font-size: 10px; padding: 4px 8px; border-radius: 3px;">
-        Main: {{mainDashboardData().length}} | Tent: {{tentativeData().length}} | Post: {{postShowData().length}}
+        V2 Main: {{mainDashboardData().length}} | V3 Main: {{mainDashboardDataV3().length}} | Tent: {{tentativeData().length}} | Post: {{postShowData().length}}
       </div>
     </div>
   </div>

@@ -4,11 +4,13 @@ import { Component, OnInit, inject, signal, effect } from '@angular/core';
 import { MenuComponent } from '../menu.component';
 import { SubMenuComponent } from '../submenu.component';
 import { DashboardListComponent, MainDashboardRow } from '../dashboard-list.component';
+import { DashboardListV3Component } from '../dashboard-list-v3.component';
 import { TentativeListComponent, TentativeRow } from '../tentative-list.component';
 import { PostShowListComponent, PostShowRow } from '../postshow-list.component';
 import { ActionButtonService } from '../shared/action-buttons/action-button.service';
 import { calculateDaysOut, getStatusIcon } from '../shared/dashboard-utils';
 import { EventService, Event } from '../../services/event-v2.service';
+import { EventDataV3Service } from '../../services/eventData-v3.service';
 
 
 
@@ -42,6 +44,7 @@ import { EventService, Event } from '../../services/event-v2.service';
     MenuComponent,
     SubMenuComponent,
     DashboardListComponent,
+    DashboardListV3Component,
     TentativeListComponent,
     PostShowListComponent
   ],
@@ -76,7 +79,10 @@ export class DashboardComponent implements OnInit {
    */
 
   private actionButtonService = inject(ActionButtonService);
-  private eventService = inject(EventService);
+  private eventService = inject(EventService); // Keep existing v2 service
+  
+  // Add v3 services for gradual migration (parallel approach)
+  private eventDataV3Service = inject(EventDataV3Service);
 
   /** END of SECTION */
 
@@ -98,6 +104,9 @@ export class DashboardComponent implements OnInit {
   mainDashboardData = signal<MainDashboardRow[]>([]);
   tentativeData = signal<TentativeRow[]>([]);
   postShowData = signal<PostShowRow[]>([]);
+
+  // NEW: V3 data signals for gradual migration (these won't affect existing UI yet)
+  mainDashboardDataV3 = signal<MainDashboardRow[]>([]);
 
   /** END of SECTION */
 
@@ -235,6 +244,67 @@ export class DashboardComponent implements OnInit {
       
       console.log(`📊 Updated post-show data: ${postShowEvents.length} events`);
     });
+
+    // NEW: V3 Effect for main dashboard (runs in parallel, doesn't affect existing UI)
+    effect(() => {
+      const eventsV3 = this.eventDataV3Service.normalizedEvents();
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      
+      console.log(`🆕 V3 Dashboard processing ${eventsV3.length} total events`);
+      
+      // Same logic as v2, but using v3 data
+      const liveAndFutureEventsV3 = eventsV3.filter(event => {
+        const status = event.eventStatus || event.status;
+        if (status === 'Tentative' || status === 'Cancelled') {
+          return false;
+        }
+        
+        const startDate = event.startDate || event.event_date || event.date || event.dateStart;
+        const endDate = event.endDate || event.startDate || event.event_date || event.date || event.dateStart;
+        
+        if (!startDate) return false;
+        
+        const eventStart = new Date(startDate);
+        const eventEnd = new Date(endDate || startDate);
+        eventStart.setHours(0, 0, 0, 0);
+        eventEnd.setHours(23, 59, 59, 999);
+        
+        const isLive = today >= eventStart && today <= eventEnd;
+        const isFuture = eventStart > today;
+        
+        return isLive || isFuture;
+      });
+      
+      // Sort same as v2
+      const sortedEventsV3 = liveAndFutureEventsV3.sort((a, b) => {
+        const startDateA = a.startDate || a.event_date || a.date || a.dateStart;
+        const startDateB = b.startDate || b.event_date || b.date || b.dateStart;
+        
+        if (!startDateA || !startDateB) return 0;
+        
+        const dateA = new Date(startDateA);
+        const dateB = new Date(startDateB);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        
+        const endDateA = a.endDate || startDateA;
+        const endDateB = b.endDate || startDateB;
+        const isLiveA = today >= new Date(startDateA) && today <= new Date(endDateA);
+        const isLiveB = today >= new Date(startDateB) && today <= new Date(endDateB);
+        
+        if (isLiveA && !isLiveB) return -1;
+        if (!isLiveA && isLiveB) return 1;
+        
+        return dateA.getTime() - dateB.getTime();
+      });
+      
+      this.mainDashboardDataV3.set(
+        sortedEventsV3.map(event => this.convertEventToMainDashboardRowV3(event))
+      );
+      
+      console.log(`🆕 V3 Updated main dashboard: ${liveAndFutureEventsV3.length} live/future events`);
+    });
   }
 
   /** END of SECTION */
@@ -316,6 +386,34 @@ export class DashboardComponent implements OnInit {
     };
   }
 
+  // NEW: V3 version of converter (uses v3 service for venue lookups)
+  private convertEventToMainDashboardRowV3(event: any): MainDashboardRow {
+    const startDate = event.startDate || event.event_date || event.date || event.dateStart;
+    const endDate = event.endDate || event.startDate || event.event_date || event.date || event.dateStart;
+    
+    if (!startDate) {
+      console.warn('V3 Event missing start date:', event);
+    }
+
+    const formattedStartDate = this.formatDate(startDate || null);
+    const formattedEndDate = this.formatDate(endDate || null);
+    
+    // Calculate status based on actual dates, not formatted strings
+    const { daysOut, isLive } = this.calculateEventStatus(startDate || null, endDate || null);
+    
+    return {
+      start: formattedStartDate,
+      end: formattedEndDate,
+      eventName: event.title || event.name || 'Untitled Event',
+      eventId: { html: `<span class="event-id v3">${event.id}</span>` }, // Add v3 class for identification
+      venue: this.eventDataV3Service.getVenueName(event.venue_id || ''),
+      cityState: this.eventDataV3Service.getVenueLocation(event.venue_id || ''),
+      providing: event.event_type || event.type || 'General',
+      toDo: Math.floor(Math.random() * 10) + 1, // This should come from actual task data
+      daysOut: daysOut
+    };
+  }
+
   // Convert Event to TentativeRow
   private convertEventToTentativeRow(event: Event): TentativeRow {
     const startDate = event.startDate || event.event_date || event.date || event.dateStart;
@@ -357,10 +455,18 @@ export class DashboardComponent implements OnInit {
     // Start real-time listeners - this will automatically trigger our effects
     this.eventService.startRealtimeListeners();
     
+    // Also initialize v3 services (parallel to v2 for comparison)
+    console.log('🆕 Initializing EventDataV3Service listeners...');
+    this.eventDataV3Service.initializeAllRealtimeListeners();
+    
     // Add a slight delay to see if events load after Firebase connection
     setTimeout(() => {
       console.log('⏰ After 2 seconds - events count:', this.eventService.events().length);
       console.log('⏰ Current events:', this.eventService.events());
+      
+      // Log v3 data for comparison
+      console.log('🆕 V3 Events count:', this.eventDataV3Service.normalizedEvents().length);
+      console.log('🆕 V3 Events:', this.eventDataV3Service.normalizedEvents());
     }, 2000);
   }
 }
