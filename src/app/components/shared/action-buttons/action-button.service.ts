@@ -1,12 +1,15 @@
-import { Injectable, signal, computed } from '@angular/core';
+import { Injectable, signal, computed, inject } from '@angular/core';
 import { ActionButtonConfig } from './action-buttons';
 import { ActionInfo } from './action-components/action-info/action-info/action-info';
 import { ActionRelatedApps } from './action-components/action-related-apps/action-related-apps';
+import { DialogService } from '../../../services/dialog.service';
+import { AddEventDialogComponent } from '../../dialogs/add-event-dialog.component';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ActionButtonService {
+  private dialogService = inject(DialogService);
   
   private buttonConfigs = signal<ActionButtonConfig[]>([
     {
@@ -102,8 +105,7 @@ export class ActionButtonService {
   
   // Default actions
   private onAddEvent(): void {
-    console.log('Add Event clicked');
-    // TODO: Implement add event modal/functionality
-    // Could emit an event or call a service method
+    console.log('🎉 Opening Add Event dialog');
+    this.dialogService.openDialog(AddEventDialogComponent);
   }
 }

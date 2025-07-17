@@ -5,12 +5,27 @@ export interface Event {
   id: string;
   title?: string;
   name?: string;
+  
+  // Date fields - using Date objects for start and end dates
+  startDate?: Date;
+  endDate?: Date;
+  
+  // Legacy date fields (for backward compatibility)
   event_date?: Date;
   date?: Date;
   dateStart?: Date;
+  
+  // Event details
   event_type?: string;
   type?: string;
+  
+  // Status management
+  eventStatus?: 'Confirmed' | 'Tentative' | 'Cancelled';
+  eventPostShowStatus?: 'Pending' | 'Complete';
+  
+  // Legacy status (for backward compatibility)
   status?: string;
+  
   budget?: number;
   venue_id?: string;
   venue?: any;
@@ -115,6 +130,9 @@ export class EventService {
 
   constructor(private firebaseService: FirebaseService) {
     console.log('🎉 Modern Event Service initialized with real-time listeners');
+    
+    // Set up effects in constructor (injection context)
+    this.setupRealtimeEffects();
   }
 
   // =====================
@@ -122,57 +140,76 @@ export class EventService {
   // =====================
 
   /**
-   * Start real-time listeners for all collections
+   * Set up real-time effects in constructor (injection context)
+   */
+  private setupRealtimeEffects(): void {
+    // Get signals for real-time data (these will be created when needed)
+    const eventsSignal = this.firebaseService.getCollectionSignal('events', {
+      orderBy: [{ field: 'createdAt', direction: 'desc' }]
+    });
+
+    const venuesSignal = this.firebaseService.getCollectionSignal('venues', {
+      orderBy: [{ field: 'name', direction: 'asc' }]
+    });
+
+    const contactsSignal = this.firebaseService.getCollectionSignal('contacts', {
+      orderBy: [{ field: 'firstName', direction: 'asc' }]
+    });
+
+    const vehiclesSignal = this.firebaseService.getCollectionSignal('vehicles', {
+      orderBy: [{ field: 'name', direction: 'asc' }]
+    });
+
+    // Create effects to sync Firebase signals with our local signals
+    effect(() => {
+      const events = eventsSignal();
+      console.log(`📅 Raw events from Firebase:`, events.length, 'events');
+      
+      const normalizedEvents = events.map(event => this.normalizeEvent(event));
+      console.log(`📅 Normalized events:`, normalizedEvents.length, 'events');
+      
+      // Log first event's dates to verify parsing
+      if (normalizedEvents.length > 0) {
+        const first = normalizedEvents[0];
+        console.log(`📅 First event "${first.title}": startDate=${first.startDate}, endDate=${first.endDate}`);
+      }
+      
+      this._events.set(normalizedEvents);
+      console.log(`📅 Events updated: ${normalizedEvents.length} items`);
+    });
+
+    effect(() => {
+      const venues = venuesSignal();
+      this._venues.set(venues.map(venue => this.normalizeVenue(venue)));
+      console.log(`🏢 Venues updated: ${venues.length} items`);
+    });
+
+    effect(() => {
+      const contacts = contactsSignal();
+      this._contacts.set(contacts.map(contact => this.normalizeContact(contact)));
+      console.log(`👥 Contacts updated: ${contacts.length} items`);
+    });
+
+    effect(() => {
+      const vehicles = vehiclesSignal();
+      this._vehicles.set(vehicles.map(vehicle => this.normalizeVehicle(vehicle)));
+      console.log(`🚗 Vehicles updated: ${vehicles.length} items`);
+    });
+
+    console.log('🔄 All real-time effects set up with signals');
+  }
+
+  /**
+   * Start real-time listeners for all collections (simplified - effects already set up)
    */
   startRealtimeListeners(): void {
     this._loading.set(true);
     this._error.set(null);
 
     try {
-      // Get or create signals for real-time data
-      const eventsSignal = this.firebaseService.getCollectionSignal('events', {
-        orderBy: [{ field: 'createdAt', direction: 'desc' }]
-      });
-
-      const venuesSignal = this.firebaseService.getCollectionSignal('venues', {
-        orderBy: [{ field: 'name', direction: 'asc' }]
-      });
-
-      const contactsSignal = this.firebaseService.getCollectionSignal('contacts', {
-        orderBy: [{ field: 'firstName', direction: 'asc' }]
-      });
-
-      const vehiclesSignal = this.firebaseService.getCollectionSignal('vehicles', {
-        orderBy: [{ field: 'name', direction: 'asc' }]
-      });
-
-      // Create effects to sync Firebase signals with our local signals
-      effect(() => {
-        const events = eventsSignal();
-        this._events.set(events.map(this.normalizeEvent));
-        console.log(`📅 Events updated: ${events.length} items`);
-      });
-
-      effect(() => {
-        const venues = venuesSignal();
-        this._venues.set(venues.map(this.normalizeVenue));
-        console.log(`🏢 Venues updated: ${venues.length} items`);
-      });
-
-      effect(() => {
-        const contacts = contactsSignal();
-        this._contacts.set(contacts.map(this.normalizeContact));
-        console.log(`👥 Contacts updated: ${contacts.length} items`);
-      });
-
-      effect(() => {
-        const vehicles = vehiclesSignal();
-        this._vehicles.set(vehicles.map(this.normalizeVehicle));
-        console.log(`🚗 Vehicles updated: ${vehicles.length} items`);
-      });
-
+      // Effects are already set up in constructor, just mark as loaded
       this._loading.set(false);
-      console.log('🔄 All real-time listeners started with signals');
+      console.log('🔄 Real-time listeners already active via effects');
 
     } catch (error) {
       this._loading.set(false);
@@ -317,23 +354,45 @@ export class EventService {
   // =====================
 
   private normalizeEvent(event: any): Event {
+    // Parse dates first
+    const parsedStartDate = this.parseDate(event.startDate || event.event_date || event.date || event.dateStart);
+    const parsedEndDate = this.parseDate(event.endDate || event.event_date || event.date || event.dateStart);
+    
     return {
+      // Spread original event first, then override with normalized values
+      ...event,
+      
+      // Core identification
       id: event.id,
       title: event.title || event.name || event.eventName || '',
       name: event.name || event.title || event.eventName || '',
+      
+      // Modern date fields (primary) - these will override any raw timestamps
+      startDate: parsedStartDate,
+      endDate: parsedEndDate,
+      
+      // Legacy date fields (for backward compatibility)
       event_date: this.parseDate(event.event_date || event.date || event.dateStart),
       date: this.parseDate(event.date || event.event_date || event.dateStart),
       dateStart: this.parseDate(event.dateStart || event.event_date || event.date),
+      
+      // Event details
       event_type: event.event_type || event.type || '',
       type: event.type || event.event_type || '',
-      status: event.status || 'active',
+      
+      // Status management (modern fields)
+      eventStatus: event.eventStatus || event.status || 'Confirmed',
+      eventPostShowStatus: event.eventPostShowStatus || 'Pending',
+      
+      // Legacy status (for backward compatibility)
+      status: event.status || event.eventStatus || 'Confirmed',
+      
       budget: event.budget || 0,
       venue_id: event.venue_id || '',
       venue: event.venue || null,
       description: event.description || event.notes || '',
       createdAt: this.parseDate(event.createdAt),
-      updatedAt: this.parseDate(event.updatedAt),
-      ...event // Include all other properties
+      updatedAt: this.parseDate(event.updatedAt)
     };
   }
 
@@ -400,14 +459,24 @@ export class EventService {
       return dateValue;
     }
     
+    // Handle Firestore Timestamp
+    if (dateValue.toDate && typeof dateValue.toDate === 'function') {
+      return dateValue.toDate();
+    }
+    
+    // Handle seconds/nanoseconds Timestamp object
+    if (dateValue.seconds !== undefined) {
+      return new Date(dateValue.seconds * 1000);
+    }
+    
     if (typeof dateValue === 'string') {
       const parsed = new Date(dateValue);
       return isNaN(parsed.getTime()) ? undefined : parsed;
     }
     
-    // Handle Firestore Timestamp
-    if (dateValue.toDate && typeof dateValue.toDate === 'function') {
-      return dateValue.toDate();
+    // Handle numeric timestamp
+    if (typeof dateValue === 'number') {
+      return new Date(dateValue);
     }
     
     return undefined;

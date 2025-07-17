@@ -1,4 +1,4 @@
-import { Component, Input, signal, computed } from '@angular/core';
+import { Component, input, signal, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { BaseDashboardRow, calculateEmptyRows } from './shared/dashboard-list-types';
@@ -80,17 +80,21 @@ export interface MainDashboardRow extends BaseDashboardRow {
   styleUrls: ['./dashboard-list.component.scss']
 })
 export class DashboardListComponent {
-  constructor(private router: Router) {}
+  private router = inject(Router);
 
-  @Input() set data(value: MainDashboardRow[]) {
-    this._data.set(value);
-  }
+  // Modern functional input signal
+  data = input.required<MainDashboardRow[]>();
   
-  private _data = signal<MainDashboardRow[]>([]);
+  // Internal signal for the data (if needed for additional processing)
+  private _dataSignal = computed(() => {
+    const inputData = this.data();
+    console.log('📊 Main Dashboard List received data:', inputData);
+    return inputData;
+  });
   
   // Getter for template usage
   get dataSignal() {
-    return this._data;
+    return this._dataSignal;
   }
 
   openEvent(row: MainDashboardRow) {
@@ -103,7 +107,7 @@ export class DashboardListComponent {
   private maxRows = 10;
   
   emptyRows = computed(() => {
-    return calculateEmptyRows(this._data().length, this.maxRows);
+    return calculateEmptyRows(this._dataSignal().length, this.maxRows);
   });
 
   getDaysOutClass(daysOut: number | undefined): string {

@@ -1,5 +1,6 @@
-import { Component, Input, signal, computed } from '@angular/core';
+import { Component, input, signal, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 import { BaseDashboardRow, calculateEmptyRows } from './shared/dashboard-list-types';
 
 export interface PostShowRow extends BaseDashboardRow {
@@ -105,19 +106,26 @@ export interface PostShowRow extends BaseDashboardRow {
   `]
 })
 export class PostShowListComponent {
-  @Input() set data(value: PostShowRow[]) {
-    this._data.set(value);
-  }
+  private router = inject(Router);
+
+  // Modern functional input signal
+  data = input.required<PostShowRow[]>();
   
-  private _data = signal<PostShowRow[]>([]);
+  // Internal signal for the data with logging
+  private _dataSignal = computed(() => {
+    const inputData = this.data();
+    console.log('📊 Post Show List received data:', inputData);
+    return inputData;
+  });
+  
   private maxRows = 6;
   
   emptyRows = computed(() => {
-    return calculateEmptyRows(this._data().length, this.maxRows);
+    return calculateEmptyRows(this._dataSignal().length, this.maxRows);
   });
   
   // Getter for template usage
   get dataSignal() {
-    return this._data;
+    return this._dataSignal;
   }
 }

@@ -1,5 +1,6 @@
-import { Component, Input, signal, computed } from '@angular/core';
+import { Component, input, signal, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 import { BaseDashboardRow, calculateEmptyRows } from './shared/dashboard-list-types';
 
 export interface TentativeRow extends BaseDashboardRow {
@@ -115,19 +116,26 @@ export interface TentativeRow extends BaseDashboardRow {
   `]
 })
 export class TentativeListComponent {
-  @Input() set data(value: TentativeRow[]) {
-    this._data.set(value);
-  }
+  private router = inject(Router);
+
+  // Modern functional input signal
+  data = input.required<TentativeRow[]>();
   
-  private _data = signal<TentativeRow[]>([]);
+  // Internal signal for the data with logging
+  private _dataSignal = computed(() => {
+    const inputData = this.data();
+    console.log('📊 Tentative List received data:', inputData);
+    return inputData;
+  });
+  
   private maxRows = 6;
   
   emptyRows = computed(() => {
-    return calculateEmptyRows(this._data().length, this.maxRows);
+    return calculateEmptyRows(this._dataSignal().length, this.maxRows);
   });
   
   // Getter for template usage
   get dataSignal() {
-    return this._data;
+    return this._dataSignal;
   }
 }
