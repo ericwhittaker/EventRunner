@@ -49,114 +49,71 @@ import { EventService, Event } from '../../services/event-v2.service';
   styleUrl: '../../app.scss'
 })
 export class DashboardComponent implements OnInit {
+
+  /** DEV WORKAREA, NOTES, AND TODOs
+   * ##############################################################################################
+   * ##############################################################################################
+   * @note 
+   * @todo 
+   */
+
+  /** WORKING AREA ================================ */
+
+  /** END OF WORKING AREA ========================= */
+
+
+
+
+
+
+
+
+
+
+  /** ALL INJECTABLES 
+   * ##############################################################################################
+   * ##############################################################################################
+   */
+
   private actionButtonService = inject(ActionButtonService);
   private eventService = inject(EventService);
-  
-  // Helper method to format date for display in MM/DD/YYYY format
-  private formatDate(date: Date | null): string {
-    if (!date) return 'No Date';
-    
-    return date.toLocaleDateString('en-US', {
-      month: '2-digit',
-      day: '2-digit',
-      year: 'numeric'
-    });
-  }
 
-  // Helper method to calculate event status and days
-  private calculateEventStatus(startDate: Date | null, endDate: Date | null): { daysOut: number | undefined, isLive: boolean } {
-    if (!startDate) {
-      return { daysOut: undefined, isLive: false };
-    }
+  /** END of SECTION */
 
-    const today = new Date();
-    today.setHours(0, 0, 0, 0); // Start of today
-    
-    const eventStart = new Date(startDate);
-    eventStart.setHours(0, 0, 0, 0);
-    
-    const eventEnd = endDate ? new Date(endDate) : eventStart;
-    eventEnd.setHours(23, 59, 59, 999); // End of the day
-    
-    // Check if event is live (today is between start and end dates)
-    const isLive = today >= eventStart && today <= eventEnd;
-    
-    if (isLive) {
-      return { daysOut: undefined, isLive: true }; // "Live" - no days count
-    }
-    
-    // Calculate days until event starts
-    const diffTime = eventStart.getTime() - today.getTime();
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    
-    return { daysOut: diffDays, isLive: false };
-  }
 
-  // Convert Event to MainDashboardRow
-  private convertEventToMainDashboardRow(event: Event): MainDashboardRow {
-    const startDate = event.startDate || event.event_date || event.date || event.dateStart;
-    const endDate = event.endDate || event.startDate || event.event_date || event.date || event.dateStart;
-    
-    if (!startDate) {
-      console.warn('Event missing start date:', event);
-    }
 
-    const venue = event.venue_id ? this.eventService.getVenueById(event.venue_id) : null;
-    
-    const formattedStartDate = this.formatDate(startDate || null);
-    const formattedEndDate = this.formatDate(endDate || null);
-    
-    // Calculate status based on actual dates, not formatted strings
-    const { daysOut, isLive } = this.calculateEventStatus(startDate || null, endDate || null);
-    
-    return {
-      start: formattedStartDate,
-      end: formattedEndDate,
-      eventName: event.title || event.name || 'Untitled Event',
-      eventId: { html: `<span class="event-id">${event.id}</span>` },
-      venue: this.eventService.getVenueName(event.venue_id || ''),
-      cityState: this.eventService.getVenueLocation(event.venue_id || ''),
-      providing: event.event_type || event.type || 'General',
-      toDo: Math.floor(Math.random() * 10) + 1, // This should come from actual task data
-      daysOut: daysOut
-    };
-  }
 
-  // Convert Event to TentativeRow
-  private convertEventToTentativeRow(event: Event): TentativeRow {
-    const startDate = event.startDate || event.event_date || event.date || event.dateStart;
-    const endDate = event.endDate || event.startDate || event.event_date || event.date || event.dateStart;
-    
-    return {
-      eventId: event.id || `temp-${Math.random()}`,
-      start: this.formatDate(startDate || null),
-      end: this.formatDate(endDate || null),
-      eventName: event.title || event.name || 'Untitled Event',
-      status: { html: `<span class="status tentative">Tentative</span>` },
-      toDo: Math.floor(Math.random() * 5) + 1
-    };
-  }
 
-  // Convert Event to PostShowRow
-  private convertEventToPostShowRow(event: Event): PostShowRow {
-    const startDate = event.startDate || event.event_date || event.date || event.dateStart;
-    const endDate = event.endDate || event.startDate || event.event_date || event.date || event.dateStart;
-    
-    return {
-      eventId: event.id || `temp-${Math.random()}`,
-      start: this.formatDate(startDate || null),
-      end: this.formatDate(endDate || null),
-      eventName: event.title || event.name || 'Untitled Event',
-      cityState: this.eventService.getVenueLocation(event.venue_id || ''),
-      toDo: Math.floor(Math.random() * 3) + 1,
-      setS: { html: `<span class="status post-show">Post Show</span>` }
-    };
-  }
-  
-  // Dashboard Data Signals
+
+
+
+
+
+  /** ALL input()'s, output()'s, PROPERTIES, VARIABLES, AND signal()'s, computed()'s, etc.
+   * ##############################################################################################
+   * ##############################################################################################
+   */
+
+  /** Dashboard Data Signals */
   mainDashboardData = signal<MainDashboardRow[]>([]);
   tentativeData = signal<TentativeRow[]>([]);
   postShowData = signal<PostShowRow[]>([]);
+
+  /** END of SECTION */
+
+
+
+
+
+
+
+
+
+
+  /** CONSTRUCTOR
+   * ##############################################################################################
+   * ##############################################################################################
+   */
 
   constructor() {
     // Set up effects to automatically update dashboard when data changes
@@ -279,6 +236,119 @@ export class DashboardComponent implements OnInit {
       console.log(`📊 Updated post-show data: ${postShowEvents.length} events`);
     });
   }
+
+  /** END of SECTION */
+
+
+
+
+
+
+
+
+  // Helper method to format date for display in MM/DD/YYYY format
+  private formatDate(date: Date | null): string {
+    if (!date) return 'No Date';
+    
+    return date.toLocaleDateString('en-US', {
+      month: '2-digit',
+      day: '2-digit',
+      year: 'numeric'
+    });
+  }
+
+  // Helper method to calculate event status and days
+  private calculateEventStatus(startDate: Date | null, endDate: Date | null): { daysOut: number | undefined, isLive: boolean } {
+    if (!startDate) {
+      return { daysOut: undefined, isLive: false };
+    }
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // Start of today
+    
+    const eventStart = new Date(startDate);
+    eventStart.setHours(0, 0, 0, 0);
+    
+    const eventEnd = endDate ? new Date(endDate) : eventStart;
+    eventEnd.setHours(23, 59, 59, 999); // End of the day
+    
+    // Check if event is live (today is between start and end dates)
+    const isLive = today >= eventStart && today <= eventEnd;
+    
+    if (isLive) {
+      return { daysOut: undefined, isLive: true }; // "Live" - no days count
+    }
+    
+    // Calculate days until event starts
+    const diffTime = eventStart.getTime() - today.getTime();
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    
+    return { daysOut: diffDays, isLive: false };
+  }
+
+  // Convert Event to MainDashboardRow
+  private convertEventToMainDashboardRow(event: Event): MainDashboardRow {
+    const startDate = event.startDate || event.event_date || event.date || event.dateStart;
+    const endDate = event.endDate || event.startDate || event.event_date || event.date || event.dateStart;
+    
+    if (!startDate) {
+      console.warn('Event missing start date:', event);
+    }
+
+    const venue = event.venue_id ? this.eventService.getVenueById(event.venue_id) : null;
+    
+    const formattedStartDate = this.formatDate(startDate || null);
+    const formattedEndDate = this.formatDate(endDate || null);
+    
+    // Calculate status based on actual dates, not formatted strings
+    const { daysOut, isLive } = this.calculateEventStatus(startDate || null, endDate || null);
+    
+    return {
+      start: formattedStartDate,
+      end: formattedEndDate,
+      eventName: event.title || event.name || 'Untitled Event',
+      eventId: { html: `<span class="event-id">${event.id}</span>` },
+      venue: this.eventService.getVenueName(event.venue_id || ''),
+      cityState: this.eventService.getVenueLocation(event.venue_id || ''),
+      providing: event.event_type || event.type || 'General',
+      toDo: Math.floor(Math.random() * 10) + 1, // This should come from actual task data
+      daysOut: daysOut
+    };
+  }
+
+  // Convert Event to TentativeRow
+  private convertEventToTentativeRow(event: Event): TentativeRow {
+    const startDate = event.startDate || event.event_date || event.date || event.dateStart;
+    const endDate = event.endDate || event.startDate || event.event_date || event.date || event.dateStart;
+    
+    return {
+      eventId: event.id || `temp-${Math.random()}`,
+      start: this.formatDate(startDate || null),
+      end: this.formatDate(endDate || null),
+      eventName: event.title || event.name || 'Untitled Event',
+      status: { html: `<span class="status tentative">Tentative</span>` },
+      toDo: Math.floor(Math.random() * 5) + 1
+    };
+  }
+
+  // Convert Event to PostShowRow
+  private convertEventToPostShowRow(event: Event): PostShowRow {
+    const startDate = event.startDate || event.event_date || event.date || event.dateStart;
+    const endDate = event.endDate || event.startDate || event.event_date || event.date || event.dateStart;
+    
+    return {
+      eventId: event.id || `temp-${Math.random()}`,
+      start: this.formatDate(startDate || null),
+      end: this.formatDate(endDate || null),
+      eventName: event.title || event.name || 'Untitled Event',
+      cityState: this.eventService.getVenueLocation(event.venue_id || ''),
+      toDo: Math.floor(Math.random() * 3) + 1,
+      setS: { html: `<span class="status post-show">Post Show</span>` }
+    };
+  }
+
+
+
 
   async ngOnInit() {
     console.log('🚀 Dashboard initializing with real-time signals');
