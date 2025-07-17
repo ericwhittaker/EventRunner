@@ -1,5 +1,6 @@
 export const environment = {
   production: false,
+  useEmulators: true, // Set to false to use production Firebase in dev
   firebase: {
     apiKey: "AIzaSyBWqKsIyRgjc9spUhLKmbAW8uyFbtHOp7I",
     authDomain: "eventrunner-ca01b.firebaseapp.com",

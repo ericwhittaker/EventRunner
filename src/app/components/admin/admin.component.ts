@@ -3,8 +3,8 @@ import { MenuComponent } from '../menu.component';
 import { CommonModule } from '@angular/common';
 import { APP_VERSION } from '../../version';
 import { FileMakerMigrationService } from '../../services/filemaker-migration-new.service';
-import { EventService } from '../../services/event.service';
-import { FirebaseService } from '../../services/firebase.service';
+import { EventService } from '../../services/event-v2.service';
+import { FirebaseService } from '../../services/firebase-v2.service';
 
 @Component({
   selector: 'app-admin',

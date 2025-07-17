@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { MenuComponent } from '../menu.component';
 import { CommonModule } from '@angular/common';
-import { EventService, Event } from '../../services/event.service';
+import { EventService } from '../../services/event-v2.service';
 
 @Component({
   selector: 'app-events-viewer',
@@ -77,30 +77,31 @@ export class EventsViewerComponent implements OnInit {
   
   async runMigration() {
     const { FileMakerMigrationService } = await import('../../services/filemaker-migration-new.service');
-    const { FirebaseService } = await import('../../services/firebase.service');
+    const { FirebaseService } = await import('../../services/firebase-v2.service');
     const { DDRParserService } = await import('../../services/ddr-parser.service');
     const firebaseService = new FirebaseService();
     const ddrParserService = new DDRParserService();
     const migrationService = new FileMakerMigrationService(firebaseService, ddrParserService);
-    await migrationService.migrateFromDDR();
+    await migrationService.migrateWithXMLOrDDR();
     await this.eventService.loadAllData();
   }
   
-  formatDate(date: Date): string {
-    return date.toLocaleDateString();
+  formatDate(date: Date | undefined): string {
+    return date ? date.toLocaleDateString() : 'No date';
   }
   
-  formatCurrency(amount: number): string {
-    return '$' + amount.toLocaleString();
+  formatCurrency(amount: number | undefined): string {
+    return '$' + (amount || 0).toLocaleString();
   }
   
-  getVenueName(venueId: string): string {
+  getVenueName(venueId: string | undefined): string {
+    if (!venueId) return 'Unknown Venue';
     const venue = this.eventService.getVenueById(venueId);
-    return venue ? venue.name : 'Unknown Venue';
+    return venue?.name || venue?.venueName || 'Unknown Venue';
   }
   
-  getVenueLocation(venueId: string): string {
-    const venue = this.eventService.getVenueById(venueId);
-    return venue ? `${venue.city}, ${venue.state}` : 'Unknown Location';
+  getVenueLocation(venueId: string | undefined): string {
+    if (!venueId) return 'Unknown Location';
+    return this.eventService.getVenueLocation(venueId);
   }
 }

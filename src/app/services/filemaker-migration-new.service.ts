@@ -1,5 +1,5 @@
 import { Injectable, signal } from '@angular/core';
-import { FirebaseService } from './firebase.service';
+import { FirebaseService } from './firebase-v2.service';
 import { DDRParserService, DDRData } from './ddr-parser.service';
 
 // Type definitions based on your FileMaker structure
