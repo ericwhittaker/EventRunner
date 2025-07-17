@@ -1,13 +1,29 @@
+/** ANGULAR ROUTER */
 import { Routes } from '@angular/router';
+
+/** COMPONENTS - (LOGIN & LOADING) */
+/** TBD */
+
+/** COMPONENTS - (VIEWS) */
+import { DashboardComponent } from './components/dashboard/dashboard.component';
+
+
+
+
+
+
+
+
+
+
+console.log('(E-TRAK) File: app.routes.ts #(const routes)# is being created.');
 
 export const routes: Routes = [
   {
-    path: '',
-    loadComponent: () => import('./components/dashboard/dashboard.component').then(c => c.DashboardComponent)
+    path: '', component: DashboardComponent
   },
   {
-    path: 'dashboard',
-    loadComponent: () => import('./components/dashboard/dashboard.component').then(c => c.DashboardComponent)
+    path: 'dashboard', component: DashboardComponent
   },
   {
     path: 'events',
@@ -50,3 +66,6 @@ export const routes: Routes = [
     redirectTo: ''
   }
 ];
+
+console.log('(E-TRAK) File: app.routes.ts #(const routes)# has been created.');
+

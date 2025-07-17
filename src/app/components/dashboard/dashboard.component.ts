@@ -1,4 +1,6 @@
-import { Component, signal, inject, OnInit, effect } from '@angular/core';
+/** ANGULAR (CORE) */
+import { Component, OnInit, inject, signal, effect } from '@angular/core';
+
 import { MenuComponent } from '../menu.component';
 import { SubMenuComponent } from '../submenu.component';
 import { DashboardListComponent, MainDashboardRow } from '../dashboard-list.component';
@@ -7,6 +9,32 @@ import { PostShowListComponent, PostShowRow } from '../postshow-list.component';
 import { ActionButtonService } from '../shared/action-buttons/action-button.service';
 import { calculateDaysOut, getStatusIcon } from '../shared/dashboard-utils';
 import { EventService, Event } from '../../services/event-v2.service';
+
+
+
+
+
+
+
+
+
+  /** ENUMS AND INTERFACES (These are temporary and should go in the model files)
+   * ##############################################################################################
+   * ##############################################################################################
+   */
+
+  
+
+  /** END of SECTION */
+
+
+
+
+
+
+
+
+
 
 @Component({
   selector: 'app-dashboard',
@@ -17,34 +45,8 @@ import { EventService, Event } from '../../services/event-v2.service';
     TentativeListComponent,
     PostShowListComponent
   ],
-  template: `
-    <app-menu></app-menu>
-    <div class="subheader-row">
-      <app-submenu></app-submenu>
-    </div>
-    <div class="dashboard-center-area">
-      <div class="dashboard-main-area">
-        <div class="dashboard-card dashboard-card-main">
-          <app-dashboard-list [data]="mainDashboardData()"></app-dashboard-list>
-        </div>
-        <div class="dashboard-bottom-row">
-          <div class="dashboard-card dashboard-card-tentative">
-            <app-tentative-list [data]="tentativeData()"></app-tentative-list>
-          </div>
-          <div class="dashboard-card dashboard-card-postshow">
-            <app-postshow-list [data]="postShowData()"></app-postshow-list>
-          </div>
-        </div>
-        <!-- Debug info moved to bottom center -->
-        <div style="display: flex; justify-content: center; margin-top: 10px;">
-          <div style="background: yellow; font-size: 10px; padding: 4px 8px; border-radius: 3px;">
-            Main: {{mainDashboardData().length}} | Tent: {{tentativeData().length}} | Post: {{postShowData().length}}
-          </div>
-        </div>
-      </div>
-    </div>
-  `,
-  styleUrls: ['../../app.scss']
+  templateUrl: './dashboard.component.html',
+  styleUrl: '../../app.scss'
 })
 export class DashboardComponent implements OnInit {
   private actionButtonService = inject(ActionButtonService);
