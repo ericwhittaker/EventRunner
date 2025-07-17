@@ -25,10 +25,6 @@ import { EventService, Event } from '../../services/event-v2.service';
     <div class="dashboard-center-area">
       <div class="dashboard-main-area">
         <div class="dashboard-card dashboard-card-main">
-          <!-- Debug info -->
-          <div style="position: absolute; top: 0; right: 0; background: yellow; font-size: 10px; padding: 2px;">
-            Main: {{mainDashboardData().length}} | Tent: {{tentativeData().length}} | Post: {{postShowData().length}}
-          </div>
           <app-dashboard-list [data]="mainDashboardData()"></app-dashboard-list>
         </div>
         <div class="dashboard-bottom-row">
@@ -37,6 +33,12 @@ import { EventService, Event } from '../../services/event-v2.service';
           </div>
           <div class="dashboard-card dashboard-card-postshow">
             <app-postshow-list [data]="postShowData()"></app-postshow-list>
+          </div>
+        </div>
+        <!-- Debug info moved to bottom center -->
+        <div style="display: flex; justify-content: center; margin-top: 10px;">
+          <div style="background: yellow; font-size: 10px; padding: 4px 8px; border-radius: 3px;">
+            Main: {{mainDashboardData().length}} | Tent: {{tentativeData().length}} | Post: {{postShowData().length}}
           </div>
         </div>
       </div>
