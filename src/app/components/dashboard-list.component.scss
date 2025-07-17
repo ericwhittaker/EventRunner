@@ -81,7 +81,7 @@
 }
 
 :host ::ng-deep .status.live {
-  background: #4caf50;
+  background: #00e676;
 }
 
 .event-name {
@@ -103,11 +103,11 @@
 }
 
 /* Only keep status and icon styles, remove redundant card/table styles */
-.status.live {
-  background: #2ecc40;
+.status-live {
+  background: #00e676 !important;
   color: #fff;
-  border-radius: 12px;
-  padding: 2px 8px;
+  border-radius: 4px;
+  padding: 4px 8px;
   font-size: 0.9rem;
   font-weight: 600;
 }

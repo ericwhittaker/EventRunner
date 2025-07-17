@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { BaseDashboardRow, calculateEmptyRows } from './shared/dashboard-list-types';
 
 export interface PostShowRow extends BaseDashboardRow {
+  eventId: string;
   cityState: string;
   toDo: number; // Count of todos
   setS: { html: string };
@@ -29,7 +30,7 @@ export interface PostShowRow extends BaseDashboardRow {
           </tr>
         </thead>
         <tbody>
-          @for (row of dataSignal(); track row.eventName) {
+          @for (row of dataSignal(); track row.eventId) {
             <tr class="clickable-row">
               <td>{{ row.start }}</td>
               <td>{{ row.end }}</td>

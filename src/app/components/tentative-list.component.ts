@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { BaseDashboardRow, calculateEmptyRows } from './shared/dashboard-list-types';
 
 export interface TentativeRow extends BaseDashboardRow {
+  eventId: string;
   status: { html: string };
   toDo: number; // Count of todos
 }
@@ -27,7 +28,7 @@ export interface TentativeRow extends BaseDashboardRow {
           </tr>
         </thead>
         <tbody>
-          @for (row of dataSignal(); track row.eventName) {
+          @for (row of dataSignal(); track row.eventId) {
             <tr class="clickable-row">
               <td>{{ row.start }}</td>
               <td>{{ row.end }}</td>

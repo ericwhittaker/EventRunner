@@ -48,28 +48,44 @@ export class DashboardComponent implements OnInit {
   private actionButtonService = inject(ActionButtonService);
   private eventService = inject(EventService);
   
-  // Helper method to format date for display
+  // Helper method to format date for display in MM/DD/YYYY format
   private formatDate(date: Date | null): string {
     if (!date) return 'No Date';
     
     return date.toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric',
-      hour: 'numeric',
-      minute: '2-digit',
-      hour12: true
+      month: '2-digit',
+      day: '2-digit',
+      year: 'numeric'
     });
   }
 
-  // Helper method to add calculated fields
-  private addCalculatedFields(row: any): MainDashboardRow {
-    const daysOut = calculateDaysOut(row.start);
-    return {
-      ...row,
-      daysOut,
-      statusIcon: getStatusIcon(daysOut)
-    };
+  // Helper method to calculate event status and days
+  private calculateEventStatus(startDate: Date | null, endDate: Date | null): { daysOut: number | undefined, isLive: boolean } {
+    if (!startDate) {
+      return { daysOut: undefined, isLive: false };
+    }
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // Start of today
+    
+    const eventStart = new Date(startDate);
+    eventStart.setHours(0, 0, 0, 0);
+    
+    const eventEnd = endDate ? new Date(endDate) : eventStart;
+    eventEnd.setHours(23, 59, 59, 999); // End of the day
+    
+    // Check if event is live (today is between start and end dates)
+    const isLive = today >= eventStart && today <= eventEnd;
+    
+    if (isLive) {
+      return { daysOut: undefined, isLive: true }; // "Live" - no days count
+    }
+    
+    // Calculate days until event starts
+    const diffTime = eventStart.getTime() - today.getTime();
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    
+    return { daysOut: diffDays, isLive: false };
   }
 
   // Convert Event to MainDashboardRow
@@ -86,7 +102,10 @@ export class DashboardComponent implements OnInit {
     const formattedStartDate = this.formatDate(startDate || null);
     const formattedEndDate = this.formatDate(endDate || null);
     
-    return this.addCalculatedFields({
+    // Calculate status based on actual dates, not formatted strings
+    const { daysOut, isLive } = this.calculateEventStatus(startDate || null, endDate || null);
+    
+    return {
       start: formattedStartDate,
       end: formattedEndDate,
       eventName: event.title || event.name || 'Untitled Event',
@@ -94,8 +113,9 @@ export class DashboardComponent implements OnInit {
       venue: this.eventService.getVenueName(event.venue_id || ''),
       cityState: this.eventService.getVenueLocation(event.venue_id || ''),
       providing: event.event_type || event.type || 'General',
-      toDo: Math.floor(Math.random() * 10) + 1 // This should come from actual task data
-    });
+      toDo: Math.floor(Math.random() * 10) + 1, // This should come from actual task data
+      daysOut: daysOut
+    };
   }
 
   // Convert Event to TentativeRow
@@ -104,6 +124,7 @@ export class DashboardComponent implements OnInit {
     const endDate = event.endDate || event.startDate || event.event_date || event.date || event.dateStart;
     
     return {
+      eventId: event.id || `temp-${Math.random()}`,
       start: this.formatDate(startDate || null),
       end: this.formatDate(endDate || null),
       eventName: event.title || event.name || 'Untitled Event',
@@ -118,6 +139,7 @@ export class DashboardComponent implements OnInit {
     const endDate = event.endDate || event.startDate || event.event_date || event.date || event.dateStart;
     
     return {
+      eventId: event.id || `temp-${Math.random()}`,
       start: this.formatDate(startDate || null),
       end: this.formatDate(endDate || null),
       eventName: event.title || event.name || 'Untitled Event',
@@ -174,8 +196,34 @@ export class DashboardComponent implements OnInit {
         return result;
       });
       
+      // Sort events: Live events first, then future events by start date
+      const sortedEvents = liveAndFutureEvents.sort((a, b) => {
+        const startDateA = a.startDate || a.event_date || a.date || a.dateStart;
+        const startDateB = b.startDate || b.event_date || b.date || b.dateStart;
+        
+        if (!startDateA || !startDateB) return 0;
+        
+        const dateA = new Date(startDateA);
+        const dateB = new Date(startDateB);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        
+        // Check if events are live
+        const endDateA = a.endDate || startDateA;
+        const endDateB = b.endDate || startDateB;
+        const isLiveA = today >= new Date(startDateA) && today <= new Date(endDateA);
+        const isLiveB = today >= new Date(startDateB) && today <= new Date(endDateB);
+        
+        // Live events come first
+        if (isLiveA && !isLiveB) return -1;
+        if (!isLiveA && isLiveB) return 1;
+        
+        // Within same category (both live or both future), sort by start date
+        return dateA.getTime() - dateB.getTime();
+      });
+      
       this.mainDashboardData.set(
-        liveAndFutureEvents.map(event => this.convertEventToMainDashboardRow(event))
+        sortedEvents.map(event => this.convertEventToMainDashboardRow(event))
       );
       
       console.log(`📊 Updated main dashboard: ${liveAndFutureEvents.length} live/future events`);

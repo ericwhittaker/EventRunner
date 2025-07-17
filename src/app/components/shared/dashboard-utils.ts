@@ -21,14 +21,16 @@ export function getStatusIcon(daysOut: number): string {
 
 export function getStatusClass(daysOut: number | undefined): string {
   if (daysOut === undefined) {
-    return 'status-past'; // Bright green for "Live" events
-  } else if (daysOut <= 3) {
-    return 'status-urgent'; // Bright red for very urgent (1-3 days)
+    return 'status-live'; // Green for "Live" events (happening now)
+  } else if (daysOut <= 0) {
+    return 'status-past'; // Past events (shouldn't appear in main dashboard)
   } else if (daysOut <= 14) {
-    return 'status-soon'; // Bright orange for soon (4-14 days)
+    return 'status-urgent'; // Red for urgent (1-14 days)
   } else if (daysOut <= 30) {
-    return 'status-future'; // Bright yellow for future (15-30 days)
+    return 'status-soon'; // Orange for soon (15-30 days)  
+  } else if (daysOut <= 60) {
+    return 'status-future'; // Yellow for future (31-60 days)
   } else {
-    return 'status-far-future'; // Purple for far future (30+ days)
+    return 'status-far-future'; // Blue/purple for far future (60+ days)
   }
 }

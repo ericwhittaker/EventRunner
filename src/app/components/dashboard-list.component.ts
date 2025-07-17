@@ -38,10 +38,10 @@ export interface MainDashboardRow extends BaseDashboardRow {
           </tr>
         </thead>
         <tbody>
-          @for (row of dataSignal(); track row.eventId) {
+          @for (row of dataSignal(); track row.eventId.html) {
             <tr class="event-row clickable-row" (click)="openEvent(row)">
               <td>{{ row.start }}</td>
-              <td>{{ row.end }}</td>
+              <td>{{ row.start === row.end ? '' : ' - ' + row.end }}</td>
               <td class="event-name">{{ row.eventName }}</td>
               <td [innerHTML]="row.eventId.html"></td>
               <td class="venue">{{ row.venue }}</td>
@@ -77,6 +77,50 @@ export interface MainDashboardRow extends BaseDashboardRow {
       </table>
     </div>
   `,
+  styles: [`
+    .status-cell {
+      text-align: center;
+      font-weight: 600;
+      padding: 4px 8px;
+      border-radius: 4px;
+    }
+    
+    /* Live event - Vibrant Green */
+    .status-live {
+      background-color: #00e676 !important;
+      color: white !important;
+    }
+    
+    /* Urgent (1-14 days) - Red */
+    .status-urgent {
+      background-color: #F44336;
+      color: white;
+    }
+    
+    /* Soon (15-30 days) - Orange */
+    .status-soon {
+      background-color: #FF9800;
+      color: white;
+    }
+    
+    /* Future (31-60 days) - Yellow */
+    .status-future {
+      background-color: #FFC107;
+      color: black;
+    }
+    
+    /* Far future (60+ days) - Blue */
+    .status-far-future {
+      background-color: #2196F3;
+      color: white;
+    }
+    
+    /* Past events - Gray */
+    .status-past {
+      background-color: #9E9E9E;
+      color: white;
+    }
+  `],
   styleUrls: ['./dashboard-list.component.scss']
 })
 export class DashboardListComponent {

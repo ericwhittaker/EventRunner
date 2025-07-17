@@ -1,14 +1,45 @@
-import { Component, signal } from '@angular/core';
+import { Component, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FileMakerMigrationService } from '../services/filemaker-migration-new.service';
+import { FileMakerMigrationService } from '../services/filemaker-migration.service';
+import { EventService } from '../services/event-v2.service';
 
 @Component({
   selector: 'app-migration',
   standalone: true,
   imports: [CommonModule],
   template: `
-    <div class="migration-container">
-      <h2>FileMaker to Firestore Migration</h2>
+        <div class="migration-container">
+      <h2>Data Migration & Admin Tools</h2>
+      
+      <!-- Sample Event Generation Section -->
+      <div class="upload-section">
+        <h3>Generate Sample Events</h3>
+        <p>Generate sample events for testing dashboard functionality (10 events: some live, some future, 2 tentative, 3 post-show)</p>
+        
+        <div class="migration-controls">
+          <button 
+            (click)="generateSampleEvents()" 
+            [disabled]="isGeneratingEvents()"
+            class="migrate-btn">
+            {{ isGeneratingEvents() ? 'Generating...' : 'Generate Sample Events' }}
+          </button>
+          
+          <button 
+            (click)="clearSampleEvents()" 
+            [disabled]="isGeneratingEvents()"
+            class="clear-btn">
+            Clear Sample Events
+          </button>
+        </div>
+        
+        <div class="event-generation-status" *ngIf="generationMessage()">
+          <p>{{ generationMessage() }}</p>
+        </div>
+      </div>
+      
+      <!-- FileMaker Migration Section -->
+      <div class="upload-section">
+        <h3>FileMaker Data Migration</h3>
       
       <div class="upload-section">
         <h3>Upload CSV Files</h3>
@@ -53,19 +84,20 @@ import { FileMakerMigrationService } from '../services/filemaker-migration-new.s
       <div class="migration-controls">
         <button 
           (click)="startMigration()" 
-          [disabled]="migrationService.migrationStatus() === 'running' || getUploadedFilesCount() === 0"
+          [disabled]="false"
           class="migrate-btn">
-          {{ migrationService.migrationStatus() === 'running' ? 'Migrating...' : 'Start Migration' }}
+          Start Migration (Disabled)
         </button>
         
         <button 
           (click)="clearData()" 
-          [disabled]="migrationService.migrationStatus() === 'running'"
+          [disabled]="false"
           class="clear-btn">
-          Clear Migration Data
+          Clear Migration Data (Disabled)
         </button>
       </div>
       
+      <!--
       <div class="migration-status" *ngIf="migrationService.migrationStatus() !== 'idle'">
         <h3>Migration Status</h3>
         <div class="progress-bar">
@@ -83,6 +115,7 @@ import { FileMakerMigrationService } from '../services/filemaker-migration-new.s
           </div>
         </div>
       </div>
+      -->
     </div>
   `,
   styles: [`
@@ -228,6 +261,12 @@ import { FileMakerMigrationService } from '../services/filemaker-migration-new.s
 export class MigrationComponent {
   uploadedFiles = signal<{ [key: string]: boolean }>({});
   csvData: { [tableName: string]: any[] } = {};
+  
+  // Sample event generation signals
+  isGeneratingEvents = signal<boolean>(false);
+  generationMessage = signal<string>('');
+  
+  private eventService = inject(EventService);
 
   constructor(public migrationService: FileMakerMigrationService) {}
 
@@ -236,6 +275,7 @@ export class MigrationComponent {
   }
 
   onFileSelected(event: any, tableName: string) {
+    /*
     const file = event.target.files[0];
     if (file) {
       const reader = new FileReader();
@@ -246,9 +286,12 @@ export class MigrationComponent {
       };
       reader.readAsText(file);
     }
+    */
+    console.log('FileMaker migration temporarily disabled');
   }
 
   async startMigration() {
+    /*
     if (Object.keys(this.csvData).length === 0) {
       alert('Please upload at least one CSV file before starting migration.');
       return;
@@ -260,16 +303,212 @@ export class MigrationComponent {
     } catch (error) {
       alert(`Migration failed: ${error}`);
     }
+    */
+    alert('FileMaker migration temporarily disabled. Use "Generate Sample Events" instead.');
   }
 
   async clearData() {
+    /*
     if (confirm('Are you sure you want to clear all migration data? This cannot be undone.')) {
       await this.migrationService.clearMigrationData();
       alert('Migration data cleared successfully!');
     }
+    */
+    alert('FileMaker migration temporarily disabled.');
   }
 
   trackByLog(index: number, log: string): string {
     return log;
+  }
+
+  // Sample Event Generation Methods
+  async generateSampleEvents() {
+    this.isGeneratingEvents.set(true);
+    this.generationMessage.set('Generating sample events...');
+
+    try {
+      const sampleEvents = this.createSampleEventsData();
+      
+      // Add events one by one
+      for (let i = 0; i < sampleEvents.length; i++) {
+        const event = sampleEvents[i];
+        await this.eventService.addEvent(event);
+        this.generationMessage.set(`Generated ${i + 1}/${sampleEvents.length} events...`);
+      }
+      
+      this.generationMessage.set(`Successfully generated ${sampleEvents.length} sample events!`);
+      
+      // Clear message after 3 seconds
+      setTimeout(() => {
+        this.generationMessage.set('');
+      }, 3000);
+      
+    } catch (error) {
+      this.generationMessage.set(`Error generating events: ${error}`);
+      console.error('Error generating sample events:', error);
+    } finally {
+      this.isGeneratingEvents.set(false);
+    }
+  }
+
+  async clearSampleEvents() {
+    if (confirm('Are you sure you want to clear all sample events? This will remove events created by the generator.')) {
+      this.isGeneratingEvents.set(true);
+      this.generationMessage.set('Clearing sample events...');
+
+      try {
+        // Get all events and filter by ones that look like sample events
+        const allEvents = this.eventService.events();
+        const sampleEventNames = [
+          'Rock Concert Live Tonight', 'Tech Conference 2024', 'Art Gallery Opening',
+          'Music Festival Summer', 'Food & Wine Expo', 'Sports Championship',
+          'Comedy Show Special', 'Fashion Week Finale', 'Gaming Tournament',
+          'Book Launch Event'
+        ];
+        
+        const sampleEvents = allEvents.filter(event => 
+          sampleEventNames.some(name => event.name?.includes(name.split(' ')[0]))
+        );
+
+        for (const event of sampleEvents) {
+          if (event.id) {
+            await this.eventService.deleteEvent(event.id);
+          }
+        }
+        
+        this.generationMessage.set(`Cleared ${sampleEvents.length} sample events.`);
+        
+        // Clear message after 3 seconds
+        setTimeout(() => {
+          this.generationMessage.set('');
+        }, 3000);
+        
+      } catch (error) {
+        this.generationMessage.set(`Error clearing events: ${error}`);
+        console.error('Error clearing sample events:', error);
+      } finally {
+        this.isGeneratingEvents.set(false);
+      }
+    }
+  }
+
+  private createSampleEventsData() {
+    const now = new Date();
+    const events = [];
+
+    // Helper function to create dates
+    const addDays = (date: Date, days: number) => {
+      const result = new Date(date);
+      result.setDate(result.getDate() + days);
+      return result;
+    };
+
+    const addHours = (date: Date, hours: number) => {
+      const result = new Date(date);
+      result.setHours(result.getHours() + hours);
+      return result;
+    };
+
+    // 1. Live Event (happening now)
+    events.push({
+      name: 'Rock Concert Live Tonight',
+      startDate: addHours(now, -1), // Started 1 hour ago
+      endDate: addHours(now, 2), // Ends in 2 hours
+      eventStatus: 'Confirmed' as const,
+      location: 'Madison Square Garden',
+      description: 'Amazing rock concert with top artists'
+    });
+
+    // 2. Another Live Event
+    events.push({
+      name: 'Tech Conference 2024',
+      startDate: addHours(now, -2), // Started 2 hours ago
+      endDate: addHours(now, 6), // Ends in 6 hours
+      eventStatus: 'Confirmed' as const,
+      location: 'Convention Center',
+      description: 'Latest trends in technology and innovation'
+    });
+
+    // 3. Future Event (next week)
+    events.push({
+      name: 'Art Gallery Opening',
+      startDate: addDays(now, 7),
+      endDate: addDays(addHours(now, 3), 7),
+      eventStatus: 'Confirmed' as const,
+      location: 'Downtown Art Gallery',
+      description: 'Exclusive art exhibition opening'
+    });
+
+    // 4. Future Event (next month)
+    events.push({
+      name: 'Music Festival Summer',
+      startDate: addDays(now, 30),
+      endDate: addDays(addHours(now, 8), 30),
+      eventStatus: 'Confirmed' as const,
+      location: 'Central Park',
+      description: 'Three-day music festival with multiple stages'
+    });
+
+    // 5. Future Event (next month)
+    events.push({
+      name: 'Food & Wine Expo',
+      startDate: addDays(now, 45),
+      endDate: addDays(addHours(now, 6), 45),
+      eventStatus: 'Confirmed' as const,
+      location: 'Exhibition Hall',
+      description: 'Culinary experience with world-class chefs'
+    });
+
+    // 6. Tentative Event #1
+    events.push({
+      name: 'Sports Championship',
+      startDate: addDays(now, 14),
+      endDate: addDays(addHours(now, 4), 14),
+      eventStatus: 'Tentative' as const,
+      location: 'Sports Arena',
+      description: 'Championship finals - date to be confirmed'
+    });
+
+    // 7. Tentative Event #2  
+    events.push({
+      name: 'Comedy Show Special',
+      startDate: addDays(now, 21),
+      endDate: addDays(addHours(now, 2), 21),
+      eventStatus: 'Tentative' as const,
+      location: 'Comedy Club',
+      description: 'Special comedy night - waiting for artist confirmation'
+    });
+
+    // 8. Post-show Event #1 (ended yesterday)
+    events.push({
+      name: 'Fashion Week Finale',
+      startDate: addDays(now, -2),
+      endDate: addDays(addHours(now, -1), -1),
+      eventStatus: 'Confirmed' as const,
+      location: 'Fashion District',
+      description: 'Grand finale of fashion week'
+    });
+
+    // 9. Post-show Event #2 (ended last week)
+    events.push({
+      name: 'Gaming Tournament',
+      startDate: addDays(now, -7),
+      endDate: addDays(addHours(now, 5), -7),
+      eventStatus: 'Confirmed' as const,
+      location: 'Gaming Arena',
+      description: 'Professional esports tournament'
+    });
+
+    // 10. Post-show Event #3 (ended last month)
+    events.push({
+      name: 'Book Launch Event',
+      startDate: addDays(now, -30),
+      endDate: addDays(addHours(now, 2), -30),
+      eventStatus: 'Confirmed' as const,
+      location: 'Bookstore Main',
+      description: 'Bestselling author book launch and signing'
+    });
+
+    return events;
   }
 }
