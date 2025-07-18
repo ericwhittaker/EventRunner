@@ -4,7 +4,6 @@ import { MainDashboardRow } from './dashboard-list.component';
 
 @Component({
   selector: 'app-dashboard-list-v3',
-  standalone: true,
   template: `
     <div>
       <div class="dashboard-card-header">Main Dashboard (V3 - Modern Control Flow)</div>
