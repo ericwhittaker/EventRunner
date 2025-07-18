@@ -1,14 +1,15 @@
+/** ANGULAR (CORE) */
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { MenuComponent } from '../menu.component';
 import { CommonModule } from '@angular/common';
 import { FileSystemService } from '../../services/file-system.service';
 
 @Component({
   selector: 'app-event-detail',
-  imports: [MenuComponent, CommonModule],
+  imports: [
+    CommonModule
+  ],
   template: `
-    <app-menu></app-menu>
     <div class="subnav-container">
       <div class="subnav-left">
         <button class="btn btn-secondary" (click)="goBack()">

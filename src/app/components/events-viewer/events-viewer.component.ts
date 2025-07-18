@@ -1,14 +1,15 @@
+/** ANGULARE (CORE) */
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { MenuComponent } from '../menu.component';
 import { CommonModule } from '@angular/common';
 import { EventService } from '../../services/event-v2.service';
 
 @Component({
   selector: 'app-events-viewer',
-  imports: [MenuComponent, CommonModule],
+  imports: [
+    CommonModule
+  ],
   template: `
-    <app-menu></app-menu>
     <div class="page-header">
       <h1>Events Dashboard</h1>
       <button class="btn-primary" (click)="runMigration()">� Run Migration</button>

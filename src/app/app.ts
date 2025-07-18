@@ -2,13 +2,13 @@
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 
-import { MenuComponent } from './components/menu.component';
+import { Header } from './components/shared/header/header';
 
 @Component({
   selector: 'app-root',
   imports: [
     RouterOutlet,
-    MenuComponent
+    Header
   ],
   templateUrl: './app.html',
   styleUrl: './app.scss'

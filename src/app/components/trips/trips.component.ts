@@ -1,5 +1,5 @@
+/** ANGULAR (CORE) */
 import { Component } from '@angular/core';
-import { MenuComponent } from '../menu.component';
 import { CommonModule } from '@angular/common';
 
 @Component({

@@ -1,12 +1,13 @@
+/** ANGULARE (CORE) */
 import { Component } from '@angular/core';
-import { MenuComponent } from '../menu.component';
 import { SubMenuComponent } from '../submenu.component';
 
 @Component({
   selector: 'app-events',
-  imports: [MenuComponent, SubMenuComponent],
+  imports: [
+    SubMenuComponent
+  ],
   template: `
-    <app-menu></app-menu>
     <div class="subheader-row">
       <app-submenu></app-submenu>
     </div>
