@@ -1,1 +1,11 @@
-<p>subheader works!</p>
+<!--
+  SUBHEADER COMPONENT HTML
+  ##############################################################################################
+  ##############################################################################################
+  @note This layout uses ng-content slots for flexible subheader design.
+-->
+<div class="er-subheader">
+  <!-- Flexible slot: project any content here -->
+  <ng-content></ng-content>
+  <div class="er-subheader-accent" [ngStyle]="{ background: accentColor() }"></div>
+</div>

@@ -1,15 +1,12 @@
 /** ANGULARE (CORE) */
 import { Component } from '@angular/core';
-import { SubMenuComponent } from '../submenu.component';
 
 @Component({
   selector: 'app-events',
   imports: [
-    SubMenuComponent
   ],
   template: `
     <div class="subheader-row">
-      <app-submenu></app-submenu>
     </div>
     <div class="page-content">
       <h2>Events Management</h2>

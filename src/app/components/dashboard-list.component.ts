@@ -13,6 +13,10 @@ export interface MainDashboardRow extends BaseDashboardRow {
   daysOut?: number; // Days until/since event (shows in Status column)
 }
 
+/** Need to move this interface to the v3 dashboard and change the name of dashboard to events i think and clean up the other events component...
+ * Maybe call it eventsListView and eventsDetailedView? 
+ */
+
 @Component({
   selector: 'app-dashboard-list',
   standalone: true,

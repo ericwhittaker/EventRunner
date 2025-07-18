@@ -1,8 +1,10 @@
 /** ANGULAR (CORE) */
 import { Component, OnInit, inject, signal, effect } from '@angular/core';
+import { ActionButtons } from '../shared/action-buttons/action-buttons';
 
 /** COMPONENTS */
-import { SubMenuComponent } from '../submenu.component';
+
+import { Subheader } from '../shared/subheader/subheader';
 import { MainDashboardRow } from '../dashboard-list.component';
 import { DashboardListV3Component } from '../dashboard-list-v3.component';
 import { TentativeListComponent, TentativeRow } from '../tentative-list.component';
@@ -41,14 +43,15 @@ import { EventDataV3Service } from '../../services/eventData-v3.service';
 @Component({
   selector: 'app-dashboard',
   imports: [
-    SubMenuComponent,
+    ActionButtons,
     // DashboardListComponent,
     DashboardListV3Component,
     TentativeListComponent,
-    PostShowListComponent
-  ],
+    PostShowListComponent,
+    Subheader
+],
   templateUrl: './dashboard.component.html',
-  styleUrl: '../../app.scss'
+  styleUrls: ['../../app.scss', './events.scss']
 })
 export class DashboardComponent implements OnInit {
 
