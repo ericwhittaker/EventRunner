@@ -1,7 +1,7 @@
 /** ANGULAR (CORE) */
 import { Component, OnInit, inject, signal, effect } from '@angular/core';
 
-import { MenuComponent } from '../menu.component';
+/** COMPONENTS */
 import { SubMenuComponent } from '../submenu.component';
 import { MainDashboardRow } from '../dashboard-list.component';
 import { DashboardListV3Component } from '../dashboard-list-v3.component';
@@ -41,7 +41,6 @@ import { EventDataV3Service } from '../../services/eventData-v3.service';
 @Component({
   selector: 'app-dashboard',
   imports: [
-    MenuComponent,
     SubMenuComponent,
     // DashboardListComponent,
     DashboardListV3Component,

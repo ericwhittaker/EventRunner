@@ -1,12 +1,13 @@
+/** ANGULAR (CORE) */
 import { Component } from '@angular/core';
-import { MenuComponent } from '../menu.component';
 import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-venues',
-  imports: [MenuComponent, CommonModule],
+  imports: [
+    CommonModule
+  ],
   template: `
-    <app-menu></app-menu>
     <div class="subnav-container">
       <div class="subnav-left">
         <button class="action-btn">Add Venue</button>

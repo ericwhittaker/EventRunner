@@ -1,5 +1,5 @@
+/** ANGULAR (CORE) */
 import { Component, signal } from '@angular/core';
-import { MenuComponent } from '../menu.component';
 import { CommonModule } from '@angular/common';
 import { APP_VERSION } from '../../version';
 import { FileMakerMigrationService } from '../../services/filemaker-migration-new.service';
@@ -8,9 +8,10 @@ import { FirebaseService } from '../../services/firebase-v2.service';
 
 @Component({
   selector: 'app-admin',
-  imports: [MenuComponent, CommonModule],
+  imports: [
+    CommonModule
+  ],
   template: `
-    <app-menu></app-menu>
     <div class="subnav-container">
       <div class="subnav-left">
         <button class="action-btn">System Settings</button>

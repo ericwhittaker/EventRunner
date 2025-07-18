@@ -4,9 +4,10 @@ import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-trips',
-  imports: [MenuComponent, CommonModule],
+  imports: [
+    CommonModule
+  ],
   template: `
-    <app-menu></app-menu>
     <div class="subnav-container">
       <div class="subnav-left">
         <button class="action-btn">Add Trip</button>
