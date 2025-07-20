@@ -20,7 +20,7 @@ import { CommonModule } from '@angular/common';
         <div class="nav-item">Activity Log</div>
       </div>
       <div class="subnav-right">
-        <span class="module-title">User Management</span>
+        <input type="text" placeholder="Search users..." class="search-input">
       </div>
     </div>
     <div class="page-content">
@@ -91,7 +91,8 @@ import { CommonModule } from '@angular/common';
     .subnav-container { background: #f8f9fa; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #dee2e6; }
     .subnav-left { display: flex; gap: 10px; }
     .subnav-center { display: flex; gap: 20px; }
-    .subnav-right { font-weight: 600; color: #495057; }
+    .subnav-right { display: flex; align-items: center; }
+    .search-input { padding: 6px 12px; border: 1px solid #ddd; border-radius: 4px; }
     .action-btn { background: #007bff; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; }
     .nav-item { padding: 8px 16px; cursor: pointer; border-radius: 4px; }
     .nav-item.active { background: #007bff; color: white; }

@@ -19,3 +19,63 @@
     <input class="search-input" type="text" placeholder="Search Events" />
   </div>
 </div>
+
+<!-- Dynamic sub menu section -->
+<div class="header-submenu-container">
+  @if (currentSection() === 'events') {
+    <button class="header-submenu-btn active">Current</button>
+    <button class="header-submenu-btn">Live</button>
+    <button class="header-submenu-btn">NoGo</button>
+    <button class="header-submenu-btn">All</button>
+    <button class="header-submenu-btn">Last 14 Days</button>
+    <button class="header-submenu-btn">10 Days Out</button>
+    <button class="header-submenu-btn">Installs</button>
+  }
+  @if (currentSection() === 'build') {
+    <button class="header-submenu-btn active">In Progress</button>
+    <button class="header-submenu-btn">Completed</button>
+    <button class="header-submenu-btn">Scheduled</button>
+    <button class="header-submenu-btn">Archived</button>
+  }
+  @if (currentSection() === 'trips') {
+    <button class="header-submenu-btn active">Active Trips</button>
+    <button class="header-submenu-btn">Completed</button>
+    <button class="header-submenu-btn">Add Trip</button>
+    <button class="header-submenu-btn">Add Vehicle</button>
+  }
+  @if (currentSection() === 'vehicles') {
+    <button class="header-submenu-btn active">All Vehicles</button>
+    <button class="header-submenu-btn">Add Vehicle</button>
+    <button class="header-submenu-btn">In Service</button>
+    <button class="header-submenu-btn">Maintenance</button>
+  }
+  @if (currentSection() === 'venues') {
+    <button class="header-submenu-btn active">All Venues</button>
+    <button class="header-submenu-btn">Add Venue</button>
+    <button class="header-submenu-btn">Import</button>
+    <button class="header-submenu-btn">Search</button>
+  }
+  @if (currentSection() === 'contacts') {
+    <button class="header-submenu-btn active">All Contacts</button>
+    <button class="header-submenu-btn">Add Contact</button>
+    <button class="header-submenu-btn">Import</button>
+    <button class="header-submenu-btn">Clients</button>
+    <button class="header-submenu-btn">Vendors</button>
+    <button class="header-submenu-btn">Recently Added</button>
+    <button class="header-submenu-btn">Search</button>
+  }
+  @if (currentSection() === 'users') {
+    <button class="header-submenu-btn active">Active Users</button>
+    <button class="header-submenu-btn">Add User</button>
+    <button class="header-submenu-btn">Manage Roles</button>
+    <button class="header-submenu-btn">Edit</button>
+  }
+  @if (currentSection() === 'admin') {
+    <button class="header-submenu-btn active">System Settings</button>
+    <button class="header-submenu-btn">Backup</button>
+    <button class="header-submenu-btn">Dashboard</button>
+    <button class="header-submenu-btn">System Health</button>
+    <button class="header-submenu-btn">Logs</button>
+    <button class="header-submenu-btn">Database</button>
+  }
+</div>

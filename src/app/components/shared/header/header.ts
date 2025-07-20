@@ -1,5 +1,5 @@
 /** ANGULAR (CORE) */
-import { Component, OnInit, OnDestroy, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 /** ANGULAR (ROUTER) */
 import { Router } from '@angular/router';
@@ -88,6 +88,7 @@ export class Header implements OnInit {
 
   public version: string = APP_VERSION; // Use static version directly
   private static cachedElectronVersion: string | null = null; // Cache the Electron version
+  public readonly currentSection = signal('events'); // Signal for current section (used for dynamic sub menu)
 
   /** END of SECTION */
 
@@ -130,6 +131,7 @@ export class Header implements OnInit {
   ngOnInit() {
     console.log('(E-TRAK) File: header.ts #(ngOnInit())# CALLED');
     this.loadVersion();
+    this.setCurrentSectionFromRoute();
     console.log('(E-TRAK) File: header.ts #(ngOnInit())# END');
   }
 
@@ -227,6 +229,37 @@ export class Header implements OnInit {
    */
   isActive(route: string): boolean {
     return this.router.url.includes(route) || (route === 'dashboard' && this.router.url === '/');
+  }
+
+  /** 
+   * @method - This method sets the current section signal based on the route
+   * @description - Listens for route changes and updates currentSection accordingly
+   * @note - Keeps ngOnInit clean and readable
+   * ______________________________________________________________________________________________
+   * @param - none
+   * @returns - nothing
+   */
+  setCurrentSectionFromRoute() {
+    this.router.events.subscribe(() => {
+      const url = this.router.url;
+      if (url.includes('dashboard') || url === '/') {
+        this.currentSection.set('events');
+      } else if (url.includes('build-log')) {
+        this.currentSection.set('build');
+      } else if (url.includes('trips')) {
+        this.currentSection.set('trips');
+      } else if (url.includes('venues')) {
+        this.currentSection.set('venues');
+      } else if (url.includes('contacts')) {
+        this.currentSection.set('contacts');
+      } else if (url.includes('users')) {
+        this.currentSection.set('users');
+      } else if (url.includes('admin')) {
+        this.currentSection.set('admin');
+      } else {
+        this.currentSection.set('events');
+      }
+    });
   }
 
   /** END of SECTION */
