@@ -1,8 +1,8 @@
 import { Component, input, signal, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
-import { BaseDashboardRow, calculateEmptyRows } from '../../../shared/dashboard-list-types';
-import { getStatusClass } from '../../../shared/dashboard-utils';
+import { BaseDashboardRow, calculateEmptyRows } from '../../dashboard-list-types';
+import { getStatusClass } from '../../dashboard-utils';
 
 export interface MainDashboardRow extends BaseDashboardRow {
   eventId: { html: string };

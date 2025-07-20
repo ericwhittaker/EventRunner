@@ -7,10 +7,10 @@ import { ActionButtons } from '../shared/action-buttons/action-buttons';
 import { Subheader } from '../shared/subheader/subheader';
 import { MainDashboardRow } from './events-tables/events-main-table/dashboard-list.component';
 import { DashboardListV3Component } from './events-tables/events-main-table/dashboard-list-v3.component';
-import { TentativeListComponent, TentativeRow } from '../tentative-list.component';
-import { PostShowListComponent, PostShowRow } from '../postshow-list.component';
+import { TentativeListComponent, TentativeRow } from './events-tables/events-tentative-table/tentative-list.component';
+import { PostShowListComponent, PostShowRow } from './events-tables/events-postshow-table/postshow-list.component';
 import { ActionButtonService } from '../shared/action-buttons/action-button.service';
-import { calculateDaysOut, getStatusIcon } from '../shared/dashboard-utils';
+import { calculateDaysOut, getStatusIcon } from './dashboard-utils';
 import { EventService, Event } from '../../services/event-v2.service';
 import { EventDataV3Service } from '../../services/eventData-v3.service';
 
