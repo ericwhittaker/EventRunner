@@ -69,7 +69,7 @@ import { MainDashboardRow } from './dashboard-list.component';
       </div>
     </div>
   `,
-  styleUrl: '../../../app.scss',
+  styleUrl: '../../../../app.scss',
 })
 export class DashboardListV3Component {
   /** INPUT SIGNALS - Modern Angular approach */

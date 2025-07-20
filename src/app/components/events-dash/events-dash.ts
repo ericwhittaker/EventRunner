@@ -5,8 +5,8 @@ import { ActionButtons } from '../shared/action-buttons/action-buttons';
 /** COMPONENTS */
 
 import { Subheader } from '../shared/subheader/subheader';
-import { MainDashboardRow } from './events-tables/dashboard-list.component';
-import { DashboardListV3Component } from './events-tables/dashboard-list-v3.component';
+import { MainDashboardRow } from './events-tables/events-main-table/dashboard-list.component';
+import { DashboardListV3Component } from './events-tables/events-main-table/dashboard-list-v3.component';
 import { TentativeListComponent, TentativeRow } from '../tentative-list.component';
 import { PostShowListComponent, PostShowRow } from '../postshow-list.component';
 import { ActionButtonService } from '../shared/action-buttons/action-button.service';
