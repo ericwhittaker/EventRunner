@@ -1,5 +1,6 @@
 /** ANGULAR (CORE) */
-import { Component, input } from '@angular/core';
+import { Component, input, inject } from '@angular/core';
+import { Router } from '@angular/router';
 import { MainDashboardRow } from './dashboard-list.component';
 
 @Component({
@@ -25,7 +26,7 @@ import { MainDashboardRow } from './dashboard-list.component';
         </thead>
         <tbody>
           @for (row of data(); track row.eventId.html) {
-            <tr>
+            <tr (click)="openEventDetail(row.eventId.html)" style="cursor:pointer;">
               <td>{{ row.start }}</td>
               <td>{{ row.end }}</td>
               <td>{{ row.eventName }}</td>
@@ -74,7 +75,16 @@ export class DashboardListV3Component {
   /** INPUT SIGNALS - Modern Angular approach */
   data = input.required<MainDashboardRow[]>();
 
+  public router = inject(Router);
   constructor() {
     console.log('🆕 DashboardListV3Component created with modern control flow');
+  }
+
+  openEventDetail(eventIdHtml: string) {
+    // Extract event ID from HTML string (e.g., <span class="event-id">8591</span>)
+    const match = eventIdHtml.match(/>([^<]+)</);
+    const eventId = match ? match[1].trim() : 'unknown';
+    console.log('[DashboardListV3] Clicked event row:', { eventIdHtml, eventId });
+    this.router.navigate(['event', eventId]);
   }
 }

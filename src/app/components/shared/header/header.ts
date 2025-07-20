@@ -228,7 +228,15 @@ export class Header implements OnInit {
    * ______________________________________________________________________________________________
    */
   isActive(route: string): boolean {
-    return this.router.url.includes(route) || (route === 'dashboard' && this.router.url === '/');
+    if (route === 'dashboard') {
+      // Active for dashboard and event detail routes
+      return (
+        this.router.url === '/' ||
+        this.router.url.includes('dashboard') ||
+        /\/event\//.test(this.router.url)
+      );
+    }
+    return this.router.url.includes(route);
   }
 
   /** 
@@ -256,6 +264,8 @@ export class Header implements OnInit {
         this.currentSection.set('users');
       } else if (url.includes('admin')) {
         this.currentSection.set('admin');
+      } else if (/\/event\//.test(url)) {
+        this.currentSection.set('event');
       } else {
         this.currentSection.set('events');
       }

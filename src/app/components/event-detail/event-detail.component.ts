@@ -12,25 +12,13 @@ import { FileSystemService } from '../../services/file-system.service';
   template: `
     <div class="subnav-container">
       <div class="subnav-left">
-        <button class="btn btn-secondary" (click)="goBack()">
-          <i class="fas fa-arrow-left"></i>
-          <span>Back to Dashboard</span>
-        </button>
-        <button class="btn btn-primary">
-          <i class="fas fa-edit"></i>
-          <span>Edit Event</span>
-        </button>
-        <button class="btn btn-success" (click)="openFileManager()" [disabled]="isOpeningFolder()">
-          <i class="fas" [class.fa-spinner]="isOpeningFolder()" [class.fa-spin]="isOpeningFolder()" [class.fa-folder-open]="!isOpeningFolder()"></i>
-          <span>{{ isOpeningFolder() ? 'Opening...' : 'Open Files' }}</span>
-        </button>
+
       </div>
-      <div class="subnav-center">
-        <div class="nav-item active">Overview</div>
-        <div class="nav-item">Equipment</div>
-        <div class="nav-item">Crew</div>
-        <div class="nav-item">Timeline</div>
-        <div class="nav-item">Notes</div>
+      <div class="subnav-center event-detail-menu">
+
+
+
+
       </div>
       <div class="subnav-right">
         <span class="event-id">Event #{{ eventId }}</span>
@@ -133,6 +121,33 @@ import { FileSystemService } from '../../services/file-system.service';
     </div>
   `,
   styles: [`
+    .event-detail-menu {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+    .menu-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: #e8f4fd;
+      color: #003043;
+      border: none;
+      border-radius: 4px;
+      padding: 6px 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.2s;
+      font-size: 14px;
+    }
+    .menu-btn:hover {
+      background: #b3e6fb;
+    }
+    .menu-btn i {
+      font-size: 16px;
+      min-width: 20px;
+      text-align: center;
+    }
     .page-content { padding: 20px; max-width: 1400px; margin: 0 auto; }
     .content-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; }
     .card { background: white; border-radius: 8px; padding: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }

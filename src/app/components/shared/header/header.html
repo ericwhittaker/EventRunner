@@ -23,13 +23,42 @@
 <!-- Dynamic sub menu section -->
 <div class="header-submenu-container">
   @if (currentSection() === 'events') {
-    <button class="header-submenu-btn active">Current</button>
+    <!-- <button class="header-submenu-btn active">Current</button>
     <button class="header-submenu-btn">Live</button>
     <button class="header-submenu-btn">NoGo</button>
     <button class="header-submenu-btn">All</button>
     <button class="header-submenu-btn">Last 14 Days</button>
     <button class="header-submenu-btn">10 Days Out</button>
-    <button class="header-submenu-btn">Installs</button>
+    <button class="header-submenu-btn">Installs</button> -->
+  }
+  @if (currentSection() === 'event') {
+    <button class="btn btn-secondary back-to-dashboard-btn" (click)="navigateTo('dashboard')">
+      <i class="fas fa-arrow-left"></i>
+      <span>Back to Dashboard</span>
+    </button>
+    <div class="header-submenu-center">
+      <button class="header-submenu-btn active">
+        <i class="fa fa-forward"></i> Advance
+      </button>
+      <button class="header-submenu-btn">
+        <i class="fa fa-info-circle"></i> Additional Info
+      </button>
+      <button class="header-submenu-btn">
+        <i class="fa fa-list-check"></i> To Do
+      </button>
+      <button class="header-submenu-btn">
+        <i class="fa fa-hammer"></i> Build Tasks
+      </button>
+      <button class="header-submenu-btn">
+        <i class="fa fa-bolt"></i> ELS
+      </button>
+      <button class="header-submenu-btn">
+        <i class="fa fa-file-invoice-dollar"></i> Invoice
+      </button>
+      <button class="header-submenu-btn">
+        <i class="fa fa-calendar-check"></i> Post Show
+      </button>
+    </div>
   }
   @if (currentSection() === 'build') {
     <button class="header-submenu-btn active">In Progress</button>

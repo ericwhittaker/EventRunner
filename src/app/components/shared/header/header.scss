@@ -2,12 +2,11 @@
   background: #f8fbff;
   border-bottom: 2px solid #00BAFB;
   box-shadow: 0 2px 6px rgba(0, 186, 251, 0.08);
-  padding: 8px 16px;
+  padding: 4px 16px 4px 183px;
   display: flex;
   align-items: center;
-  justify-content: center;
+  min-height: 40px;
   gap: 12px;
-  min-height: 44px;
   font-size: 13px;
   color: #003043;
 }
@@ -21,6 +20,14 @@
   font-weight: 500;
   cursor: pointer;
   transition: background 0.2s;
+  min-width: 140px;
+  max-width: 180px;
+  flex: 1 1 140px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  text-align: left;
 }
 .header-submenu-btn.active {
   background: #00BAFB;
@@ -28,6 +35,49 @@
 }
 .header-submenu-btn:hover {
   background: #b3e6fb;
+}
+
+// Back to Dashboard button styling - exact match to original btn-secondary
+.back-to-dashboard-btn {
+  background: linear-gradient(135deg, #6c757d 0%, #545b62 100%);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 10px 16px;
+  font-weight: 500;
+  margin-right: 16px;
+  min-width: 120px;
+  max-width: none;
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  box-shadow: 0 2px 4px rgba(108, 117, 125, 0.3);
+}
+.back-to-dashboard-btn:hover:not(:disabled) {
+  background: linear-gradient(135deg, #545b62 0%, #383d41 100%);
+  box-shadow: 0 4px 8px rgba(108, 117, 125, 0.4);
+  transform: translateY(-1px);
+}
+
+// Centered submenu container for event detail buttons
+.header-submenu-center {
+  display: flex;
+  justify-content: center;
+  flex: 1;
+  gap: 10px;
+}
+.header-submenu-center .header-submenu-btn {
+  min-width: 110px;
+  max-width: 140px;
+  flex: 1 1 0;
+  padding: 6px 12px;
+  font-size: 13px;
 }
 /* FileMaker Menu Component Styling */
 .menu-container {
