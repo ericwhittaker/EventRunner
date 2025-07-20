@@ -5,7 +5,7 @@ import { Routes } from '@angular/router';
 /** TBD */
 
 /** COMPONENTS - (VIEWS) */
-import { DashboardComponent } from './components/dashboard/dashboard.component';
+import { EventsDashComponent } from './components/events-dash/events-dash';
 import { TripsComponent } from './components/trips/trips.component';
 import { BuildTasksComponent } from './components/build-tasks/build-tasks';
 import { VenuesComponent } from './components/venues/venues.component';
@@ -28,10 +28,10 @@ console.log('(E-TRAK) File: app.routes.ts #(const routes)# is being created.');
 
 export const routes: Routes = [
   {
-    path: '', component: DashboardComponent
+    path: '', component: EventsDashComponent
   },
   {
-    path: 'dashboard', component: DashboardComponent
+    path: 'dashboard', component: EventsDashComponent
   },
   {
     path: 'trips', component: TripsComponent

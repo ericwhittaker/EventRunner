@@ -5,8 +5,8 @@ import { ActionButtons } from '../shared/action-buttons/action-buttons';
 /** COMPONENTS */
 
 import { Subheader } from '../shared/subheader/subheader';
-import { MainDashboardRow } from '../dashboard-list.component';
-import { DashboardListV3Component } from '../dashboard-list-v3.component';
+import { MainDashboardRow } from './events-tables/dashboard-list.component';
+import { DashboardListV3Component } from './events-tables/dashboard-list-v3.component';
 import { TentativeListComponent, TentativeRow } from '../tentative-list.component';
 import { PostShowListComponent, PostShowRow } from '../postshow-list.component';
 import { ActionButtonService } from '../shared/action-buttons/action-button.service';
@@ -50,10 +50,10 @@ import { EventDataV3Service } from '../../services/eventData-v3.service';
     PostShowListComponent,
     Subheader
 ],
-  templateUrl: './dashboard.component.html',
-  styleUrls: ['../../app.scss', './events.scss']
+  templateUrl: './events-dash.html',
+  styleUrls: ['../../app.scss', './events-dash.scss']
 })
-export class DashboardComponent implements OnInit {
+export class EventsDashComponent implements OnInit {
 
   /** DEV WORKAREA, NOTES, AND TODOs
    * ##############################################################################################
