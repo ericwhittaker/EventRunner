@@ -22,15 +22,6 @@
 
 <!-- Dynamic sub menu section -->
 <div class="header-submenu-container">
-  @if (currentSection() === 'events') {
-    <!-- <button class="header-submenu-btn active">Current</button>
-    <button class="header-submenu-btn">Live</button>
-    <button class="header-submenu-btn">NoGo</button>
-    <button class="header-submenu-btn">All</button>
-    <button class="header-submenu-btn">Last 14 Days</button>
-    <button class="header-submenu-btn">10 Days Out</button>
-    <button class="header-submenu-btn">Installs</button> -->
-  }
   @if (currentSection() === 'event') {
     <button class="btn btn-secondary back-to-dashboard-btn" (click)="navigateTo('dashboard')">
       <i class="fas fa-arrow-left"></i>

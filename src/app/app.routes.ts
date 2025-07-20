@@ -6,7 +6,6 @@ import { Routes } from '@angular/router';
 
 /** COMPONENTS - (VIEWS) */
 import { DashboardComponent } from './components/dashboard/dashboard.component';
-import { EventsViewerComponent } from './components/events-viewer/events-viewer.component';
 import { TripsComponent } from './components/trips/trips.component';
 import { BuildLogComponent } from './components/build-log/build-log.component';
 import { VenuesComponent } from './components/venues/venues.component';
@@ -33,9 +32,6 @@ export const routes: Routes = [
   },
   {
     path: 'dashboard', component: DashboardComponent
-  },
-  {
-    path: 'events', component: EventsViewerComponent
   },
   {
     path: 'trips', component: TripsComponent
