@@ -1,10 +1,14 @@
 /** ANGULAR (CORE) */
 import { Component, input, inject } from '@angular/core';
 import { Router } from '@angular/router';
-import { MainDashboardRow } from './dashboard-list.component';
+import { MainDashboardRow } from '../../dashboard-list-types'; 
+
+
+
+
 
 @Component({
-  selector: 'app-dashboard-list-v3',
+  selector: 'er-events-table-main',
   template: `
     <div>
       <div class="dashboard-card-header">Main Dashboard (V3 - Modern Control Flow)</div>
@@ -71,7 +75,7 @@ import { MainDashboardRow } from './dashboard-list.component';
   `,
   styleUrl: '../../../../app.scss',
 })
-export class DashboardListV3Component {
+export class EventsTableMainComponent {
   /** INPUT SIGNALS - Modern Angular approach */
   data = input.required<MainDashboardRow[]>();
 

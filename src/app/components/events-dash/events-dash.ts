@@ -5,11 +5,11 @@ import { ActionButtons } from '../shared/action-buttons/action-buttons';
 /** COMPONENTS */
 
 import { Subheader } from '../shared/subheader/subheader';
-import { MainDashboardRow } from './events-tables/events-main-table/dashboard-list.component';
-import { DashboardListV3Component } from './events-tables/events-main-table/dashboard-list-v3.component';
-import { TentativeListComponent, TentativeRow } from './events-tables/events-tentative-table/tentative-list.component';
-import { PostShowListComponent, PostShowRow } from './events-tables/events-postshow-table/postshow-list.component';
+import { EventsTableMainComponent } from './events-tables/events-table-main/events-table-main';
+import { EventsTableTentativeComponent, TentativeRow } from './events-tables/events-table-tentative/events-table-tentative';
+import { EventsTablePostShowComponent, PostShowRow } from './events-tables/events-table-postshow/events-table-postshow';
 import { ActionButtonService } from '../shared/action-buttons/action-button.service';
+import { MainDashboardRow } from './dashboard-list-types';
 import { calculateDaysOut, getStatusIcon } from './dashboard-utils';
 import { EventService, Event } from '../../services/event-v2.service';
 import { EventDataV3Service } from '../../services/eventData-v3.service';
@@ -45,9 +45,9 @@ import { EventDataV3Service } from '../../services/eventData-v3.service';
   imports: [
     ActionButtons,
     // DashboardListComponent,
-    DashboardListV3Component,
-    TentativeListComponent,
-    PostShowListComponent,
+    EventsTableMainComponent,
+    EventsTableTentativeComponent,
+    EventsTablePostShowComponent,
     Subheader
 ],
   templateUrl: './events-dash.html',

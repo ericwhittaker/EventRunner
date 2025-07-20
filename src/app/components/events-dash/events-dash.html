@@ -42,15 +42,15 @@
     
     <!-- V3 Dashboard (Modern Control Flow) -->
     <div class="dashboard-card dashboard-card-main" style="margin-top: 20px; border: 2px solid #4CAF50;">
-      <app-dashboard-list-v3 [data]="mainDashboardDataV3()"></app-dashboard-list-v3>
+      <er-events-table-main [data]="mainDashboardDataV3()"></er-events-table-main>
     </div>
     
     <div class="dashboard-bottom-row">
       <div class="dashboard-card dashboard-card-tentative">
-        <app-tentative-list [data]="tentativeData()"></app-tentative-list>
+        <er-events-table-tentative [data]="tentativeData()"></er-events-table-tentative>
       </div>
       <div class="dashboard-card dashboard-card-postshow">
-        <app-postshow-list [data]="postShowData()"></app-postshow-list>
+        <er-events-table-postshow [data]="postShowData()"></er-events-table-postshow>
       </div>
     </div>
     <!-- Debug info moved to bottom center -->

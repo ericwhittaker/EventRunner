@@ -18,3 +18,12 @@ export function calculateEmptyRows(currentRowCount: number, maxRows: number): nu
   const emptyCount = Math.max(0, maxRows - currentRowCount);
   return Array(emptyCount).fill(0).map((_, i) => i);
 }
+
+export interface MainDashboardRow extends BaseDashboardRow {
+  eventId: { html: string };
+  venue: string;
+  cityState: string;
+  providing: string;
+  toDo: number; // Count of todos
+  daysOut?: number; // Days until/since event (shows in Status column)
+}
