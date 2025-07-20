@@ -7,7 +7,7 @@ import { Routes } from '@angular/router';
 /** COMPONENTS - (VIEWS) */
 import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { TripsComponent } from './components/trips/trips.component';
-import { BuildLogComponent } from './components/build-log/build-log.component';
+import { BuildTasksComponent } from './components/build-tasks/build-tasks';
 import { VenuesComponent } from './components/venues/venues.component';
 import { ContactsComponent } from './components/contacts/contacts.component';
 import { UsersComponent } from './components/users/users.component';
@@ -37,7 +37,7 @@ export const routes: Routes = [
     path: 'trips', component: TripsComponent
   },
   {
-    path: 'build-log', component: BuildLogComponent
+    path: 'build-log', component: BuildTasksComponent
   },
   {
     path: 'venues', component: VenuesComponent

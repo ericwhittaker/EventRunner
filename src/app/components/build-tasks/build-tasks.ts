@@ -3,7 +3,7 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 @Component({
-  selector: 'app-build-log',
+  selector: 'er-build-tasks',
   imports: [
     CommonModule
   ],
@@ -90,5 +90,5 @@ import { CommonModule } from '@angular/common';
     .nav-item:hover:not(.active) { background: #e9ecef; }
   `]
 })
-export class BuildLogComponent {
+export class BuildTasksComponent {
 }
