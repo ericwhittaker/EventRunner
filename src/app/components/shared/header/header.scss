@@ -2,7 +2,7 @@
   background: #f8fbff;
   border-bottom: 2px solid #00BAFB;
   box-shadow: 0 2px 6px rgba(0, 186, 251, 0.08);
-  padding: 4px 16px 4px 183px;
+  padding: 4px 16px 4px 16px;
   display: flex;
   align-items: center;
   min-height: 40px;
@@ -165,4 +165,113 @@
 
 .search-input::placeholder {
   color: rgba(255, 255, 255, 0.7);
+}
+
+.subnav-left {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.subnav-center {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex: 1;
+  justify-content: center;
+}
+
+.nav-item {
+  background: #003043;
+  color: white;
+  padding: 4px 12px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.nav-item.active {
+  background: #0066cc;
+  font-weight: 600;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.nav-item:hover {
+  background: #015675;
+}
+
+.subnav-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 12px;
+}
+
+.user-tasks-section {
+  display: flex;
+  align-items: center;
+}
+
+.user-tasks {
+  color: #374151;
+  font-weight: 500;
+  font-size: 12px;
+}
+
+.task-buttons {
+  display: flex;
+  gap: 4px;
+}
+
+.task-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: #f8f9fa;
+  border: 1px solid #d1d5db;
+  color: #374151;
+  padding: 6px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s;
+  min-width: 45px;
+}
+
+.task-btn:hover {
+  background: #e9ecef;
+  border-color: #adb5bd;
+}
+
+.task-btn.new:hover {
+  background: #e3f2fd;
+  border-color: #90caf9;
+  color: #1565c0;
+}
+
+.task-btn.asap:hover {
+  background: #fff3e0;
+  border-color: #ffb74d;
+  color: #e65100;
+}
+
+.task-btn.wait:hover {
+  background: #f3e5f5;
+  border-color: #ce93d8;
+  color: #7b1fa2;
+}
+
+.btn-label {
+  font-size: 10px;
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+
+.btn-counter {
+  font-size: 11px;
+  font-weight: 700;
+  color: #666;
+  line-height: 1;
 }

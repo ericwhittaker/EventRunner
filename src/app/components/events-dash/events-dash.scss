@@ -1,35 +1,12 @@
-
-.submenu-root {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  width: 100%;
-  flex: 1;
-  justify-content: space-between;
-  gap: 0;
-}
 .subnav-left {
   display: flex;
   align-items: center;
   gap: 6px;
 }
 
-.tool-btn {
-  background: #f8f9fa;
-  border: 1px solid #d1d5db;
-  border-radius: 4px;
-  padding: 4px 8px;
-  font-size: 11px;
-  cursor: pointer;
-  color: #374151;
-  font-weight: 500;
-  transition: all 0.2s;
-}
 
-.tool-btn:hover {
-  background: #e5e7eb;
-  border-color: #9ca3af;
-}
+
+
 
 .subnav-center {
   display: flex;

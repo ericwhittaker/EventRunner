@@ -6,6 +6,8 @@ import { Router } from '@angular/router';
 /** APP (SERVICES) */
 import { APP_VERSION } from '../../../version';
 
+import { ActionButtons } from '../action-buttons/action-buttons';
+
 
 
 
@@ -36,7 +38,8 @@ import { APP_VERSION } from '../../../version';
 @Component({
   selector: 'er-header',
   imports: [
-    CommonModule
+    CommonModule,
+    ActionButtons
   ],
   templateUrl: './header.html',
   styleUrl: './header.scss'
@@ -251,7 +254,7 @@ export class Header implements OnInit {
     this.router.events.subscribe(() => {
       const url = this.router.url;
       if (url.includes('dashboard') || url === '/') {
-        this.currentSection.set('events');
+        this.currentSection.set('dashboard');
       } else if (url.includes('build-log')) {
         this.currentSection.set('build');
       } else if (url.includes('trips')) {
