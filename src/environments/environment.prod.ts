@@ -1,5 +1,7 @@
 export const environment = {
   production: true,
+  supabaseUrl: 'https://ytdmvxrhfhhgbnuvjhpq.supabase.co',
+  supabaseKey: 'sb_publishable_l74bkh4aHr24uWF6pdFwYw_WzhFA4nR',
   useEmulators: false, // Never use emulators in production
   firebase: {
     apiKey: "AIzaSyBWqKsIyRgjc9spUhLKmbAW8uyFbtHOp7I",
