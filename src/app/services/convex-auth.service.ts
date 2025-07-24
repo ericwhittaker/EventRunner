@@ -15,6 +15,9 @@ export class ConvexAuthService {
   public isAuthenticated = computed(() => this.convexService.isAuthenticated());
   public isLoading = computed(() => this.convexService.isLoading());
   public error = computed(() => this.convexService.authError());
+  
+  // Expose data signals
+  public users = computed(() => this.convexService.users());
 
   constructor() {
     console.log('(EventRunner) ConvexAuthService using enhanced ConvexService');

@@ -69,6 +69,7 @@ export class ConvexService {
   // Signals for reactive data
   public events = signal<ConvexEvent[]>([]);
   public venues = signal<ConvexVenue[]>([]);
+  public users = signal<User[]>([]);
   public isConnected = signal(false);
   
   // Auth signals
@@ -324,6 +325,26 @@ export class ConvexService {
       const venues = await this.client.query(api.venues.list, {});
       this.venues.set(venues);
       console.log('(EventRunner) File: convex.service.ts #(loadInitialData)# Venues loaded:', venues.length, 'venues');
+
+      // Load users (only if authenticated - admin feature)
+      if (this.isAuthenticated()) {
+        try {
+          const users = await this.client.query(api.users.listAllUsers, {});
+          // Transform Convex Auth users to our User interface
+          const transformedUsers = users.map(convexUser => ({
+            id: convexUser._id,
+            email: convexUser.email || '',
+            firstName: this.extractFirstName(convexUser.name || ''),
+            lastName: this.extractLastName(convexUser.name || ''),
+            role: 'user' // Default role for now
+          }));
+          this.users.set(transformedUsers);
+          console.log('(EventRunner) File: convex.service.ts #(loadInitialData)# Users loaded:', transformedUsers.length, 'users');
+        } catch (userError) {
+          console.warn('(EventRunner) File: convex.service.ts #(loadInitialData)# Could not load users (may not be admin):', userError);
+          this.users.set([]);
+        }
+      }
     } catch (error) {
       console.error('(EventRunner) File: convex.service.ts #(loadInitialData)# Error:', error);
       throw error;
@@ -333,6 +354,17 @@ export class ConvexService {
   // Method to refresh data manually
   public async refreshData(): Promise<void> {
     await this.loadInitialData();
+  }
+
+  // Helper methods for name parsing
+  private extractFirstName(fullName: string): string {
+    const parts = fullName.trim().split(' ');
+    return parts[0] || '';
+  }
+
+  private extractLastName(fullName: string): string {
+    const parts = fullName.trim().split(' ');
+    return parts.slice(1).join(' ') || '';
   }
 
   // Event CRUD operations

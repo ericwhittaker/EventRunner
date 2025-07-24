@@ -55,6 +55,38 @@ import { ConvexAuthService, SignUpData } from '../../services/convex-auth.servic
             </div>
           </div>
         </div>
+        
+        <!-- New: Convex Auth Users Section -->
+        <div class="card">
+          <h3>Convex Auth Users</h3>
+          <div class="user-list">
+            @if (convexAuthService.users().length === 0) {
+              <div class="no-users">
+                <p>No users found in Convex Auth database.</p>
+                @if (!convexAuthService.isAuthenticated()) {
+                  <p><small>Login as admin to view users.</small></p>
+                }
+              </div>
+            } @else {
+              @for (user of convexAuthService.users(); track user.id) {
+                <div class="user-item">
+                  <div class="user-avatar">
+                    {{ getInitials(user.firstName, user.lastName, user.email) }}
+                  </div>
+                  <div class="user-info">
+                    <h4>{{ getDisplayName(user.firstName, user.lastName, user.email) }}</h4>
+                    <p>{{ user.email }}</p>
+                    <span class="user-status convex">Convex User</span>
+                  </div>
+                  <div class="user-actions">
+                    <button class="edit-btn" disabled>Manage</button>
+                  </div>
+                </div>
+              }
+            }
+          </div>
+        </div>
+        
         <div class="card">
           <h3>User Roles</h3>
           <div class="role-list">
@@ -180,6 +212,8 @@ import { ConvexAuthService, SignUpData } from '../../services/convex-auth.servic
     .user-status { padding: 2px 8px; border-radius: 12px; font-size: 12px; }
     .user-status.online { background: #d4edda; color: #155724; }
     .user-status.offline { background: #f8d7da; color: #721c24; }
+    .user-status.convex { background: #d1ecf1; color: #0c5460; }
+    .no-users { text-align: center; padding: 20px; color: #666; }
     .edit-btn { background: #6c757d; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 12px; }
     .role-item { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #eee; }
     .role-name { font-weight: 500; }
@@ -232,7 +266,7 @@ export class UsersComponent {
     lastName: ''
   };
 
-  constructor(private convexAuthService: ConvexAuthService) {}
+  constructor(public convexAuthService: ConvexAuthService) {}
 
   showAddUserDialog(): void {
     this.showAddDialog.set(true);
@@ -274,5 +308,29 @@ export class UsersComponent {
     } finally {
       this.isCreating.set(false);
     }
+  }
+
+  // Helper methods for user display
+  getInitials(firstName?: string, lastName?: string, email?: string): string {
+    if (firstName && lastName) {
+      return `${firstName[0]}${lastName[0]}`.toUpperCase();
+    }
+    if (firstName) {
+      return firstName.substring(0, 2).toUpperCase();
+    }
+    if (email) {
+      return email.substring(0, 2).toUpperCase();
+    }
+    return 'U';
+  }
+
+  getDisplayName(firstName?: string, lastName?: string, email?: string): string {
+    if (firstName && lastName) {
+      return `${firstName} ${lastName}`;
+    }
+    if (firstName) {
+      return firstName;
+    }
+    return email || 'Unknown User';
   }
 }
