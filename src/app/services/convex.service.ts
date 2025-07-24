@@ -8,8 +8,8 @@ export interface ConvexEvent {
   _id: Id<"events">;
   name: string;
   description?: string;
-  eventType?: string;
-  status?: string;
+  eventType?: "concert" | "corporate" | "conference" | "festival" | "wedding" | "other";
+  status?: "tentative" | "confirmed" | "postshow" | "nogo";
   eventDate?: number;
   eventTime?: string;
   venueId?: Id<"venues">;
@@ -105,8 +105,8 @@ export class ConvexService {
   async createEvent(eventData: {
     name: string;
     description?: string;
-    eventType?: string;
-    status?: string;
+    eventType?: "concert" | "corporate" | "conference" | "festival" | "wedding" | "other";
+    status?: "tentative" | "confirmed" | "postshow" | "nogo";
     eventDate?: number;
     eventTime?: string;
     venueId?: Id<"venues">;
@@ -126,8 +126,8 @@ export class ConvexService {
   async updateEvent(id: Id<"events">, updates: {
     name?: string;
     description?: string;
-    eventType?: string;
-    status?: string;
+    eventType?: "concert" | "corporate" | "conference" | "festival" | "wedding" | "other";
+    status?: "tentative" | "confirmed" | "postshow" | "nogo";
     eventDate?: number;
     eventTime?: string;
     venueId?: Id<"venues">;

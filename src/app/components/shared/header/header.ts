@@ -5,6 +5,7 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 /** APP (SERVICES) */
 import { APP_VERSION } from '../../../version';
+import { AuthService } from '../../../services/auth.service';
 
 import { ActionButtons } from '../action-buttons/action-buttons';
 
@@ -72,6 +73,7 @@ export class Header implements OnInit {
    */
 
   public router = inject(Router);
+  public authService = inject(AuthService);
 
   /** END of SECTION */
 
@@ -215,6 +217,7 @@ export class Header implements OnInit {
    * ______________________________________________________________________________________________
    */
   navigateTo(route: string) {
+    console.log(`🧭 Header navigating to route: ${route}`);
     this.router.navigate([route]);
   }
 
@@ -273,6 +276,19 @@ export class Header implements OnInit {
         this.currentSection.set('events');
       }
     });
+  }
+
+  /** 
+   * @method - This method logs out the current user
+   * @description - Calls the auth service to logout and redirects to login page
+   * ______________________________________________________________________________________________
+   * @param - none
+   * @returns - nothing
+   */
+  async logout(): Promise<void> {
+    console.log('(EventRunner) File: header.ts #(logout)# Logging out user');
+    await this.authService.logout();
+    this.router.navigate(['/login']);
   }
 
   /** END of SECTION */

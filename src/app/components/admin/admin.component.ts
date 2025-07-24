@@ -2,9 +2,6 @@
 import { Component, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { APP_VERSION } from '../../version';
-import { FileMakerMigrationService } from '../../services/filemaker-migration-new.service';
-import { EventService } from '../../services/event-v2.service';
-import { FirebaseService } from '../../services/firebase-v2.service';
 
 @Component({
   selector: 'app-admin',
@@ -102,23 +99,7 @@ import { FirebaseService } from '../../services/firebase-v2.service';
             </p>
             
             <div class="migration-controls">
-              <button 
-                class="migration-btn start-btn" 
-                (click)="generateSampleEvents()" 
-                [disabled]="isGeneratingEvents()">
-                @if (isGeneratingEvents()) {
-                  <span>⏳ Generating...</span>
-                } @else {
-                  <span>✨ Generate Sample Events</span>
-                }
-              </button>
-              
-              <button 
-                class="migration-btn clear-btn" 
-                (click)="clearSampleEvents()" 
-                [disabled]="isGeneratingEvents()">
-                🗑️ Clear Sample Events
-              </button>
+
             </div>
             
             @if (generationMessage()) {
@@ -162,57 +143,9 @@ import { FirebaseService } from '../../services/firebase-v2.service';
             </div>
             
             <div class="migration-controls">
-              <button 
-                class="migration-btn start-btn" 
-                (click)="startDDRMigration()" 
-                [disabled]="migrationService.migrationStatus() === 'running'">
-                @if (migrationService.migrationStatus() === 'running') {
-                  <span>🔄 Migrating...</span>
-                } @else {
-                  <span>🚀 Start DDR Migration</span>
-                }
-              </button>
-              
-              <button 
-                class="migration-btn clear-btn" 
-                (click)="clearData()" 
-                [disabled]="migrationService.migrationStatus() === 'running'">
-                🗑️ Clear Data
-              </button>
+
             </div>
           </div>
-          
-          @if (migrationService.migrationStatus() !== 'idle') {
-            <div class="card">
-              <h3>Migration Progress</h3>
-              <div class="progress-section">
-                <div class="progress-bar">
-                  <div class="progress-fill" [style.width.%]="migrationService.migrationProgress()"></div>
-                </div>
-                <div class="progress-info">
-                  <span>{{ migrationService.migrationProgress() }}% Complete</span>
-                  <span class="status-badge" [class]="migrationService.migrationStatus()">
-                    {{ migrationService.migrationStatus() | titlecase }}
-                  </span>
-                </div>
-              </div>
-            </div>
-          }
-          
-          @if (migrationService.migrationLogs().length > 0) {
-            <div class="card logs-card">
-              <h3>Migration Logs</h3>
-              <div class="logs-container">
-                @for (log of migrationService.migrationLogs(); track log) {
-                  <div class="log-entry" 
-                       [class.success]="log.includes('✓')"
-                       [class.error]="log.includes('✗')">
-                    {{ log }}
-                  </div>
-                }
-              </div>
-            </div>
-          }
         </div>
       }
 
@@ -294,105 +227,10 @@ export class AdminComponent {
   isGeneratingEvents = signal<boolean>(false);
   generationMessage = signal<string>('');
 
-  constructor(
-    public migrationService: FileMakerMigrationService, 
-    private eventService: EventService,
-    private firebaseService: FirebaseService
-  ) {}
+  constructor() {}
 
   selectTab(tab: string) {
     this.selectedTab.set(tab);
-  }
-
-  async startDDRMigration() {
-    try {
-      await this.migrationService.migrateWithXMLOrDDR();
-      // Refresh the EventService to reflect the new data
-      await this.eventService.loadAllData();
-      alert('Migration completed successfully!');
-    } catch (error) {
-      alert(`Migration failed: ${error}`);
-    }
-  }
-
-  async clearData() {
-    if (confirm('Are you sure you want to clear all migration data? This cannot be undone.')) {
-      await this.migrationService.clearMigrationData();
-      // Refresh the EventService to reflect the cleared data
-      await this.eventService.loadAllData();
-      alert('Migration data cleared successfully!');
-    }
-  }
-
-  // Sample Event Generation Methods
-  async generateSampleEvents() {
-    this.isGeneratingEvents.set(true);
-    this.generationMessage.set('Generating sample events...');
-
-    try {
-      const sampleEvents = this.createSampleEventsData();
-      
-      // Add events one by one
-      for (let i = 0; i < sampleEvents.length; i++) {
-        const event = sampleEvents[i];
-        await this.eventService.addEvent(event);
-        this.generationMessage.set(`Generated ${i + 1}/${sampleEvents.length} events...`);
-      }
-      
-      this.generationMessage.set(`Successfully generated ${sampleEvents.length} sample events!`);
-      
-      // Clear message after 3 seconds
-      setTimeout(() => {
-        this.generationMessage.set('');
-      }, 3000);
-      
-    } catch (error) {
-      this.generationMessage.set(`Error generating events: ${error}`);
-      console.error('Error generating sample events:', error);
-    } finally {
-      this.isGeneratingEvents.set(false);
-    }
-  }
-
-  async clearSampleEvents() {
-    if (confirm('Are you sure you want to clear all sample events? This will remove events created by the generator.')) {
-      this.isGeneratingEvents.set(true);
-      this.generationMessage.set('Clearing sample events...');
-
-      try {
-        // Get all events and filter by ones that look like sample events
-        const allEvents = this.eventService.events();
-        const sampleEventNames = [
-          'Rock Concert Live Tonight', 'Tech Conference 2024', 'Art Gallery Opening',
-          'Music Festival Summer', 'Food & Wine Expo', 'Sports Championship',
-          'Comedy Show Special', 'Fashion Week Finale', 'Gaming Tournament',
-          'Book Launch Event'
-        ];
-        
-        const sampleEvents = allEvents.filter(event => 
-          sampleEventNames.some(name => event.name?.includes(name.split(' ')[0]))
-        );
-
-        for (const event of sampleEvents) {
-          if (event.id) {
-            await this.eventService.deleteEvent(event.id);
-          }
-        }
-        
-        this.generationMessage.set(`Cleared ${sampleEvents.length} sample events.`);
-        
-        // Clear message after 3 seconds
-        setTimeout(() => {
-          this.generationMessage.set('');
-        }, 3000);
-        
-      } catch (error) {
-        this.generationMessage.set(`Error clearing events: ${error}`);
-        console.error('Error clearing sample events:', error);
-      } finally {
-        this.isGeneratingEvents.set(false);
-      }
-    }
   }
 
   private createSampleEventsData() {

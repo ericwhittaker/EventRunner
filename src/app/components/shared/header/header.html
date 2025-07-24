@@ -15,7 +15,15 @@
   </div>
   <div class="menu-right">
     <span class="version-info">v{{ version }}</span>
-    <span class="active-users">Active Users <span class="user-count">12</span></span>
+    
+    <!-- User Info Section -->
+    @if (authService.isAuthenticated()) {
+      <div class="user-info">
+        <span class="user-greeting">Hello, {{ authService.user()?.email || 'User' }}</span>
+        <button class="logout-btn" (click)="logout()">Logout</button>
+      </div>
+    }
+    
     <input class="search-input" type="text" placeholder="Search Events" />
   </div>
 </div>

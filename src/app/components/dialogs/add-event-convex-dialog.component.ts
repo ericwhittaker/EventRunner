@@ -1,26 +1,27 @@
 import { Component, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { EventService } from '../../services/event-v2.service';
+import { ConvexService } from '../../services/convex.service';
+import { AuthService } from '../../services/auth.service';
 
-export interface AddEventDialogData {
-  title: string;
-  startDate: Date;
-  endDate: Date;
-  event_type: string;
-  eventStatus: 'Confirmed' | 'Tentative' | 'Cancelled' | '';
-  venue_id?: string;
+export interface AddEventConvexDialogData {
+  name: string;
   description?: string;
+  eventType: "concert" | "corporate" | "conference" | "festival" | "wedding" | "other" | "";
+  status: "tentative" | "confirmed" | "postshow" | "nogo" | "";
+  eventDate?: Date;
+  eventTime?: string;
+  venueId?: string;
 }
 
 @Component({
-  selector: 'app-add-event-dialog',
+  selector: 'app-add-event-convex-dialog',
   imports: [CommonModule, FormsModule],
   template: `
     <div class="dialog-overlay" (click)="onOverlayClick($event)">
       <div class="dialog-container" (click)="$event.stopPropagation()">
         <div class="dialog-header">
-          <h2>Add New Event</h2>
+          <h2>Add New Event (Convex)</h2>
           <button class="close-btn" (click)="onCancel()" aria-label="Close">
             <i class="fas fa-times"></i>
           </button>
@@ -29,74 +30,88 @@ export interface AddEventDialogData {
         <div class="dialog-content">
           <form (ngSubmit)="onSubmit()" #eventForm="ngForm">
             <div class="form-group">
-              <label for="title">Event Title *</label>
+              <label for="name">Event Name *</label>
               <input 
-                id="title"
+                id="name"
                 type="text" 
-                [(ngModel)]="eventData.title" 
-                name="title"
+                [(ngModel)]="eventData.name" 
+                name="name"
                 required
-                placeholder="Enter event title"
+                placeholder="Enter event name"
                 class="form-control"
               />
             </div>
 
             <div class="form-group">
-              <label for="startDate">Start Date *</label>
-              <input 
-                id="startDate"
-                type="date" 
-                [(ngModel)]="startDateString" 
-                name="startDate"
-                required
-                class="form-control"
-              />
-            </div>
-
-            <div class="form-group">
-              <label for="endDate">End Date *</label>
-              <input 
-                id="endDate"
-                type="date" 
-                [(ngModel)]="endDateString" 
-                name="endDate"
-                required
-                class="form-control"
-              />
-            </div>
-
-            <div class="form-group">
-              <label for="event_type">Event Type *</label>
+              <label for="eventType">Event Type *</label>
               <select 
-                id="event_type"
-                [(ngModel)]="eventData.event_type" 
-                name="event_type"
+                id="eventType"
+                [(ngModel)]="eventData.eventType" 
+                name="eventType"
                 required
                 class="form-control"
               >
                 <option value="">Select event type</option>
-                <option value="Concert">Concert</option>
-                <option value="Corporate">Corporate Event</option>
-                <option value="Wedding">Wedding</option>
-                <option value="Festival">Festival</option>
-                <option value="Conference">Conference</option>
-                <option value="Other">Other</option>
+                <option value="concert">Concert</option>
+                <option value="corporate">Corporate Event</option>
+                <option value="conference">Conference</option>
+                <option value="festival">Festival</option>
+                <option value="wedding">Wedding</option>
+                <option value="other">Other</option>
               </select>
             </div>
 
             <div class="form-group">
-              <label for="eventStatus">Event Status *</label>
+              <label for="status">Event Status *</label>
               <select 
-                id="eventStatus"
-                [(ngModel)]="eventData.eventStatus" 
-                name="eventStatus"
+                id="status"
+                [(ngModel)]="eventData.status" 
+                name="status"
                 required
                 class="form-control"
               >
                 <option value="">Select event status</option>
-                <option value="Confirmed">Confirmed</option>
-                <option value="Tentative">Tentative</option>
-                <option value="Cancelled">Cancelled</option>
+                <option value="confirmed">Confirmed</option>
+                <option value="tentative">Tentative</option>
+                <option value="nogo">No Go</option>
+                <option value="postshow">Post-Show</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="eventDate">Event Date</label>
+              <input 
+                id="eventDate"
+                type="date" 
+                [(ngModel)]="eventDateString" 
+                name="eventDate"
+                class="form-control"
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="eventTime">Event Time</label>
+              <input 
+                id="eventTime"
+                type="time" 
+                [(ngModel)]="eventData.eventTime" 
+                name="eventTime"
+                class="form-control"
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="venueId">Venue</label>
+              <select 
+                id="venueId"
+                [(ngModel)]="eventData.venueId" 
+                name="venueId"
+                class="form-control"
+              >
+                <option value="">Select venue (optional)</option>
+                @for (venue of convexService.venues(); track venue._id) {
+                  <option [value]="venue._id">{{ venue.name }}</option>
+                }
               </select>
             </div>
 
@@ -122,10 +137,16 @@ export interface AddEventDialogData {
                 [disabled]="!eventForm.valid || loading()"
               >
                 <i class="fas fa-spinner fa-spin" *ngIf="loading()"></i>
-                {{ loading() ? 'Adding...' : 'Add Event' }}
+                {{ loading() ? 'Creating...' : 'Create Event' }}
               </button>
             </div>
           </form>
+        </div>
+
+        <!-- Debug info -->
+        <div class="debug-info" *ngIf="showDebug">
+          <h4>🔧 Debug Info</h4>
+          <pre>{{ debugInfo() | json }}</pre>
         </div>
       </div>
     </div>
@@ -149,7 +170,7 @@ export interface AddEventDialogData {
       border-radius: 8px;
       box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
       width: 90%;
-      max-width: 500px;
+      max-width: 600px;
       max-height: 90vh;
       overflow: hidden;
       display: flex;
@@ -162,7 +183,7 @@ export interface AddEventDialogData {
       align-items: center;
       padding: 1.5rem;
       border-bottom: 1px solid #e0e0e0;
-      background: #f8f9fa;
+      background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
     }
 
     .dialog-header h2 {
@@ -216,8 +237,8 @@ export interface AddEventDialogData {
 
     .form-control:focus {
       outline: none;
-      border-color: #007bff;
-      box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+      border-color: #00BAFB;
+      box-shadow: 0 0 0 2px rgba(0, 186, 251, 0.25);
     }
 
     .form-control:invalid {
@@ -266,12 +287,12 @@ export interface AddEventDialogData {
     }
 
     .btn-primary {
-      background: #007bff;
+      background: #00BAFB;
       color: white;
     }
 
     .btn-primary:hover:not(:disabled) {
-      background: #0056b3;
+      background: #0099cc;
     }
 
     .fa-spin {
@@ -282,60 +303,73 @@ export interface AddEventDialogData {
       from { transform: rotate(0deg); }
       to { transform: rotate(360deg); }
     }
+
+    .debug-info {
+      padding: 1rem;
+      background: #f8f9fa;
+      border-top: 1px solid #e0e0e0;
+      margin-top: auto;
+    }
+
+    .debug-info h4 {
+      margin: 0 0 0.5rem 0;
+      font-size: 0.9rem;
+      color: #666;
+    }
+
+    .debug-info pre {
+      font-size: 0.8rem;
+      margin: 0;
+      background: white;
+      padding: 0.5rem;
+      border-radius: 4px;
+      border: 1px solid #ddd;
+      max-height: 200px;
+      overflow-y: auto;
+    }
   `]
 })
-export class AddEventDialogComponent {
-  private eventService = inject(EventService);
+export class AddEventConvexDialogComponent {
+  protected convexService = inject(ConvexService);
+  private authService = inject(AuthService);
 
   loading = signal(false);
+  showDebug = false; // Set to true for debugging
   
-  eventData: AddEventDialogData = {
-    title: '',
-    startDate: new Date(),
-    endDate: new Date(),
-    event_type: '',
-    eventStatus: '', // No default - user must choose
-    description: ''
+  eventData: AddEventConvexDialogData = {
+    name: '',
+    description: '',
+    eventType: '',
+    status: '',
+    eventTime: '10:00'
   };
 
+  debugInfo = signal({
+    formData: this.eventData,
+    venues: this.convexService.venues(),
+    currentUser: this.authService.user()
+  });
+
   // Helper to convert Date to date input format (YYYY-MM-DD)
-  get startDateString(): string {
-    const date = this.eventData.startDate;
+  get eventDateString(): string {
+    const date = this.eventData.eventDate;
     if (!date) return '';
     return date.toISOString().split('T')[0];
   }
 
-  set startDateString(value: string) {
+  set eventDateString(value: string) {
     if (value) {
-      // Set time to 8:00 AM for start date
-      const date = new Date(value);
-      date.setHours(8, 0, 0, 0);
-      this.eventData.startDate = date;
-    }
-  }
-
-  get endDateString(): string {
-    const date = this.eventData.endDate;
-    if (!date) return '';
-    return date.toISOString().split('T')[0];
-  }
-
-  set endDateString(value: string) {
-    if (value) {
-      // Set time to 8:00 AM for end date
-      const date = new Date(value);
-      date.setHours(8, 0, 0, 0);
-      this.eventData.endDate = date;
+      this.eventData.eventDate = new Date(value);
+    } else {
+      this.eventData.eventDate = undefined;
     }
   }
 
   onOverlayClick(event: MouseEvent): void {
-    // Close dialog when clicking overlay
     this.onCancel();
   }
 
   onCancel(): void {
-    // Emit close event or call parent method
     this.closeDialog();
   }
 
@@ -345,38 +379,39 @@ export class AddEventDialogComponent {
     this.loading.set(true);
 
     try {
-      // Prepare event data for Firebase
-      const eventToAdd = {
-        title: this.eventData.title,
-        startDate: this.eventData.startDate,
-        endDate: this.eventData.endDate,
-        event_type: this.eventData.event_type,
-        eventStatus: this.eventData.eventStatus as 'Confirmed' | 'Tentative' | 'Cancelled',
-        eventPostShowStatus: 'Pending' as const, // Default to pending
+      const currentUser = this.authService.user();
+      if (!currentUser) {
+        console.error('❌ No authenticated user found');
+        return;
+      }
+
+      // Prepare event data for Convex
+      const eventToCreate = {
+        name: this.eventData.name,
         description: this.eventData.description || '',
-        venue_id: this.eventData.venue_id || '',
-        // Add legacy fields for backward compatibility
-        event_date: this.eventData.startDate,
-        status: this.eventData.eventStatus,
-        // Add default values
-        duration_hours: 4, // Default 4 hour event
-        client_contact_id: '',
-        crew_size: 1,
-        equipment_needed: '',
-        notes: ''
+        eventType: this.eventData.eventType === '' ? undefined : this.eventData.eventType as any,
+        status: this.eventData.status === '' ? undefined : this.eventData.status as any,
+        eventDate: this.eventData.eventDate ? this.eventData.eventDate.getTime() : undefined,
+        eventTime: this.eventData.eventTime || '',
+        venueId: this.eventData.venueId as any || undefined, // Cast to Id<"venues">
+        createdBy: currentUser.email || 'unknown@demo.com'
       };
 
-      // Add the event using the service
-      const eventId = await this.eventService.addEvent(eventToAdd);
+      console.log('🔥 Creating Convex event:', eventToCreate);
+
+      // Create the event using Convex
+      const eventId = await this.convexService.createEvent(eventToCreate);
       
-      console.log(`✅ Event added successfully with ID: ${eventId}`);
+      console.log(`✅ Convex event created successfully with ID: ${eventId}`);
+      
+      // Refresh Convex data
+      await this.convexService.refreshData();
       
       // Close the dialog
       this.closeDialog();
       
     } catch (error) {
-      console.error('❌ Error adding event:', error);
-      // You could show an error message here
+      console.error('❌ Error creating Convex event:', error);
     } finally {
       this.loading.set(false);
     }
@@ -384,7 +419,7 @@ export class AddEventDialogComponent {
 
   private closeDialog(): void {
     // Remove the dialog from DOM
-    const dialogElement = document.querySelector('app-add-event-dialog');
+    const dialogElement = document.querySelector('app-add-event-convex-dialog');
     if (dialogElement) {
       dialogElement.remove();
     }

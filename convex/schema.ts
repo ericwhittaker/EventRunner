@@ -6,8 +6,20 @@ export default defineSchema({
     // Event Details
     name: v.string(),
     description: v.optional(v.string()),
-    eventType: v.optional(v.string()),
-    status: v.optional(v.string()),
+    eventType: v.optional(v.union(
+      v.literal("concert"),
+      v.literal("corporate"),
+      v.literal("conference"),
+      v.literal("festival"), 
+      v.literal("wedding"),
+      v.literal("other")
+    )),
+    status: v.optional(v.union(
+      v.literal("tentative"),
+      v.literal("confirmed"), 
+      v.literal("postshow"),
+      v.literal("nogo")
+    )),
     
     // Dates and Times
     artistsDoorsDate: v.optional(v.number()),

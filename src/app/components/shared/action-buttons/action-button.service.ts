@@ -3,7 +3,7 @@ import { ActionButtonConfig } from './action-buttons';
 import { ActionInfo } from './action-components/action-info/action-info/action-info';
 import { ActionRelatedApps } from './action-components/action-related-apps/action-related-apps';
 import { DialogService } from '../../../services/dialog.service';
-import { AddEventDialogComponent } from '../../dialogs/add-event-dialog.component';
+import { AddEventConvexDialogComponent } from '../../dialogs/add-event-convex-dialog.component';
 
 @Injectable({
   providedIn: 'root'
@@ -105,7 +105,7 @@ export class ActionButtonService {
   
   // Default actions
   private onAddEvent(): void {
-    console.log('🎉 Opening Add Event dialog');
-    this.dialogService.openDialog(AddEventDialogComponent);
+    console.log('🎉 Opening Add Event Convex dialog');
+    this.dialogService.openDialog(AddEventConvexDialogComponent);
   }
 }

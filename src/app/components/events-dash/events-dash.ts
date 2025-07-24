@@ -1,16 +1,13 @@
 /** ANGULAR (CORE) */
 import { Component, OnInit, inject, signal, effect } from '@angular/core';
-import { ActionButtons } from '../shared/action-buttons/action-buttons';
 
 /** COMPONENTS */
 
 import { EventsTableMainComponent } from './events-tables/events-table-main/events-table-main';
 import { EventsTableTentativeComponent, TentativeRow } from './events-tables/events-table-tentative/events-table-tentative';
 import { EventsTablePostShowComponent, PostShowRow } from './events-tables/events-table-postshow/events-table-postshow';
-import { ActionButtonService } from '../shared/action-buttons/action-button.service';
 import { MainDashboardRow } from './dashboard-list-types';
-import { EventService, Event } from '../../services/event-v2.service';
-import { EventDataV3Service } from '../../services/eventData-v3.service';
+import { ConvexService } from '../../services/convex.service';
 
 
 
@@ -74,12 +71,9 @@ export class EventsDashComponent implements OnInit {
    * ##############################################################################################
    * ##############################################################################################
    */
-
-  private actionButtonService = inject(ActionButtonService);
-  private eventService = inject(EventService); // Keep existing v2 service
   
-  // Add v3 services for gradual migration (parallel approach)
-  private eventDataV3Service = inject(EventDataV3Service);
+  // NEW: Convex service for gradual migration to Convex database
+  private convexService = inject(ConvexService);
 
   /** END of SECTION */
 
@@ -104,6 +98,10 @@ export class EventsDashComponent implements OnInit {
 
   // NEW: V3 data signals for gradual migration (these won't affect existing UI yet)
   mainDashboardDataV3 = signal<MainDashboardRow[]>([]);
+  
+  // NEW: Convex data signals for comparison and gradual migration
+  convexEvents = signal<any[]>([]);
+  convexDataLoaded = signal(false);
 
   /** END of SECTION */
 
@@ -123,112 +121,25 @@ export class EventsDashComponent implements OnInit {
 
   constructor() {
 
-
+    // NEW: Convex Effect for tentative events
     effect(() => {
-      const events = this.eventService.events();
+      const convexEvents = this.convexEvents();
       
-      // Tentative Dashboard: All events marked as "Tentative"
-      const tentativeEvents = events.filter(event => {
-        const status = event.eventStatus || event.status;
-        return status === 'Tentative';
+      if (convexEvents.length === 0) return;
+      
+      console.log(`🔥 Convex processing ${convexEvents.length} events for tentative dashboard`);
+      
+      // Tentative Dashboard: All events marked as "tentative"
+      const tentativeEvents = convexEvents.filter(event => {
+        const status = event.status;
+        return status === 'tentative';
       });
       
       this.tentativeData.set(
-        tentativeEvents.map(event => this.convertEventToTentativeRow(event))
+        tentativeEvents.map(event => this.convertConvexEventToTentativeRow(event))
       );
       
-      console.log(`📊 Updated tentative data: ${tentativeEvents.length} events`);
-    });
-
-    effect(() => {
-      const events = this.eventService.events();
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-      
-      // Post Show Dashboard: Events that have passed OR are cancelled
-      const postShowEvents = events.filter(event => {
-        const status = event.eventStatus || event.status;
-        
-        // Include cancelled events regardless of date
-        if (status === 'Cancelled') return true;
-        
-        // Include events that have passed their end date
-        const endDate = event.endDate || event.startDate || event.event_date || event.date || event.dateStart;
-        if (!endDate) return false;
-        
-        const eventEnd = new Date(endDate);
-        eventEnd.setHours(23, 59, 59, 999); // End of the day
-        
-        // Event has passed
-        return today > eventEnd;
-      });
-      
-      this.postShowData.set(
-        postShowEvents.map(event => this.convertEventToPostShowRow(event))
-      );
-      
-      console.log(`📊 Updated post-show data: ${postShowEvents.length} events`);
-    });
-
-    // NEW: V3 Effect for main dashboard (runs in parallel, doesn't affect existing UI)
-    effect(() => {
-      const eventsV3 = this.eventDataV3Service.normalizedEvents();
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-      
-      console.log(`🆕 V3 Dashboard processing ${eventsV3.length} total events`);
-      
-      // Same logic as v2, but using v3 data
-      const liveAndFutureEventsV3 = eventsV3.filter(event => {
-        const status = event.eventStatus || event.status;
-        if (status === 'Tentative' || status === 'Cancelled') {
-          return false;
-        }
-        
-        const startDate = event.startDate || event.event_date || event.date || event.dateStart;
-        const endDate = event.endDate || event.startDate || event.event_date || event.date || event.dateStart;
-        
-        if (!startDate) return false;
-        
-        const eventStart = new Date(startDate);
-        const eventEnd = new Date(endDate || startDate);
-        eventStart.setHours(0, 0, 0, 0);
-        eventEnd.setHours(23, 59, 59, 999);
-        
-        const isLive = today >= eventStart && today <= eventEnd;
-        const isFuture = eventStart > today;
-        
-        return isLive || isFuture;
-      });
-      
-      // Sort same as v2
-      const sortedEventsV3 = liveAndFutureEventsV3.sort((a, b) => {
-        const startDateA = a.startDate || a.event_date || a.date || a.dateStart;
-        const startDateB = b.startDate || b.event_date || b.date || b.dateStart;
-        
-        if (!startDateA || !startDateB) return 0;
-        
-        const dateA = new Date(startDateA);
-        const dateB = new Date(startDateB);
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-        
-        const endDateA = a.endDate || startDateA;
-        const endDateB = b.endDate || startDateB;
-        const isLiveA = today >= new Date(startDateA) && today <= new Date(endDateA);
-        const isLiveB = today >= new Date(startDateB) && today <= new Date(endDateB);
-        
-        if (isLiveA && !isLiveB) return -1;
-        if (!isLiveA && isLiveB) return 1;
-        
-        return dateA.getTime() - dateB.getTime();
-      });
-      
-      this.mainDashboardDataV3.set(
-        sortedEventsV3.map(event => this.convertEventToMainDashboardRowV3(event))
-      );
-      
-      console.log(`🆕 V3 Updated main dashboard: ${liveAndFutureEventsV3.length} live/future events`);
+      console.log(`🔥 Convex Updated tentative data: ${tentativeEvents.length} events`);
     });
   }
 
@@ -252,23 +163,17 @@ export class EventsDashComponent implements OnInit {
 
   ngOnInit() {
     console.log('🚀 Dashboard initializing with real-time signals');
-    console.log('🔍 Initial events count:', this.eventService.events().length);
     
-    // Start real-time listeners - this will automatically trigger our effects
-    this.eventService.startRealtimeListeners();
-    
-    // Also initialize v3 services (parallel to v2 for comparison)
-    console.log('🆕 Initializing EventDataV3Service listeners...');
-    this.eventDataV3Service.initializeAllRealtimeListeners();
+    // NEW: Load Convex data for comparison
+    console.log('🔥 Loading Convex data...');
+    this.loadConvexData();
     
     // Add a slight delay to see if events load after Firebase connection
     setTimeout(() => {
-      console.log('⏰ After 2 seconds - events count:', this.eventService.events().length);
-      console.log('⏰ Current events:', this.eventService.events());
       
-      // Log v3 data for comparison
-      console.log('🆕 V3 Events count:', this.eventDataV3Service.normalizedEvents().length);
-      console.log('🆕 V3 Events:', this.eventDataV3Service.normalizedEvents());
+      // Log Convex data for comparison
+      console.log('🔥 Convex Events count:', this.convexEvents().length);
+      console.log('🔥 Convex Events:', this.convexEvents());
     }, 2000);
   }
 
@@ -294,94 +199,47 @@ export class EventsDashComponent implements OnInit {
     });
   }
 
-  // Helper method to calculate event status and days
-  private calculateEventStatus(startDate: Date | null, endDate: Date | null): { daysOut: number | undefined, isLive: boolean } {
-    if (!startDate) {
-      return { daysOut: undefined, isLive: false };
-    }
-
-    const today = new Date();
-    today.setHours(0, 0, 0, 0); // Start of today
-    
-    const eventStart = new Date(startDate);
-    eventStart.setHours(0, 0, 0, 0);
-    
-    const eventEnd = endDate ? new Date(endDate) : eventStart;
-    eventEnd.setHours(23, 59, 59, 999); // End of the day
-    
-    // Check if event is live (today is between start and end dates)
-    const isLive = today >= eventStart && today <= eventEnd;
-    
-    if (isLive) {
-      return { daysOut: undefined, isLive: true }; // "Live" - no days count
-    }
-    
-    // Calculate days until event starts
-    const diffTime = eventStart.getTime() - today.getTime();
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    
-    return { daysOut: diffDays, isLive: false };
-  }
-
-
-
-  // NEW: V3 version of converter (uses v3 service for venue lookups)
-  private convertEventToMainDashboardRowV3(event: any): MainDashboardRow {
-    const startDate = event.startDate || event.event_date || event.date || event.dateStart;
-    const endDate = event.endDate || event.startDate || event.event_date || event.date || event.dateStart;
-    
-    if (!startDate) {
-      console.warn('V3 Event missing start date:', event);
-    }
-
-    const formattedStartDate = this.formatDate(startDate || null);
-    const formattedEndDate = this.formatDate(endDate || null);
-    
-    // Calculate status based on actual dates, not formatted strings
-    const { daysOut, isLive } = this.calculateEventStatus(startDate || null, endDate || null);
+  // NEW: Convert Convex Event to TentativeRow
+  private convertConvexEventToTentativeRow(event: any): TentativeRow {
+    // Convex stores eventDate as timestamp, convert to Date
+    const startDate = event.eventDate ? new Date(event.eventDate) : null;
+    const endDate = startDate; // For now, assume same day events
     
     return {
-      start: formattedStartDate,
-      end: formattedEndDate,
-      eventName: event.title || event.name || 'Untitled Event',
-      eventId: { html: `<span class="event-id v3">${event.id}</span>` }, // Add v3 class for identification
-      venue: this.eventDataV3Service.getVenueName(event.venue_id || ''),
-      cityState: this.eventDataV3Service.getVenueLocation(event.venue_id || ''),
-      providing: event.event_type || event.type || 'General',
-      toDo: Math.floor(Math.random() * 10) + 1, // This should come from actual task data
-      daysOut: daysOut
-    };
-  }
-
-  // Convert Event to TentativeRow
-  private convertEventToTentativeRow(event: Event): TentativeRow {
-    const startDate = event.startDate || event.event_date || event.date || event.dateStart;
-    const endDate = event.endDate || event.startDate || event.event_date || event.date || event.dateStart;
-    
-    return {
-      eventId: event.id || `temp-${Math.random()}`,
-      start: this.formatDate(startDate || null),
-      end: this.formatDate(endDate || null),
-      eventName: event.title || event.name || 'Untitled Event',
-      status: { html: `<span class="status tentative">Tentative</span>` },
+      eventId: event._id || `temp-${Math.random()}`,
+      start: this.formatDate(startDate),
+      end: this.formatDate(endDate),
+      eventName: event.name || 'Untitled Event',
+      status: { html: `<span class="status tentative convex">Tentative (Convex)</span>` },
       toDo: Math.floor(Math.random() * 5) + 1
     };
   }
 
-  // Convert Event to PostShowRow
-  private convertEventToPostShowRow(event: Event): PostShowRow {
-    const startDate = event.startDate || event.event_date || event.date || event.dateStart;
-    const endDate = event.endDate || event.startDate || event.event_date || event.date || event.dateStart;
-    
-    return {
-      eventId: event.id || `temp-${Math.random()}`,
-      start: this.formatDate(startDate || null),
-      end: this.formatDate(endDate || null),
-      eventName: event.title || event.name || 'Untitled Event',
-      cityState: this.eventService.getVenueLocation(event.venue_id || ''),
-      toDo: Math.floor(Math.random() * 3) + 1,
-      setS: { html: `<span class="status post-show">Post Show</span>` }
-    };
+  /**
+   * Load data from Convex database for comparison with existing Firebase data
+   */
+  private async loadConvexData(): Promise<void> {
+    try {
+      console.log('🔥 Loading Convex events...');
+      
+      // Load initial data using the public method
+      await this.convexService.refreshData();
+      
+      // Get events from Convex
+      const events = this.convexService.events();
+      this.convexEvents.set(events);
+      this.convexDataLoaded.set(true);
+      
+      console.log('🔥 Convex data loaded successfully:', events.length, 'events');
+      
+      // Log first event for structure comparison
+      if (events.length > 0) {
+        console.log('🔥 Sample Convex event structure:', events[0]);
+      }
+      
+    } catch (error) {
+      console.error('🔥 Error loading Convex data:', error);
+    }
   }
 
 

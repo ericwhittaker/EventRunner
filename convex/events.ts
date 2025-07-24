@@ -45,8 +45,20 @@ export const create = mutation({
   args: {
     name: v.string(),
     description: v.optional(v.string()),
-    eventType: v.optional(v.string()),
-    status: v.optional(v.string()),
+    eventType: v.optional(v.union(
+      v.literal("concert"),
+      v.literal("corporate"),
+      v.literal("conference"),
+      v.literal("festival"), 
+      v.literal("wedding"),
+      v.literal("other")
+    )),
+    status: v.optional(v.union(
+      v.literal("tentative"),
+      v.literal("confirmed"), 
+      v.literal("postshow"),
+      v.literal("nogo")
+    )),
     venueId: v.optional(v.id("venues")),
     eventDate: v.optional(v.number()),
     eventTime: v.optional(v.string()),
@@ -68,8 +80,20 @@ export const update = mutation({
     id: v.id("events"),
     name: v.optional(v.string()),
     description: v.optional(v.string()),
-    eventType: v.optional(v.string()),
-    status: v.optional(v.string()),
+    eventType: v.optional(v.union(
+      v.literal("concert"),
+      v.literal("corporate"),
+      v.literal("conference"),
+      v.literal("festival"), 
+      v.literal("wedding"),
+      v.literal("other")
+    )),
+    status: v.optional(v.union(
+      v.literal("tentative"),
+      v.literal("confirmed"), 
+      v.literal("postshow"),
+      v.literal("nogo")
+    )),
     venueId: v.optional(v.id("venues")),
     eventDate: v.optional(v.number()),
     eventTime: v.optional(v.string()),
