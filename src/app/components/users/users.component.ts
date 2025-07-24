@@ -297,8 +297,8 @@ export class UsersComponent {
       if (success) {
         console.log('(EventRunner) User created successfully');
         this.hideAddUserDialog();
-        // Here you would typically refresh the user list
-        // For now, we'll just close the dialog
+        // Refresh the user list to show the new user
+        await this.convexAuthService.refreshData();
       } else {
         this.errorMessage.set('Failed to create user. Please check the details and try again.');
       }

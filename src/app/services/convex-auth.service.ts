@@ -89,4 +89,8 @@ export class ConvexAuthService {
     const user = this.user();
     return user?.email || 'anonymous@eventrunner.local';
   }
+
+  async refreshData(): Promise<void> {
+    return await this.convexService.refreshData();
+  }
 }
