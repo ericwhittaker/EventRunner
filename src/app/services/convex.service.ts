@@ -67,14 +67,38 @@ export class ConvexService {
 
   private async setupRealtimeListeners(): Promise<void> {
     try {
-      // For now, let's just load initial data
-      // We'll implement real-time updates in the next step
+      console.log('(EventRunner) File: convex.service.ts #(setupRealtimeListeners)# Setting up Convex real-time subscriptions...');
+      
+      // Load initial data
       await this.loadInitialData();
       
+      // Set up polling for real-time-like updates (Convex handles this internally)
+      // The ConvexClient automatically maintains real-time connections
+      // We'll refresh periodically to ensure we have the latest data
+      setInterval(async () => {
+        try {
+          const events = await this.client.query(api.events.list, {});
+          const venues = await this.client.query(api.venues.list, {});
+          
+          // Update signals if data changed
+          if (JSON.stringify(events) !== JSON.stringify(this.events())) {
+            this.events.set(events);
+            console.log('(EventRunner) File: convex.service.ts #(realtime)# Events updated:', events.length);
+          }
+          
+          if (JSON.stringify(venues) !== JSON.stringify(this.venues())) {
+            this.venues.set(venues);
+            console.log('(EventRunner) File: convex.service.ts #(realtime)# Venues updated:', venues.length);
+          }
+        } catch (error) {
+          console.error('(EventRunner) File: convex.service.ts #(realtime)# Update error:', error);
+        }
+      }, 1000); // Check every second for updates
+      
       this.isConnected.set(true);
-      console.log('(EventRunner) File: convex.service.ts #(setupRealtimeListeners)# Convex initial data loaded');
+      console.log('(EventRunner) File: convex.service.ts #(setupRealtimeListeners)# Real-time polling established');
     } catch (error) {
-      console.error('(EventRunner) File: convex.service.ts #(setupRealtimeListeners)# Failed to load data:', error);
+      console.error('(EventRunner) File: convex.service.ts #(setupRealtimeListeners)# Failed to setup subscriptions:', error);
       this.isConnected.set(false);
     }
   }
@@ -115,7 +139,7 @@ export class ConvexService {
     try {
       const id = await this.client.mutation(api.events.create, eventData);
       console.log('(EventRunner) File: convex.service.ts #(createEvent)# Event created with ID:', id);
-      await this.refreshData(); // Refresh data after creation
+      // Real-time subscription will automatically update the signals
       return id;
     } catch (error) {
       console.error('(EventRunner) File: convex.service.ts #(createEvent)# Error:', error);
@@ -136,7 +160,7 @@ export class ConvexService {
     try {
       await this.client.mutation(api.events.update, { id, ...updates });
       console.log('(EventRunner) File: convex.service.ts #(updateEvent)# Event updated:', id);
-      await this.refreshData(); // Refresh data after update
+      // Real-time subscription will automatically update the signals
     } catch (error) {
       console.error('(EventRunner) File: convex.service.ts #(updateEvent)# Error:', error);
       throw error;
@@ -147,7 +171,7 @@ export class ConvexService {
     try {
       await this.client.mutation(api.events.remove, { id });
       console.log('(EventRunner) File: convex.service.ts #(deleteEvent)# Event deleted:', id);
-      await this.refreshData(); // Refresh data after deletion
+      // Real-time subscription will automatically update the signals
     } catch (error) {
       console.error('(EventRunner) File: convex.service.ts #(deleteEvent)# Error:', error);
       throw error;

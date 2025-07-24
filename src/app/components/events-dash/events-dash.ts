@@ -120,6 +120,19 @@ export class EventsDashComponent implements OnInit {
    */
 
   constructor() {
+    // Subscribe to ConvexService events signal for real-time updates
+    effect(() => {
+      const events = this.convexService.events();
+      this.convexEvents.set(events);
+      this.convexDataLoaded.set(events.length > 0);
+      
+      console.log('🔥 Real-time Convex events update:', events.length, 'events');
+      
+      // Log first event for structure comparison
+      if (events.length > 0) {
+        console.log('🔥 Sample Convex event structure:', events[0]);
+      }
+    });
 
     // NEW: Convex Effect for tentative events
     effect(() => {
@@ -140,6 +153,48 @@ export class EventsDashComponent implements OnInit {
       );
       
       console.log(`🔥 Convex Updated tentative data: ${tentativeEvents.length} events`);
+    });
+
+    // NEW: Convex Effect for main dashboard events
+    effect(() => {
+      const convexEvents = this.convexEvents();
+      
+      if (convexEvents.length === 0) return;
+      
+      console.log(`🔥 Convex processing ${convexEvents.length} events for main dashboard`);
+      
+      // Main Dashboard: All confirmed events (not tentative, not postshow)
+      const mainEvents = convexEvents.filter(event => {
+        const status = event.status;
+        return status === 'confirmed';
+      });
+      
+      this.mainDashboardDataV3.set(
+        mainEvents.map(event => this.convertConvexEventToMainRow(event))
+      );
+      
+      console.log(`🔥 Convex Updated main dashboard data: ${mainEvents.length} events`);
+    });
+
+    // NEW: Convex Effect for postshow events
+    effect(() => {
+      const convexEvents = this.convexEvents();
+      
+      if (convexEvents.length === 0) return;
+      
+      console.log(`🔥 Convex processing ${convexEvents.length} events for postshow dashboard`);
+      
+      // PostShow Dashboard: All events marked as "postshow"
+      const postShowEvents = convexEvents.filter(event => {
+        const status = event.status;
+        return status === 'postshow';
+      });
+      
+      this.postShowData.set(
+        postShowEvents.map(event => this.convertConvexEventToPostShowRow(event))
+      );
+      
+      console.log(`🔥 Convex Updated postshow data: ${postShowEvents.length} events`);
     });
   }
 
@@ -164,14 +219,11 @@ export class EventsDashComponent implements OnInit {
   ngOnInit() {
     console.log('🚀 Dashboard initializing with real-time signals');
     
-    // NEW: Load Convex data for comparison
-    console.log('🔥 Loading Convex data...');
-    this.loadConvexData();
+    // The effects in constructor will automatically handle data updates
+    // No need to call loadConvexData() - effects will trigger when ConvexService loads data
     
-    // Add a slight delay to see if events load after Firebase connection
+    // Add a slight delay to see if events load after Convex connection
     setTimeout(() => {
-      
-      // Log Convex data for comparison
       console.log('🔥 Convex Events count:', this.convexEvents().length);
       console.log('🔥 Convex Events:', this.convexEvents());
     }, 2000);
@@ -215,35 +267,44 @@ export class EventsDashComponent implements OnInit {
     };
   }
 
-  /**
-   * Load data from Convex database for comparison with existing Firebase data
-   */
-  private async loadConvexData(): Promise<void> {
-    try {
-      console.log('🔥 Loading Convex events...');
-      
-      // Load initial data using the public method
-      await this.convexService.refreshData();
-      
-      // Get events from Convex
-      const events = this.convexService.events();
-      this.convexEvents.set(events);
-      this.convexDataLoaded.set(true);
-      
-      console.log('🔥 Convex data loaded successfully:', events.length, 'events');
-      
-      // Log first event for structure comparison
-      if (events.length > 0) {
-        console.log('🔥 Sample Convex event structure:', events[0]);
-      }
-      
-    } catch (error) {
-      console.error('🔥 Error loading Convex data:', error);
-    }
+  // NEW: Convert Convex Event to MainDashboardRow
+  private convertConvexEventToMainRow(event: any): MainDashboardRow {
+    // Convex stores eventDate as timestamp, convert to Date
+    const startDate = event.eventDate ? new Date(event.eventDate) : null;
+    const endDate = startDate; // For now, assume same day events
+    
+    // Calculate days until event
+    const today = new Date();
+    const daysOut = startDate ? Math.ceil((startDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)) : undefined;
+    
+    return {
+      eventId: { html: `<span class="event-id">${event._id}</span>` },
+      start: this.formatDate(startDate),
+      end: this.formatDate(endDate),
+      eventName: event.name || 'Untitled Event',
+      venue: 'TBD', // TODO: Lookup venue name
+      cityState: 'TBD', // TODO: Get from venue
+      providing: event.eventType || 'TBD',
+      daysOut: daysOut,
+      toDo: Math.floor(Math.random() * 5) + 1
+    };
   }
 
-
-
-
+  // NEW: Convert Convex Event to PostShowRow
+  private convertConvexEventToPostShowRow(event: any): PostShowRow {
+    // Convex stores eventDate as timestamp, convert to Date
+    const startDate = event.eventDate ? new Date(event.eventDate) : null;
+    const endDate = startDate; // For now, assume same day events
+    
+    return {
+      eventId: event._id || `temp-${Math.random()}`,
+      start: this.formatDate(startDate),
+      end: this.formatDate(endDate),
+      eventName: event.name || 'Untitled Event',
+      cityState: 'TBD', // TODO: Get from venue
+      toDo: Math.floor(Math.random() * 3) + 1,
+      setS: { html: `<span class="check-icon">✓</span>` }
+    };
+  }
 
 }
