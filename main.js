@@ -15,7 +15,7 @@ const path = require('path')
 
 // Log rotation configuration
 const LOG_CONFIG = {
-  maxFileSize: 1024 * 1024, // 1MB max file size
+  maxFileSize: 100 * 1024, // 100KB max file size
   maxFiles: 5, // Keep 5 rotated log files
   maxAge: 30 * 24 * 60 * 60 * 1000 // 30 days in milliseconds
 }
