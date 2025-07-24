@@ -1,7 +1,11 @@
 import { defineSchema, defineTable } from "convex/server";
 import { v } from "convex/values";
+import { authTables } from "@convex-dev/auth/server";
 
 export default defineSchema({
+  // Convex Auth required tables
+  ...authTables,
+  
   events: defineTable({
     // Event Details
     name: v.string(),
@@ -103,15 +107,6 @@ export default defineSchema({
     updatedBy: v.optional(v.string()),
   }),
 
-  users: defineTable({
-    email: v.string(),
-    firstName: v.optional(v.string()),
-    lastName: v.optional(v.string()),
-    role: v.optional(v.string()),
-    isActive: v.optional(v.boolean()),
-    
-    // System fields - REQUIRED
-    createdAt: v.number(),
-    updatedAt: v.number(),
-  }),
+  // Note: users table is provided by authTables from Convex Auth
+  // Don't define it here to avoid conflicts
 });

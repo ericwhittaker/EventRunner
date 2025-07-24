@@ -1,6 +1,8 @@
 import { ApplicationConfig, provideBrowserGlobalErrorListeners, provideZonelessChangeDetection } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import { HashLocationStrategy, LocationStrategy } from '@angular/common';
+// Remove convex-angular dependency
+// import { provideConvex } from 'convex-angular';
 
 import { routes } from './app.routes';
 // import { 
@@ -17,6 +19,9 @@ export const appConfig: ApplicationConfig = {
     provideZonelessChangeDetection(),
     provideRouter(routes),
     { provide: LocationStrategy, useClass: HashLocationStrategy },
+    
+    // Use our own ConvexService instead of convex-angular
+    // ConvexService will handle both database operations AND authentication
     
     // // Firebase providers
     // provideFirebaseApp(),

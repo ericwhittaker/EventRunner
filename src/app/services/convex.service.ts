@@ -1,4 +1,4 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, signal, computed } from '@angular/core';
 import { ConvexClient } from 'convex/browser';
 import { api } from '../../../convex/_generated/api';
 import { Id } from '../../../convex/_generated/dataModel';
@@ -39,30 +39,261 @@ export interface ConvexVenue {
   updatedBy?: string;
 }
 
+export interface User {
+  id: string;
+  email: string;
+  firstName?: string;
+  lastName?: string;
+  role?: string;
+}
+
+export interface LoginCredentials {
+  email: string;
+  password: string;
+}
+
+export interface SignUpData {
+  email: string;
+  password: string;
+  firstName?: string;
+  lastName?: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
 export class ConvexService {
-  private client: ConvexClient;
+  private client!: ConvexClient;
+  private deploymentUrl = 'https://scintillating-mandrill-776.convex.cloud';
   
   // Signals for reactive data
   public events = signal<ConvexEvent[]>([]);
   public venues = signal<ConvexVenue[]>([]);
   public isConnected = signal(false);
+  
+  // Auth signals
+  public user = signal<User | null>(null);
+  public isAuthenticated = signal(false);
+  public isLoading = signal(false);
+  public authError = signal<string | null>(null);
 
   constructor() {
-    console.log('(EventRunner) File: convex.service.ts #(Constructor)# Convex Service initialized');
+    console.log('(EventRunner) ConvexService initialized with AUTH support');
     
-    // Initialize Convex client
-    const convexUrl = this.getConvexUrl();
-    this.client = new ConvexClient(convexUrl);
-    
+    // Initialize Convex client with auth token if available
+    this.initializeClient();
     this.setupRealtimeListeners();
   }
 
-  private getConvexUrl(): string {
-    // Get URL from .env.local file - hardcoded for now
-    return 'https://scintillating-mandrill-776.convex.cloud';
+  private initializeClient(): void {
+    // Initialize ConvexClient without auth in constructor
+    this.client = new ConvexClient(this.deploymentUrl, {
+      verbose: true
+    });
+    
+    // Set auth token after client creation
+    const currentToken = this.getStoredAuthToken();
+    if (currentToken) {
+      console.log('✅ ConvexService initialized WITH auth token');
+      // Set the auth token fetcher function on the client (returns Promise)
+      this.client.setAuth(() => Promise.resolve(this.getStoredAuthToken()));
+      this.checkAuthState();
+    } else {
+      console.log('⚠️ ConvexService initialized WITHOUT auth token');
+    }
+  }
+
+  private getStoredAuthToken(): string | null {
+    const storageKey = `__convexAuth-${this.deploymentUrl}`;
+    const storedData = localStorage.getItem(storageKey);
+    
+    if (storedData) {
+      try {
+        const authData = JSON.parse(storedData);
+        return authData.token;
+      } catch (error) {
+        console.error('Failed to parse stored auth data:', error);
+        return null;
+      }
+    }
+    
+    return null;
+  }
+
+  private async checkAuthState(): Promise<void> {
+    try {
+      const userData = await this.client.query(api.users.getCurrentUser, {});
+      const isAuth = await this.client.query(api.users.isAuthenticated, {});
+      
+      if (userData && isAuth) {
+        // Parse Convex Auth user data
+        const fullName = userData.name || '';
+        const nameParts = fullName.split(' ');
+        
+        this.user.set({
+          id: userData._id,
+          email: userData.email || '',
+          firstName: nameParts[0] || '',
+          lastName: nameParts.slice(1).join(' ') || '',
+          role: 'user',
+        });
+        
+        this.isAuthenticated.set(true);
+        console.log('✅ User authenticated:', userData.email);
+      } else {
+        this.user.set(null);
+        this.isAuthenticated.set(false);
+        console.log('❌ User not authenticated');
+      }
+    } catch (error) {
+      console.error('Auth state check failed:', error);
+      this.user.set(null);
+      this.isAuthenticated.set(false);
+    }
+  }
+
+  // =================================
+  // AUTHENTICATION METHODS
+  // =================================
+
+  async login(credentials: LoginCredentials): Promise<boolean> {
+    this.isLoading.set(true);
+    this.authError.set(null);
+
+    try {
+      console.log('🔑 ConvexService #(login)# Attempting login for:', credentials.email);
+
+      // Use Convex Auth signIn action
+      const result = await this.client.action(api.auth.signIn, {
+        provider: 'password',
+        params: {
+          email: credentials.email,
+          password: credentials.password,
+          flow: 'signIn',
+        },
+      });
+
+      console.log('🔑 ConvexService #(login)# SignIn result:', result);
+
+      // Store tokens manually
+      if (result.tokens) {
+        const storageKey = `__convexAuth-${this.deploymentUrl}`;
+        const authData = {
+          token: result.tokens.token,
+          refreshToken: result.tokens.refreshToken,
+          timestamp: Date.now()
+        };
+        
+        localStorage.setItem(storageKey, JSON.stringify(authData));
+        console.log('🔑 ConvexService #(login)# Tokens stored');
+        
+        // Reinitialize client with new auth token
+        this.initializeClient();
+        
+        // Check auth state
+        await this.checkAuthState();
+        
+        console.log('🔑 ConvexService #(login)# Login successful');
+        return true;
+      }
+
+      return false;
+    } catch (error) {
+      console.error('🔑 ConvexService #(login)# Login failed:', error);
+      this.authError.set(error instanceof Error ? error.message : 'Login failed');
+      return false;
+    } finally {
+      this.isLoading.set(false);
+    }
+  }
+
+  async logout(): Promise<void> {
+    this.isLoading.set(true);
+    
+    try {
+      console.log('🔑 ConvexService #(logout)# Logging out user');
+
+      // Call signOut action
+      await this.client.action(api.auth.signOut, {});
+
+      // Clear stored tokens
+      const storageKey = `__convexAuth-${this.deploymentUrl}`;
+      localStorage.removeItem(storageKey);
+      
+      // Clear auth state
+      this.user.set(null);
+      this.isAuthenticated.set(false);
+      
+      // Reinitialize client without auth
+      this.initializeClient();
+      
+      console.log('🔑 ConvexService #(logout)# Logout successful');
+    } catch (error) {
+      console.error('🔑 ConvexService #(logout)# Logout error:', error);
+      this.authError.set(error instanceof Error ? error.message : 'Logout failed');
+    } finally {
+      this.isLoading.set(false);
+    }
+  }
+
+  async signUp(signUpData: SignUpData): Promise<boolean> {
+    this.isLoading.set(true);
+    this.authError.set(null);
+
+    try {
+      console.log('🔑 ConvexService #(signUp)# Attempting signup for:', signUpData.email);
+
+      // Use Convex Auth signIn action with signUp flow
+      const result = await this.client.action(api.auth.signIn, {
+        provider: 'password',
+        params: {
+          email: signUpData.email,
+          password: signUpData.password,
+          flow: 'signUp',
+        },
+      });
+
+      // Store tokens and initialize like login
+      if (result.tokens) {
+        const storageKey = `__convexAuth-${this.deploymentUrl}`;
+        const authData = {
+          token: result.tokens.token,
+          refreshToken: result.tokens.refreshToken,
+          timestamp: Date.now()
+        };
+        
+        localStorage.setItem(storageKey, JSON.stringify(authData));
+        
+        // Reinitialize client with new auth token
+        this.initializeClient();
+        
+        // Update profile if additional info provided
+        if (signUpData.firstName || signUpData.lastName) {
+          try {
+            await this.client.mutation(api.users.updateProfile, {
+              firstName: signUpData.firstName,
+              lastName: signUpData.lastName,
+            });
+          } catch (profileError) {
+            console.warn('Failed to update profile after signup:', profileError);
+          }
+        }
+        
+        // Check auth state
+        await this.checkAuthState();
+        
+        console.log('🔑 ConvexService #(signUp)# Signup successful');
+        return true;
+      }
+
+      return false;
+    } catch (error) {
+      console.error('🔑 ConvexService #(signUp)# Signup failed:', error);
+      this.authError.set(error instanceof Error ? error.message : 'Signup failed');
+      return false;
+    } finally {
+      this.isLoading.set(false);
+    }
   }
 
   private async setupRealtimeListeners(): Promise<void> {
@@ -72,31 +303,10 @@ export class ConvexService {
       // Load initial data
       await this.loadInitialData();
       
-      // Set up polling for real-time-like updates (Convex handles this internally)
-      // The ConvexClient automatically maintains real-time connections
-      // We'll refresh periodically to ensure we have the latest data
-      setInterval(async () => {
-        try {
-          const events = await this.client.query(api.events.list, {});
-          const venues = await this.client.query(api.venues.list, {});
-          
-          // Update signals if data changed
-          if (JSON.stringify(events) !== JSON.stringify(this.events())) {
-            this.events.set(events);
-            console.log('(EventRunner) File: convex.service.ts #(realtime)# Events updated:', events.length);
-          }
-          
-          if (JSON.stringify(venues) !== JSON.stringify(this.venues())) {
-            this.venues.set(venues);
-            console.log('(EventRunner) File: convex.service.ts #(realtime)# Venues updated:', venues.length);
-          }
-        } catch (error) {
-          console.error('(EventRunner) File: convex.service.ts #(realtime)# Update error:', error);
-        }
-      }, 1000); // Check every second for updates
-      
+      // Convex WebSocket handles all real-time updates automatically
+      // No need for polling - the client maintains subscriptions internally
       this.isConnected.set(true);
-      console.log('(EventRunner) File: convex.service.ts #(setupRealtimeListeners)# Real-time polling established');
+      console.log('(EventRunner) File: convex.service.ts #(setupRealtimeListeners)# Real-time WebSocket established - Convex handles updates automatically');
     } catch (error) {
       console.error('(EventRunner) File: convex.service.ts #(setupRealtimeListeners)# Failed to setup subscriptions:', error);
       this.isConnected.set(false);

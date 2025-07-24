@@ -5,7 +5,7 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 /** APP (SERVICES) */
 import { APP_VERSION } from '../../../version';
-import { AuthService } from '../../../services/auth.service';
+import { ConvexAuthService } from '../../../services/convex-auth.service';
 
 import { ActionButtons } from '../action-buttons/action-buttons';
 
@@ -73,7 +73,7 @@ export class Header implements OnInit {
    */
 
   public router = inject(Router);
-  public authService = inject(AuthService);
+  public convexAuthService = inject(ConvexAuthService);
 
   /** END of SECTION */
 
@@ -280,14 +280,14 @@ export class Header implements OnInit {
 
   /** 
    * @method - This method logs out the current user
-   * @description - Calls the auth service to logout and redirects to login page
+   * @description - Calls the Convex auth service to logout and redirects to login page
    * ______________________________________________________________________________________________
    * @param - none
    * @returns - nothing
    */
   async logout(): Promise<void> {
     console.log('(EventRunner) File: header.ts #(logout)# Logging out user');
-    await this.authService.logout();
+    await this.convexAuthService.logout();
     this.router.navigate(['/login']);
   }
 

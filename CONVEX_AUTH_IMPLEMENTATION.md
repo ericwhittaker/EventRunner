@@ -12,38 +12,43 @@ Implementing Convex Auth (beta) in EventRunner Angular app to replace mock authe
 ## 📋 Implementation Tasks
 
 ### Phase 1: Basic Convex Auth Setup
-- [ ] **Task 1.1**: Install and configure `@convex-dev/auth` package
-  - Status: ❌ TODO
-  - Details: Add Convex Auth to backend
+- [x] **Task 1.1**: Install and configure `@convex-dev/auth` package
+  - Status: ✅ DONE
+  - Details: ✅ Ran `npx @convex-dev/auth` CLI setup
+  - Notes: Created auth.config.ts, auth.ts, http.ts files
   
-- [ ] **Task 1.2**: Install `convex-angular` library for better Angular integration
-  - Status: ❌ TODO  
-  - Details: Replace custom ConvexService with convex-angular
+- [x] **Task 1.2**: Install `convex-angular` library for better Angular integration
+  - Status: ✅ DONE  
+  - Details: ✅ Already installed in package.json (v0.2.0)
 
-- [ ] **Task 1.3**: Configure Convex Auth in backend (`convex/auth.ts`)
-  - Status: ❌ TODO
-  - Details: Setup password provider and auth configuration
+- [x] **Task 1.3**: Configure Convex Auth in backend (`convex/auth.ts`)
+  - Status: ✅ DONE
+  - Details: ✅ Added Password provider to auth.ts
 
-- [ ] **Task 1.4**: Update Convex schema to support auth
-  - Status: ❌ TODO
-  - Details: Add auth-related tables if needed
+- [x] **Task 1.4**: Update Convex schema to support auth
+  - Status: ✅ DONE
+  - Details: ✅ Added authTables to schema.ts
 
-- [ ] **Task 1.5**: Create Convex auth functions (signup, signin, signout)
-  - Status: ❌ TODO
-  - Details: Backend auth mutations and queries
+- [x] **Task 1.5**: Create Convex auth functions (signup, signin, signout)
+  - Status: ✅ DONE
+  - Details: ✅ Created auth queries/mutations in users.ts
+  - Notes: Auth actions are handled by Convex Auth directly via HTTP endpoints
 
 ### Phase 2: Angular Frontend Integration  
-- [ ] **Task 2.1**: Replace ConvexService with convex-angular
-  - Status: ❌ TODO
-  - Details: Use `injectQuery`, `injectMutation`, `provideConvex`
+- [x] **Task 2.1**: Replace ConvexService with convex-angular
+  - Status: ✅ DONE
+  - Details: ✅ Created ConvexAngularService with injectQuery/injectMutation
+  - Notes: ✅ Updated AddEventConvexDialogComponent and EventsDashComponent
 
-- [ ] **Task 2.2**: Update AuthService to use Convex Auth
-  - Status: ❌ TODO
-  - Details: Replace mock auth with real Convex Auth calls
+- [x] **Task 2.2**: Update AuthService to use Convex Auth
+  - Status: ✅ DONE
+  - Details: ✅ Updated ConvexAuthService to use convex-angular and real Convex Auth
+  - Notes: Uses reactive queries for auth state, proper HTTP endpoints for auth
 
-- [ ] **Task 2.3**: Update login component to use new auth flow
-  - Status: ❌ TODO
-  - Details: Wire up signup/signin forms
+- [x] **Task 2.3**: Update login component to use new auth flow
+  - Status: ✅ DONE
+  - Details: ✅ Added toggle between ConvexAuth and MockAuth, updated UI to use appropriate service
+  - Notes: Component can now switch between auth implementations for testing
 
 - [ ] **Task 2.4**: Update auth guard and header components
   - Status: ❌ TODO

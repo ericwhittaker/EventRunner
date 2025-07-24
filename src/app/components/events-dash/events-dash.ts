@@ -122,7 +122,7 @@ export class EventsDashComponent implements OnInit {
   constructor() {
     // Subscribe to ConvexService events signal for real-time updates
     effect(() => {
-      const events = this.convexService.events();
+      const events = this.convexService.events() || [];
       this.convexEvents.set(events);
       this.convexDataLoaded.set(events.length > 0);
       

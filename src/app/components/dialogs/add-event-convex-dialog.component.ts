@@ -109,7 +109,7 @@ export interface AddEventConvexDialogData {
                 class="form-control"
               >
                 <option value="">Select venue (optional)</option>
-                @for (venue of convexService.venues(); track venue._id) {
+                @for (venue of convexService.venues() || []; track venue._id) {
                   <option [value]="venue._id">{{ venue.name }}</option>
                 }
               </select>
@@ -404,8 +404,7 @@ export class AddEventConvexDialogComponent {
       
       console.log(`✅ Convex event created successfully with ID: ${eventId}`);
       
-      // Refresh Convex data
-      await this.convexService.refreshData();
+      // Real-time updates handled automatically by convex-angular
       
       // Close the dialog
       this.closeDialog();

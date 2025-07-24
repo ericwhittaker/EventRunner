@@ -2,7 +2,7 @@ import { Component, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { AuthService, LoginCredentials } from '../../services/auth.service';
+import { ConvexAuthService, LoginCredentials } from '../../services/convex-auth.service';
 
 @Component({
   selector: 'app-login',
@@ -16,11 +16,11 @@ import { AuthService, LoginCredentials } from '../../services/auth.service';
         </div>
 
         <form class="login-form" (ngSubmit)="onSubmit()" #loginForm="ngForm">
-          @if (authService.error()) {
+          @if (convexAuthService.error()) {
             <div class="error-message">
               <i class="fas fa-exclamation-triangle"></i>
-              {{ authService.error() }}
-              <button type="button" class="error-close" (click)="authService.clearError()">
+              {{ convexAuthService.error() }}
+              <button type="button" class="error-close" (click)="convexAuthService.clearError()">
                 <i class="fas fa-times"></i>
               </button>
             </div>
@@ -34,7 +34,7 @@ import { AuthService, LoginCredentials } from '../../services/auth.service';
               name="email"
               [(ngModel)]="credentials.email"
               required
-              [disabled]="authService.isLoading()"
+              [disabled]="convexAuthService.isLoading()"
               placeholder="Enter your email"
               autocomplete="email"
             />
@@ -48,7 +48,7 @@ import { AuthService, LoginCredentials } from '../../services/auth.service';
               name="password"
               [(ngModel)]="credentials.password"
               required
-              [disabled]="authService.isLoading()"
+              [disabled]="convexAuthService.isLoading()"
               placeholder="Enter your password"
               autocomplete="current-password"
             />
@@ -57,9 +57,9 @@ import { AuthService, LoginCredentials } from '../../services/auth.service';
           <button
             type="submit"
             class="login-button"
-            [disabled]="authService.isLoading() || !loginForm.valid"
+            [disabled]="convexAuthService.isLoading() || !loginForm.valid"
           >
-            @if (authService.isLoading()) {
+            @if (convexAuthService.isLoading()) {
               <i class="fas fa-spinner fa-spin"></i>
               Signing in...
             } @else {
@@ -72,8 +72,22 @@ import { AuthService, LoginCredentials } from '../../services/auth.service';
         <div class="login-footer">
           <div class="demo-info">
             <h4>Demo Credentials</h4>
-            <p>Email: any valid email format</p>
-            <p>Password: <code>demo</code>, <code>test</code>, <code>password</code>, or <code>123</code></p>
+            <p>Contact your administrator to create an account.</p>
+            <p>Existing users can login with their email and password.</p>
+          </div>
+          
+          <!-- Temporary Admin Creation Section -->
+          <div class="admin-creation">
+            <h4>🚀 First Time Setup</h4>
+            <p>No admin user yet? Create one:</p>
+            <button 
+              type="button" 
+              class="create-admin-btn"
+              (click)="createFirstAdmin()"
+              [disabled]="convexAuthService.isLoading()"
+            >
+              Create Admin User
+            </button>
           </div>
         </div>
       </div>
@@ -231,6 +245,45 @@ import { AuthService, LoginCredentials } from '../../services/auth.service';
       font-size: 12px;
     }
 
+    .admin-creation {
+      margin-top: 20px;
+      padding-top: 20px;
+      border-top: 1px solid #e1e5e9;
+    }
+
+    .admin-creation h4 {
+      margin: 0 0 10px 0;
+      color: #28a745;
+      font-size: 14px;
+    }
+
+    .admin-creation p {
+      margin: 4px 0 10px 0;
+      font-size: 13px;
+      color: #6c757d;
+    }
+
+    .create-admin-btn {
+      background: #28a745;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 4px;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .create-admin-btn:hover:not(:disabled) {
+      background: #218838;
+    }
+
+    .create-admin-btn:disabled {
+      background: #6c757d;
+      cursor: not-allowed;
+    }
+
     @media (max-width: 480px) {
       .login-container {
         padding: 10px;
@@ -258,13 +311,13 @@ export class LoginComponent {
   };
 
   constructor(
-    public authService: AuthService,
+    public convexAuthService: ConvexAuthService,
     private router: Router
   ) {
     console.log('(EventRunner) File: login.component.ts #(Constructor)# Login Component initialized');
     
     // If already authenticated, redirect to dashboard
-    if (this.authService.isAuthenticated()) {
+    if (this.convexAuthService.isAuthenticated()) {
       console.log('(EventRunner) File: login.component.ts #(Constructor)# User already authenticated, redirecting...');
       this.router.navigate(['/dashboard']);
     }
@@ -273,11 +326,53 @@ export class LoginComponent {
   async onSubmit(): Promise<void> {
     console.log('(EventRunner) File: login.component.ts #(onSubmit)# Login attempt for:', this.credentials.email);
     
-    const success = await this.authService.login(this.credentials);
+    const success = await this.convexAuthService.login(this.credentials);
     
     if (success) {
-      console.log('(EventRunner) File: login.component.ts #(onSubmit)# Login successful, redirecting to dashboard');
+      console.log('(EventRunner) File: login.component.ts #(onSubmit)# Login successful, waiting for auth state to update...');
+      
+      // Wait for the reactive queries to update after successful authentication
+      await new Promise(resolve => setTimeout(resolve, 100));
+      
+      // Check if auth state is updated, if not wait a bit more
+      let retries = 0;
+      while (!this.convexAuthService.isAuthenticated() && retries < 10) {
+        console.log('(EventRunner) File: login.component.ts #(onSubmit)# Waiting for auth state update, retry:', retries + 1);
+        await new Promise(resolve => setTimeout(resolve, 100));
+        retries++;
+      }
+      
+      console.log('(EventRunner) File: login.component.ts #(onSubmit)# Auth state updated, redirecting to dashboard');
       this.router.navigate(['/dashboard']);
+    }
+  }
+
+  async createFirstAdmin(): Promise<void> {
+    console.log('(EventRunner) Creating first admin user...');
+    
+    const adminData = {
+      email: 'admin@eventrunner.local',
+      password: 'admin123',
+      firstName: 'Admin',
+      lastName: 'User'
+    };
+
+    try {
+      const success = await this.convexAuthService.signUp(adminData);
+      
+      if (success) {
+        console.log('(EventRunner) Admin user created successfully!');
+        alert('Admin user created!\n\nEmail: admin@eventrunner.local\nPassword: admin123\n\nYou can now login with these credentials.');
+        
+        // Pre-fill the login form
+        this.credentials.email = adminData.email;
+        this.credentials.password = adminData.password;
+      } else {
+        alert('Failed to create admin user. Check the console for details.');
+      }
+    } catch (error) {
+      console.error('(EventRunner) Error creating admin user:', error);
+      alert('Error creating admin user. Check the console for details.');
     }
   }
 }

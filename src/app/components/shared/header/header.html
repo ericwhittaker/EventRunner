@@ -17,9 +17,9 @@
     <span class="version-info">v{{ version }}</span>
     
     <!-- User Info Section -->
-    @if (authService.isAuthenticated()) {
+    @if (convexAuthService.isAuthenticated()) {
       <div class="user-info">
-        <span class="user-greeting">Hello, {{ authService.user()?.email || 'User' }}</span>
+        <span class="user-greeting">Hello, {{ convexAuthService.user()?.email || 'User' }}</span>
         <button class="logout-btn" (click)="logout()">Logout</button>
       </div>
     }

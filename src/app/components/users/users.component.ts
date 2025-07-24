@@ -1,16 +1,19 @@
 /**ANGULAR (CORE) */
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { ConvexAuthService, SignUpData } from '../../services/convex-auth.service';
 
 @Component({
   selector: 'app-users',
   imports: [
-    CommonModule
+    CommonModule,
+    FormsModule
   ],
   template: `
     <div class="subnav-container">
       <div class="subnav-left">
-        <button class="action-btn">Add User</button>
+        <button class="action-btn" (click)="showAddUserDialog()">Add User</button>
         <button class="action-btn">Manage Roles</button>
       </div>
       <div class="subnav-center">
@@ -71,6 +74,99 @@ import { CommonModule } from '@angular/common';
         </div>
       </div>
     </div>
+
+    <!-- Add User Dialog -->
+    @if (showAddDialog()) {
+      <div class="dialog-overlay" (click)="hideAddUserDialog()">
+        <div class="dialog-container" (click)="$event.stopPropagation()">
+          <div class="dialog-header">
+            <h2>Add New User</h2>
+            <button class="close-btn" (click)="hideAddUserDialog()">
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+          
+          <div class="dialog-content">
+            <form (ngSubmit)="createUser()" #userForm="ngForm">
+              @if (errorMessage()) {
+                <div class="error-message">
+                  <i class="fas fa-exclamation-triangle"></i>
+                  {{ errorMessage() }}
+                </div>
+              }
+
+              <div class="form-group">
+                <label for="email">Email *</label>
+                <input 
+                  id="email"
+                  type="email" 
+                  [(ngModel)]="newUserData.email" 
+                  name="email"
+                  required
+                  placeholder="Enter user email"
+                  class="form-control"
+                />
+              </div>
+
+              <div class="form-group">
+                <label for="password">Password *</label>
+                <input 
+                  id="password"
+                  type="password" 
+                  [(ngModel)]="newUserData.password" 
+                  name="password"
+                  required
+                  placeholder="Enter password"
+                  class="form-control"
+                />
+              </div>
+
+              <div class="form-group">
+                <label for="firstName">First Name</label>
+                <input 
+                  id="firstName"
+                  type="text" 
+                  [(ngModel)]="newUserData.firstName" 
+                  name="firstName"
+                  placeholder="Enter first name"
+                  class="form-control"
+                />
+              </div>
+
+              <div class="form-group">
+                <label for="lastName">Last Name</label>
+                <input 
+                  id="lastName"
+                  type="text" 
+                  [(ngModel)]="newUserData.lastName" 
+                  name="lastName"
+                  placeholder="Enter last name"
+                  class="form-control"
+                />
+              </div>
+
+              <div class="dialog-actions">
+                <button type="button" class="btn btn-secondary" (click)="hideAddUserDialog()">
+                  Cancel
+                </button>
+                <button 
+                  type="submit" 
+                  class="btn btn-primary" 
+                  [disabled]="!userForm.valid || isCreating()"
+                >
+                  @if (isCreating()) {
+                    <i class="fas fa-spinner fa-spin"></i>
+                    Creating...
+                  } @else {
+                    Create User
+                  }
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    }
   `,
   styles: [`
     .page-content { padding: 20px; max-width: 1400px; margin: 0 auto; }
@@ -97,7 +193,86 @@ import { CommonModule } from '@angular/common';
     .nav-item { padding: 8px 16px; cursor: pointer; border-radius: 4px; }
     .nav-item.active { background: #007bff; color: white; }
     .nav-item:hover:not(.active) { background: #e9ecef; }
+
+    /* Dialog styles */
+    .dialog-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.5); display: flex; align-items: center; justify-content: center; z-index: 1000; }
+    .dialog-container { background: white; border-radius: 8px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15); width: 90%; max-width: 500px; max-height: 90vh; overflow: hidden; }
+    .dialog-header { display: flex; justify-content: space-between; align-items: center; padding: 1.5rem; border-bottom: 1px solid #e0e0e0; background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); }
+    .dialog-header h2 { margin: 0; color: #333; font-size: 1.25rem; font-weight: 600; }
+    .close-btn { background: none; border: none; font-size: 1.2rem; color: #666; cursor: pointer; padding: 0.25rem; border-radius: 4px; transition: all 0.2s ease; }
+    .close-btn:hover { background: #e9ecef; color: #333; }
+    .dialog-content { padding: 1.5rem; }
+    .form-group { margin-bottom: 1rem; }
+    .form-group label { display: block; margin-bottom: 0.5rem; font-weight: 500; color: #333; }
+    .form-control { width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 4px; font-size: 1rem; transition: border-color 0.2s ease; }
+    .form-control:focus { outline: none; border-color: #00BAFB; box-shadow: 0 0 0 2px rgba(0, 186, 251, 0.25); }
+    .dialog-actions { display: flex; gap: 0.75rem; justify-content: flex-end; margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid #e0e0e0; }
+    .btn { padding: 0.75rem 1.5rem; border: none; border-radius: 4px; font-size: 1rem; font-weight: 500; cursor: pointer; transition: all 0.2s ease; display: flex; align-items: center; gap: 0.5rem; }
+    .btn:disabled { opacity: 0.6; cursor: not-allowed; }
+    .btn-secondary { background: #6c757d; color: white; }
+    .btn-secondary:hover:not(:disabled) { background: #5a6268; }
+    .btn-primary { background: #00BAFB; color: white; }
+    .btn-primary:hover:not(:disabled) { background: #0099cc; }
+    .error-message { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; border-radius: 8px; padding: 12px; margin-bottom: 20px; display: flex; align-items: center; gap: 8px; }
+    .fa-spin { animation: spin 1s linear infinite; }
+    @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
   `]
 })
 export class UsersComponent {
+  // Dialog state
+  showAddDialog = signal(false);
+  isCreating = signal(false);
+  errorMessage = signal<string | null>(null);
+
+  // Form data for new user
+  newUserData: SignUpData = {
+    email: '',
+    password: '',
+    firstName: '',
+    lastName: ''
+  };
+
+  constructor(private convexAuthService: ConvexAuthService) {}
+
+  showAddUserDialog(): void {
+    this.showAddDialog.set(true);
+    this.errorMessage.set(null);
+    // Reset form
+    this.newUserData = {
+      email: '',
+      password: '',
+      firstName: '',
+      lastName: ''
+    };
+  }
+
+  hideAddUserDialog(): void {
+    this.showAddDialog.set(false);
+    this.errorMessage.set(null);
+  }
+
+  async createUser(): Promise<void> {
+    this.isCreating.set(true);
+    this.errorMessage.set(null);
+
+    try {
+      console.log('(EventRunner) Creating user:', this.newUserData.email);
+      
+      const success = await this.convexAuthService.signUp(this.newUserData);
+      
+      if (success) {
+        console.log('(EventRunner) User created successfully');
+        this.hideAddUserDialog();
+        // Here you would typically refresh the user list
+        // For now, we'll just close the dialog
+      } else {
+        this.errorMessage.set('Failed to create user. Please check the details and try again.');
+      }
+    } catch (error) {
+      console.error('(EventRunner) Error creating user:', error);
+      this.errorMessage.set('An error occurred while creating the user.');
+    } finally {
+      this.isCreating.set(false);
+    }
+  }
 }
