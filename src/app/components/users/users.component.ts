@@ -28,37 +28,9 @@ import { ConvexAuthService, SignUpData } from '../../services/convex-auth.servic
     </div>
     <div class="page-content">
       <div class="content-grid">
-        <div class="card">
-          <h3>System Users</h3>
-          <div class="user-list">
-            <div class="user-item">
-              <div class="user-avatar">EW</div>
-              <div class="user-info">
-                <h4>Eric Whittaker</h4>
-                <p>Administrator</p>
-                <span class="user-status online">Online</span>
-              </div>
-              <div class="user-actions">
-                <button class="edit-btn">Edit</button>
-              </div>
-            </div>
-            <div class="user-item">
-              <div class="user-avatar">MJ</div>
-              <div class="user-info">
-                <h4>Mike Johnson</h4>
-                <p>Project Manager</p>
-                <span class="user-status offline">Offline</span>
-              </div>
-              <div class="user-actions">
-                <button class="edit-btn">Edit</button>
-              </div>
-            </div>
-          </div>
-        </div>
-        
-        <!-- New: Convex Auth Users Section -->
-        <div class="card">
-          <h3>Convex Auth Users</h3>
+        <!-- Convex Auth Users Section (Main) -->
+        <div class="card main-users-card">
+          <h3>Users</h3>
           <div class="user-list">
             @if (convexAuthService.users().length === 0) {
               <div class="no-users">
@@ -76,7 +48,12 @@ import { ConvexAuthService, SignUpData } from '../../services/convex-auth.servic
                   <div class="user-info">
                     <h4>{{ getDisplayName(user.firstName, user.lastName, user.email) }}</h4>
                     <p>{{ user.email }}</p>
-                    <span class="user-status convex">Convex User</span>
+                    <div class="user-status-row">
+                      <span class="user-status convex">Convex User</span>
+                      <span class="user-status {{ getUserOnlineStatus(user.id) }}">
+                        {{ getUserOnlineStatus(user.id) === 'online' ? 'Online' : 'Offline' }}
+                      </span>
+                    </div>
                   </div>
                   <div class="user-actions">
                     <button class="edit-btn" disabled>Manage</button>
@@ -204,12 +181,14 @@ import { ConvexAuthService, SignUpData } from '../../services/convex-auth.servic
     .page-content { padding: 20px; max-width: 1400px; margin: 0 auto; }
     .content-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; }
     .card { background: white; border-radius: 8px; padding: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+    .main-users-card { grid-column: 1 / -1; } /* Make users card span full width */
     .user-item { display: flex; align-items: center; gap: 15px; padding: 15px 0; border-bottom: 1px solid #eee; }
     .user-avatar { width: 40px; height: 40px; border-radius: 50%; background: #28a745; color: white; display: flex; align-items: center; justify-content: center; font-weight: 600; }
     .user-info { flex: 1; }
     .user-info h4 { margin: 0 0 5px 0; color: #333; }
-    .user-info p { margin: 0 0 5px 0; color: #666; font-size: 14px; }
-    .user-status { padding: 2px 8px; border-radius: 12px; font-size: 12px; }
+    .user-info p { margin: 0 0 8px 0; color: #666; font-size: 14px; }
+    .user-status-row { display: flex; gap: 8px; align-items: center; }
+    .user-status { padding: 3px 8px; border-radius: 12px; font-size: 12px; font-weight: 500; }
     .user-status.online { background: #d4edda; color: #155724; }
     .user-status.offline { background: #f8d7da; color: #721c24; }
     .user-status.convex { background: #d1ecf1; color: #0c5460; }
@@ -332,5 +311,16 @@ export class UsersComponent {
       return firstName;
     }
     return email || 'Unknown User';
+  }
+
+  // Mock online status - this could be enhanced with real presence tracking later
+  getUserOnlineStatus(userId: string): 'online' | 'offline' {
+    // For now, randomly assign status based on userId hash for demonstration
+    // In a real app, this would come from a presence service
+    const hash = userId.split('').reduce((a, b) => {
+      a = ((a << 5) - a) + b.charCodeAt(0);
+      return a & a;
+    }, 0);
+    return Math.abs(hash) % 3 === 0 ? 'offline' : 'online';
   }
 }
