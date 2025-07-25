@@ -71,23 +71,9 @@ import { ConvexAuthService, LoginCredentials } from '../../services/convex-auth.
 
         <div class="login-footer">
           <div class="demo-info">
-            <h4>Demo Credentials</h4>
+            <h4>Need Access?</h4>
             <p>Contact your administrator to create an account.</p>
             <p>Existing users can login with their email and password.</p>
-          </div>
-          
-          <!-- Temporary Admin Creation Section -->
-          <div class="admin-creation">
-            <h4>🚀 First Time Setup</h4>
-            <p>No admin user yet? Create one:</p>
-            <button 
-              type="button" 
-              class="create-admin-btn"
-              (click)="createFirstAdmin()"
-              [disabled]="convexAuthService.isLoading()"
-            >
-              Create Admin User
-            </button>
           </div>
         </div>
       </div>
@@ -344,35 +330,6 @@ export class LoginComponent {
       
       console.log('(EventRunner) File: login.component.ts #(onSubmit)# Auth state updated, redirecting to dashboard');
       this.router.navigate(['/dashboard']);
-    }
-  }
-
-  async createFirstAdmin(): Promise<void> {
-    console.log('(EventRunner) Creating first admin user...');
-    
-    const adminData = {
-      email: 'admin@eventrunner.local',
-      password: 'admin123',
-      firstName: 'Admin',
-      lastName: 'User'
-    };
-
-    try {
-      const success = await this.convexAuthService.signUp(adminData);
-      
-      if (success) {
-        console.log('(EventRunner) Admin user created successfully!');
-        alert('Admin user created!\n\nEmail: admin@eventrunner.local\nPassword: admin123\n\nYou can now login with these credentials.');
-        
-        // Pre-fill the login form
-        this.credentials.email = adminData.email;
-        this.credentials.password = adminData.password;
-      } else {
-        alert('Failed to create admin user. Check the console for details.');
-      }
-    } catch (error) {
-      console.error('(EventRunner) Error creating admin user:', error);
-      alert('Error creating admin user. Check the console for details.');
     }
   }
 }
