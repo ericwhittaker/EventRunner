@@ -266,10 +266,10 @@ export class Header implements OnInit {
         this.currentSection.set('venues');
       } else if (url.includes('contacts')) {
         this.currentSection.set('contacts');
-      } else if (url.includes('users')) {
-        this.currentSection.set('users');
       } else if (url.includes('admin')) {
         this.currentSection.set('admin');
+      } else if (url.includes('users')) {
+        this.currentSection.set('users');
       } else if (/\/event\//.test(url)) {
         this.currentSection.set('event');
       } else {

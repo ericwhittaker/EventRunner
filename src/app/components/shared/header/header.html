@@ -124,12 +124,6 @@
     <button class="header-submenu-btn">Recently Added</button>
     <button class="header-submenu-btn">Search</button>
   }
-  @if (currentSection() === 'users') {
-    <button class="header-submenu-btn active">Active Users</button>
-    <button class="header-submenu-btn">Add User</button>
-    <button class="header-submenu-btn">Manage Roles</button>
-    <button class="header-submenu-btn">Edit</button>
-  }
   @if (currentSection() === 'admin') {
     <button class="header-submenu-btn" 
             [class.active]="router.url === '/admin' || router.url === '/admin/dashboard'"
