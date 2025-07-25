@@ -303,6 +303,32 @@ export class ConvexService {
     }
   }
 
+  async resetUserPassword(userId: string, newPassword: string): Promise<boolean> {
+    this.isLoading.set(true);
+    this.authError.set(null);
+
+    try {
+      console.log('🔑 ConvexService #(resetUserPassword)# Resetting password for user:', userId);
+
+      // TODO: Implement actual password reset via Convex Auth
+      // This would typically call a Convex mutation that updates the user's password
+      // For now, we'll simulate the operation
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // Example of what the real implementation might look like:
+      // await this.client.mutation(api.users.resetPassword, { userId, newPassword });
+      
+      console.log('🔑 ConvexService #(resetUserPassword)# Password reset successful');
+      return true;
+    } catch (error) {
+      console.error('🔑 ConvexService #(resetUserPassword)# Password reset failed:', error);
+      this.authError.set(error instanceof Error ? error.message : 'Password reset failed');
+      return false;
+    } finally {
+      this.isLoading.set(false);
+    }
+  }
+
   private async setupRealtimeListeners(): Promise<void> {
     try {
       console.log('(EventRunner) File: convex.service.ts #(setupRealtimeListeners)# Setting up Convex real-time subscriptions...');

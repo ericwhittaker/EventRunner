@@ -76,6 +76,10 @@ export class ConvexAuthService {
     return await this.convexService.logout();
   }
 
+  async resetUserPassword(userId: string, newPassword: string): Promise<boolean> {
+    return await this.convexService.resetUserPassword(userId, newPassword);
+  }
+
   clearError(): void {
     // ConvexService handles errors automatically
   }
