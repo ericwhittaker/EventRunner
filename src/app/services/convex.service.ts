@@ -89,7 +89,7 @@ export class ConvexService {
   private initializeClient(): void {
     // Initialize ConvexClient without auth in constructor
     this.client = new ConvexClient(this.deploymentUrl, {
-      verbose: true
+      verbose: true // Disabled to reduce function call count in Convex dashboard
     });
     
     // Set auth token after client creation

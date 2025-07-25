@@ -1,6 +1,9 @@
 /** ANGULAR ROUTER */
 import { Routes } from '@angular/router';
 
+/** COMPONENTS - (LAYOUTS) */
+import { MainLayoutComponent } from './components/layouts/main-layout.component';
+
 /** COMPONENTS - (LOGIN & LOADING) */
 import { LoginComponent } from './components/auth/login.component';
 
@@ -29,58 +32,76 @@ import { AuthGuard } from './guards/auth.guard';
 console.log('(E-TRAK) File: app.routes.ts #(const routes)# is being created.');
 
 export const routes: Routes = [
-  // Login route (public)
+  // Public routes (no layout)
   {
     path: 'login',
     component: LoginComponent
   },
   
-  // Protected routes (require authentication)
+  // Protected routes with main layout (header, optional sidebar/footer)
   {
     path: '',
-    redirectTo: '/dashboard',
-    pathMatch: 'full'
+    component: MainLayoutComponent,
+    canActivate: [AuthGuard],
+    children: [
+      {
+        path: '',
+        redirectTo: '/dashboard',
+        pathMatch: 'full'
+      },
+      {
+        path: 'dashboard',
+        component: EventsDashComponent
+      },
+      {
+        path: 'trips',
+        component: TripsComponent
+      },
+      {
+        path: 'build-log',
+        component: BuildTasksComponent
+      },
+      {
+        path: 'venues',
+        component: VenuesComponent
+      },
+      {
+        path: 'contacts',
+        component: ContactsComponent
+      },
+      {
+        path: 'users',
+        component: UsersComponent
+      },
+      {
+        path: 'admin',
+        children: [
+          {
+            path: '',
+            component: AdminComponent
+          },
+          {
+            path: 'dashboard',
+            component: AdminComponent
+          },
+          {
+            path: 'users',
+            component: UsersComponent
+          },
+          {
+            path: 'settings',
+            component: AdminComponent
+          }
+        ]
+      },
+      {
+        path: 'event/:id',
+        component: EventDetailComponent
+      }
+    ]
   },
-  {
-    path: 'dashboard',
-    component: EventsDashComponent,
-    canActivate: [AuthGuard]
-  },
-  {
-    path: 'trips',
-    component: TripsComponent,
-    canActivate: [AuthGuard]
-  },
-  {
-    path: 'build-log',
-    component: BuildTasksComponent,
-    canActivate: [AuthGuard]
-  },
-  {
-    path: 'venues',
-    component: VenuesComponent,
-    canActivate: [AuthGuard]
-  },
-  {
-    path: 'contacts',
-    component: ContactsComponent,
-    canActivate: [AuthGuard]
-  },
-  {
-    path: 'users',
-    component: UsersComponent,
-    canActivate: [AuthGuard]
-  },
-  {
-    path: 'admin',
-    component: AdminComponent,
-    canActivate: [AuthGuard]
-  },
-  {
-    path: 'event/:id',
-    component: EventDetailComponent,
-    canActivate: [AuthGuard]
-  },
+  
+  // Fallback
   {
     path: '**',
     redirectTo: '/dashboard'
