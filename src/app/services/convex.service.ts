@@ -89,7 +89,7 @@ export class ConvexService {
   private initializeClient(): void {
     // Initialize ConvexClient without auth in constructor
     this.client = new ConvexClient(this.deploymentUrl, {
-      verbose: true // Disabled to reduce function call count in Convex dashboard
+      verbose: false // Disabled to reduce function call count in Convex dashboard
     });
     
     // Set auth token after client creation
@@ -194,6 +194,9 @@ export class ConvexService {
         // Check auth state
         await this.checkAuthState();
         
+        // Force reload users after successful auth
+        await this.loadUsers();
+        
         console.log('🔑 ConvexService #(login)# Login successful');
         return true;
       }
@@ -283,6 +286,9 @@ export class ConvexService {
         // Check auth state
         await this.checkAuthState();
         
+        // Force reload users after successful auth
+        await this.loadUsers();
+        
         console.log('🔑 ConvexService #(signUp)# Signup successful');
         return true;
       }
@@ -328,22 +334,9 @@ export class ConvexService {
 
       // Load users (only if authenticated - admin feature)
       if (this.isAuthenticated()) {
-        try {
-          const users = await this.client.query(api.users.listAllUsers, {});
-          // Transform Convex Auth users to our User interface
-          const transformedUsers = users.map(convexUser => ({
-            id: convexUser._id,
-            email: convexUser.email || '',
-            firstName: this.extractFirstName(convexUser.name || ''),
-            lastName: this.extractLastName(convexUser.name || ''),
-            role: 'user' // Default role for now
-          }));
-          this.users.set(transformedUsers);
-          console.log('(EventRunner) File: convex.service.ts #(loadInitialData)# Users loaded:', transformedUsers.length, 'users');
-        } catch (userError) {
-          console.warn('(EventRunner) File: convex.service.ts #(loadInitialData)# Could not load users (may not be admin):', userError);
-          this.users.set([]);
-        }
+        await this.loadUsers();
+      } else {
+        console.log('⚠️ ConvexService #(loadInitialData)# Skipping user load - not authenticated');
       }
     } catch (error) {
       console.error('(EventRunner) File: convex.service.ts #(loadInitialData)# Error:', error);
@@ -354,6 +347,26 @@ export class ConvexService {
   // Method to refresh data manually
   public async refreshData(): Promise<void> {
     await this.loadInitialData();
+  }
+
+  // Method to load users specifically (useful after login)
+  public async loadUsers(): Promise<void> {
+    try {
+      const users = await this.client.query(api.users.listAllUsers, {});
+      // Transform Convex Auth users to our User interface
+      const transformedUsers = users.map(convexUser => ({
+        id: convexUser._id,
+        email: convexUser.email || '',
+        firstName: this.extractFirstName(convexUser.name || ''),
+        lastName: this.extractLastName(convexUser.name || ''),
+        role: 'user' // Default role for now
+      }));
+      this.users.set(transformedUsers);
+      console.log('✅ ConvexService #(loadUsers)# Users loaded:', transformedUsers.length, 'users');
+    } catch (userError) {
+      console.warn('⚠️ ConvexService #(loadUsers)# Could not load users:', userError);
+      this.users.set([]);
+    }
   }
 
   // Helper methods for name parsing

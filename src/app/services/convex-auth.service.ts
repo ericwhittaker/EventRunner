@@ -93,4 +93,8 @@ export class ConvexAuthService {
   async refreshData(): Promise<void> {
     return await this.convexService.refreshData();
   }
+
+  async loadUsers(): Promise<void> {
+    return await this.convexService.loadUsers();
+  }
 }
