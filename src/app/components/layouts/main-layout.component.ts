@@ -1,7 +1,6 @@
 import { Component, computed } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { Header } from '../shared/header/header';
-import { ConvexAuthService } from '../../services/convex-auth.service';
 
 @Component({
   selector: 'app-main-layout',
@@ -44,8 +43,5 @@ import { ConvexAuthService } from '../../services/convex-auth.service';
   `]
 })
 export class MainLayoutComponent {
-  constructor(public authService: ConvexAuthService) {}
-  
-  // Computed properties for global state
-  userCount = computed(() => this.authService.users().length);
+  constructor() {}
 }
