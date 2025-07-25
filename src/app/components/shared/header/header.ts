@@ -254,28 +254,42 @@ export class Header implements OnInit {
    * @returns - nothing
    */
   setCurrentSectionFromRoute() {
+    // Set initial section based on current URL
+    const initialUrl = this.router.url;
+    this.updateSectionFromUrl(initialUrl);
+    
+    // Listen for route changes
     this.router.events.subscribe(() => {
       const url = this.router.url;
-      if (url.includes('dashboard') || url === '/') {
-        this.currentSection.set('dashboard');
-      } else if (url.includes('build-log')) {
-        this.currentSection.set('build');
-      } else if (url.includes('trips')) {
-        this.currentSection.set('trips');
-      } else if (url.includes('venues')) {
-        this.currentSection.set('venues');
-      } else if (url.includes('contacts')) {
-        this.currentSection.set('contacts');
-      } else if (url.includes('admin')) {
-        this.currentSection.set('admin');
-      } else if (url.includes('users')) {
-        this.currentSection.set('users');
-      } else if (/\/event\//.test(url)) {
-        this.currentSection.set('event');
-      } else {
-        this.currentSection.set('events');
-      }
+      this.updateSectionFromUrl(url);
     });
+  }
+
+  /** 
+   * @method - This method updates the current section based on URL
+   * @description - Extracted logic to avoid duplication between initial load and route changes
+   * @param url - The current URL to analyze
+   */
+  private updateSectionFromUrl(url: string) {
+    if (url.includes('dashboard') || url === '/') {
+      this.currentSection.set('dashboard');
+    } else if (url.includes('build-log')) {
+      this.currentSection.set('build');
+    } else if (url.includes('trips')) {
+      this.currentSection.set('trips');
+    } else if (url.includes('venues')) {
+      this.currentSection.set('venues');
+    } else if (url.includes('contacts')) {
+      this.currentSection.set('contacts');
+    } else if (url.includes('admin')) {
+      this.currentSection.set('admin');
+    } else if (url.includes('users')) {
+      this.currentSection.set('users');
+    } else if (/\/event\//.test(url)) {
+      this.currentSection.set('event');
+    } else {
+      this.currentSection.set('events');
+    }
   }
 
   /** 
