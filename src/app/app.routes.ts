@@ -81,10 +81,6 @@ export const routes: Routes = [
             component: AdminComponent
           },
           {
-            path: 'dashboard',
-            component: AdminComponent
-          },
-          {
             path: 'users',
             component: UsersComponent
           },

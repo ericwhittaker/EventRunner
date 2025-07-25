@@ -9,7 +9,7 @@
       <div class="menu-item" [class.active]="isActive('trips')" (click)="navigateTo('trips')">Vehicles</div>
       <div class="menu-item" [class.active]="isActive('venues')" (click)="navigateTo('venues')">Venues</div>
       <div class="menu-item" [class.active]="isActive('contacts')" (click)="navigateTo('contacts')">Contacts</div>
-      <div class="menu-item" [class.active]="isActive('admin')" (click)="navigateTo('admin')">Admin</div>
+      <div class="menu-item" [class.active]="isActive('admin')" (click)="navigateTo('admin/settings')">Admin</div>
     </div>
   </div>
   <div class="menu-right">
@@ -126,17 +126,14 @@
   }
   @if (currentSection() === 'admin') {
     <button class="header-submenu-btn" 
-            [class.active]="router.url === '/admin' || router.url === '/admin/dashboard'"
-            (click)="navigateTo('admin/dashboard')">Dashboard</button>
+            [class.active]="router.url === '/admin/settings'"
+            (click)="navigateTo('admin/settings')">
+            System Settings
+    </button>
     <button class="header-submenu-btn"
             [class.active]="router.url === '/admin/users'"
-            (click)="navigateTo('admin/users')">Users</button>
-    <button class="header-submenu-btn"
-            [class.active]="router.url === '/admin/settings'"
-            (click)="navigateTo('admin/settings')">System Settings</button>
-    <button class="header-submenu-btn">Backup</button>
-    <button class="header-submenu-btn">System Health</button>
-    <button class="header-submenu-btn">Logs</button>
-    <button class="header-submenu-btn">Database</button>
+            (click)="navigateTo('admin/users')">
+            Users
+    </button>
   }
 </div>
