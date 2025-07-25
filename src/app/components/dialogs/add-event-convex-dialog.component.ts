@@ -404,8 +404,6 @@ export class AddEventConvexDialogComponent {
       
       console.log(`✅ Convex event created successfully with ID: ${eventId}`);
       
-      // Real-time updates handled automatically by convex-angular
-      
       // Close the dialog
       this.closeDialog();
       
