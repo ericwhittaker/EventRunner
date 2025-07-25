@@ -1,0 +1,37 @@
+Hey everyone, it is nice to see that some are discussing specific Convex support for Angular.
+
+I am just getting started with a new project to replace a FileMaker solution which had a few features that allowed the user to open
+a file manager on either MacOS or Windows. There are so many limitations with FileMakers layouts and design that I wanted to get into something more flexible.
+
+NOTE: I am relatively new to web development, I understand a lot of the basics and have a decent understanding of databases, but I am new to this so I hope my
+opinions and questions are not too naive.
+
+So I decided to try building with web technologies and that has that been an interesting learning curve. Started with React and didn't like how much you had to piece together
+so I tried Angular at around Angular v18 and really liked the structure and opinionated nature of the framework. I like the routing, signals, Typescript focus, 
+and it had Angular/Material for UI components.
+
+The Angular framework seems to be iterating at a very quick pace and the changes they are making I think are making it such a great framework to work with.
+Angular v20 is what I am building with and opting it for zoneless and using signals. RxJS observibles seemed to hurt my brain a bit. So I am glad I don't have to use them... so far.
+
+When I started working out which functionality I needed to make sure could be implemented the requirment for being able to open the file manager on either MacOS or Windows was a big one.
+So this project now is an Electron application that uses Angular for the front-end. (Add to the learning curve)
+
+Now it was time to decide on a database, I leaned heavily on Firebase seeing how it was a Google product and well Angular is essentially backed by Google.
+It provided Firebase/Auth, Firebase/Firestore, and Firestore Rules that would couple Firebase/Firestore nicely with Firebase/Auth.
+It had a nice dashboard to manage the database and rules, and it was easy to get started with.
+
+I started with the AngularFire library to integrate Firebase with Angular. But quickly had issues with it because it was still using RxJS observables and 
+I was trying to use Angular signals. So then I got it working with the Firebase JavaScript SDK directly, which was a bit of a pain to get setup.
+It also was a pain to project what the read and write costs would be as I was still unsture how I was going to structure the data, what quries I would need,
+how would I seach large collections when the search needed to be on data from a related collection, how could I make this performant and cost effective.
+It introduced denormalizing data, which I was not a fan of, but I understood its just how NoSQL databases work. I couldn't define the database with a formal 
+schema like I could with FileMaker.
+
+So, I started to look back into SQL database solutions. Supabase was now up for consideration as it provided a seemingly integrated solution, Auth + Database, and Row Level Security
+it would add to the learning curve to create the SQL queries, but I could use the Postgres database to define a schema and it would be more familiar to me.
+That was a heck of a lot more work to get going. 
+
+Then I saw Convex and it seemed to be a great solution where I could define the schema and apis with typesafe TypeScript, 
+all the code lived in my project so no going to the dashboard to define an SQL query that would generate the api endpoint.
+But it seems like all the docs are heavily focused on React and Next.js.
+I have been able to get the Convex client working with Angular but I tried out the 
