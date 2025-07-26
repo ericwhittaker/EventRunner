@@ -218,6 +218,67 @@ npm run er-releasemajor     # Major version (0.9.5 → 1.0.0)
 - `refactor:` - code changes that neither fix bugs nor add features
 - `chore:` - updating build tasks, package manager configs, etc.
 
+## Build and Bundle Size Management
+
+### Understanding Angular Bundle Budgets
+Angular monitors your bundle sizes to prevent performance issues:
+
+```bash
+# The warning you saw:
+# ▲ [WARNING] angular:styles/component:scss exceeded maximum budget. 
+# Budget 4.00 kB was not met by 2.29 kB with a total of 6.29 kB.
+```
+
+**What this means:**
+- Your component styles were 6.29 kB
+- Angular's default budget for component styles is 4.00 kB
+- You exceeded the budget by 2.29 kB
+
+### Solutions for Large Components
+
+#### Option 1: Move to External Stylesheet (Recommended)
+```typescript
+// Instead of inline styles:
+@Component({
+  selector: 'app-users',
+  template: `...`,
+  styles: [`
+    // Massive CSS here - causes budget warning
+  `]
+})
+
+// Use external stylesheet:
+@Component({
+  selector: 'app-users',
+  styleUrls: ['./users.component.scss'],
+  template: `...`
+})
+```
+
+#### Option 2: Adjust Budget Limits (angular.json)
+```json
+"budgets": [
+  {
+    "type": "anyComponentStyle",
+    "maximumWarning": "8kB",  // Increase from 4kB
+    "maximumError": "16kB"
+  }
+]
+```
+
+### Build Commands
+```bash
+# Development build (no warnings)
+ng build
+
+# Production build (with optimizations and budget checks)
+ng build --configuration production
+
+# Build and show detailed bundle sizes
+ng build --stats-json
+npx webpack-bundle-analyzer dist/stats.json
+```
+
 ## Emergency Commands
 
 ### "Oh no, I messed up!"
